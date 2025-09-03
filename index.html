@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nala Aircon - Mobile Finance</title>
+    <title>Nala Aircon - Firebase Finance Tracker</title>
     <style>
         * {
             margin: 0;
@@ -64,6 +64,28 @@
             position: relative;
             z-index: 2;
         }
+
+        .connection-status {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 12px;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-online { background: #10b981; }
+        .status-offline { background: #ef4444; }
+        .status-loading { background: #f59e0b; animation: pulse 1.5s infinite; }
 
         /* Navigation */
         .nav-tabs {
@@ -256,6 +278,15 @@
             letter-spacing: 0.5px;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .btn::before {
@@ -316,6 +347,21 @@
 
         .btn-secondary:active {
             transform: translateY(2px);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Stats Cards */
@@ -669,6 +715,12 @@
             border: 1px solid #f87171;
         }
 
+        .message.warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -730,27 +782,40 @@
             margin-bottom: 25px;
         }
 
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-            color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
-            transition: all 0.3s ease;
-            z-index: 1000;
+        /* Auth Section */
+        .auth-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(30, 64, 175, 0.08);
+            border: 1px solid rgba(30, 64, 175, 0.1);
+            text-align: center;
         }
 
-        .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 35px rgba(30, 64, 175, 0.5);
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .user-details {
+            text-align: left;
+        }
+
+        .user-email {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: #6b7280;
         }
 
         /* Animations */
@@ -762,14 +827,37 @@
         .loading {
             animation: pulse 1.5s infinite;
         }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .header {
+                border-radius: 0;
+            }
+            
+            .nav-tabs {
+                margin: -20px 10px 0;
+            }
+            
+            .content {
+                padding: 30px 10px 100px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header">
+            <div class="connection-status">
+                <span class="status-indicator" id="connectionStatus"></span>
+                <span id="connectionText">Offline</span>
+            </div>
             <h1>💰 Nala Aircon</h1>
-            <p>Mobile Finance Tracker</p>
+            <p>Firebase Finance Tracker</p>
         </div>
 
         <!-- Navigation -->
@@ -777,6 +865,7 @@
             <button class="nav-tab active" onclick="showTab('input')">📝 Input</button>
             <button class="nav-tab" onclick="showTab('dashboard')">📊 Dashboard</button>
             <button class="nav-tab" onclick="showTab('history')">📋 History</button>
+            <button class="nav-tab" onclick="showTab('account')">👤 Account</button>
         </div>
 
         <div class="content">
@@ -802,6 +891,8 @@
                                     <option value="">Pilih Kategori</option>
                                     <option value="Uang Ops">💼 Uang Ops</option>
                                     <option value="Freshmo">🆕 Freshmo</option>
+                                    <option value="Bonus">🎁 Bonus</option>
+                                    <option value="Lainnya">📦 Lainnya</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -812,7 +903,9 @@
                                 <label class="form-label">Keterangan (Opsional)</label>
                                 <textarea class="form-textarea" id="incomeDescription" placeholder="Tambahkan keterangan..."></textarea>
                             </div>
-                            <button type="submit" class="btn btn-success">💾 Simpan Pendapatan</button>
+                            <button type="submit" class="btn btn-success" id="incomeSubmitBtn">
+                                <span>💾 Simpan Pendapatan</span>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -838,6 +931,9 @@
                                     <option value="Token">⚡ Token</option>
                                     <option value="Material Customer">🛠️ Material Customer</option>
                                     <option value="Uang Makan Lembur">🌙 Uang Makan Lembur</option>
+                                    <option value="BBM">⛽ BBM</option>
+                                    <option value="Parkir">🅿️ Parkir</option>
+                                    <option value="Lainnya">📦 Lainnya</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -848,7 +944,9 @@
                                 <label class="form-label">Keterangan (Opsional)</label>
                                 <textarea class="form-textarea" id="expenseDescription" placeholder="Tambahkan keterangan..."></textarea>
                             </div>
-                            <button type="submit" class="btn btn-danger">💾 Simpan Pengeluaran</button>
+                            <button type="submit" class="btn btn-danger" id="expenseSubmitBtn">
+                                <span>💾 Simpan Pengeluaran</span>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -875,7 +973,9 @@
                 </div>
 
                 <div class="refresh-section">
-                    <button class="btn btn-primary" onclick="refreshCharts()">🔄 Refresh Charts</button>
+                    <button class="btn btn-primary" onclick="refreshData()" id="refreshBtn">
+                        <span>🔄 Refresh Data</span>
+                    </button>
                 </div>
 
                 <div class="chart-card">
@@ -926,25 +1026,162 @@
                             <input type="date" class="form-input" id="filterEndDate">
                         </div>
                     </div>
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label class="form-label">Tipe</label>
+                            <select class="form-select" id="filterType">
+                                <option value="">Semua</option>
+                                <option value="income">Pendapatan</option>
+                                <option value="expense">Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Kategori</label>
+                            <select class="form-select" id="filterCategory">
+                                <option value="">Semua</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="filter-actions">
-                        <button class="btn btn-primary" onclick="applyFilter()">🔍 Filter</button>
+                        <button class="btn btn-primary" onclick="applyFilter()" id="filterBtn">
+                            <span>🔍 Filter</span>
+                        </button>
                         <button class="btn btn-secondary" onclick="clearFilter()">🗑️ Clear</button>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin-bottom: 25px;">
+                <div style="text-align: center; margin-bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <button class="btn btn-success" onclick="exportData()">📁 Export CSV</button>
+                    <button class="btn btn-primary" onclick="syncData()" id="syncBtn">
+                        <span>🔄 Sync</span>
+                    </button>
                 </div>
 
                 <div id="transactionList"></div>
             </div>
+
+            <!-- ACCOUNT TAB -->
+            <div id="account" class="tab-content">
+                <div class="auth-section" id="authSection">
+                    <div id="loginSection">
+                        <h3 style="margin-bottom: 20px; color: #1e40af;">🔐 Login dengan Google</h3>
+                        <p style="margin-bottom: 25px; color: #6b7280;">Login untuk menyimpan data Anda di cloud</p>
+                        <button class="btn btn-primary" onclick="signInWithGoogle()" id="loginBtn">
+                            <span>🔑 Login dengan Google</span>
+                        </button>
+                    </div>
+                    
+                    <div id="userSection" style="display: none;">
+                        <div class="user-info">
+                            <div class="user-details">
+                                <div class="user-email" id="userEmail"></div>
+                                <div class="user-status" id="userStatus">Online</div>
+                            </div>
+                            <div style="color: #059669;">✅</div>
+                        </div>
+                        
+                        <div style="margin: 25px 0;">
+                            <h4 style="color: #1e40af; margin-bottom: 15px;">⚙️ Pengaturan</h4>
+                            <div style="display: grid; gap: 10px;">
+                                <button class="btn btn-secondary" onclick="backupToLocal()">💾 Backup ke Local</button>
+                                <button class="btn btn-secondary" onclick="restoreFromLocal()">📤 Restore dari Local</button>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-danger" onclick="signOut()" id="logoutBtn">
+                            <span>🚪 Logout</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">📊</span>
+                        <h3>Statistik Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center;">
+                            <div>
+                                <div style="font-size: 2em; font-weight: 800; color: #1e40af;" id="totalTransactions">0</div>
+                                <div style="font-size: 12px; color: #6b7280;">Total Transaksi</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 2em; font-weight: 800; color: #059669;" id="dataSize">0 KB</div>
+                                <div style="font-size: 12px; color: #6b7280;">Ukuran Data</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">ℹ️</span>
+                        <h3>Informasi Aplikasi</h3>
+                    </div>
+                    <div class="card-body" style="text-align: center;">
+                        <p style="color: #6b7280; line-height: 1.6; margin-bottom: 15px;">
+                            Nala Aircon Finance Tracker v2.0<br>
+                            Aplikasi pencatat keuangan dengan Firebase<br>
+                            © 2024 Nala Aircon
+                        </p>
+                        <div style="font-size: 12px; color: #9ca3af;">
+                            Last Updated: <span id="lastSyncTime">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
     <script>
+        // FIREBASE CONFIGURATION
+        // PENTING: Ganti dengan konfigurasi Firebase Anda sendiri!
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID", 
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        let app, auth, db;
+        let currentUser = null;
+        let isOnline = navigator.onLine;
+
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            
+            // Enable offline persistence
+            db.enablePersistence().catch((err) => {
+                if (err.code === 'failed-precondition') {
+                    console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+                } else if (err.code === 'unimplemented') {
+                    console.log('The current browser does not support all features required for persistence.');
+                }
+            });
+            
+            updateConnectionStatus(true);
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            updateConnectionStatus(false);
+        }
+
         // GLOBAL VARIABLES
         let transactions = [];
         let filteredTransactions = [];
+        let categories = {
+            income: ['Uang Ops', 'Freshmo', 'Bonus', 'Lainnya'],
+            expense: ['Uang Makan', 'Servis Kendaraan', 'Token', 'Material Customer', 'Uang Makan Lembur', 'BBM', 'Parkir', 'Lainnya']
+        };
 
         // DOM ELEMENTS
         const incomeForm = document.getElementById('incomeForm');
@@ -952,7 +1189,9 @@
         const messageDiv = document.getElementById('message');
         const filterStartDate = document.getElementById('filterStartDate');
         const filterEndDate = document.getElementById('filterEndDate');
-
+        const filterType = document.getElementById('filterType');
+        const filterCategory = document.getElementById('filterCategory');
+        
         // UTILITY FUNCTIONS
         function formatRupiah(amount) {
             return new Intl.NumberFormat('id-ID', {
@@ -973,6 +1212,11 @@
             return date.toLocaleDateString('id-ID', options);
         }
 
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('id-ID');
+        }
+
         function setTodayDate() {
             const today = new Date().toISOString().split('T')[0];
             const incomeDateEl = document.getElementById('incomeDate');
@@ -982,10 +1226,31 @@
             if (expenseDateEl) expenseDateEl.value = today;
         }
 
+        function updateConnectionStatus(online) {
+            isOnline = online;
+            const statusIndicator = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('connectionText');
+            
+            if (online) {
+                statusIndicator.className = 'status-indicator status-online';
+                statusText.textContent = 'Online';
+            } else {
+                statusIndicator.className = 'status-indicator status-offline';
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        function setLoadingStatus() {
+            const statusIndicator = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('connectionText');
+            statusIndicator.className = 'status-indicator status-loading';
+            statusText.textContent = 'Syncing...';
+        }
+
         // SHOW MESSAGE
-        function showMessage(text, isError = false) {
+        function showMessage(text, type = 'success') {
             messageDiv.textContent = text;
-            messageDiv.className = `message ${isError ? 'error' : 'success'}`;
+            messageDiv.className = `message ${type}`;
             messageDiv.style.display = 'block';
             
             // Auto hide after 4 seconds
@@ -998,59 +1263,283 @@
         }
 
         // STORAGE FUNCTIONS
-        function saveData() {
-            localStorage.setItem('nalaAirconMobile', JSON.stringify(transactions));
+        function saveToLocal() {
+            try {
+                const data = {
+                    transactions: transactions,
+                    lastSync: new Date().toISOString(),
+                    user: currentUser ? currentUser.uid : null
+                };
+                localStorage.setItem('nalaAirconFirebase', JSON.stringify(data));
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+            }
         }
 
-        function loadData() {
-            const saved = localStorage.getItem('nalaAirconMobile');
-            if (saved) {
-                try {
-                    transactions = JSON.parse(saved);
+        function loadFromLocal() {
+            try {
+                const saved = localStorage.getItem('nalaAirconFirebase');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    transactions = data.transactions || [];
                     filteredTransactions = [...transactions];
-                } catch (e) {
-                    transactions = [];
-                    filteredTransactions = [];
+                    
+                    // Update last sync time
+                    if (data.lastSync) {
+                        document.getElementById('lastSyncTime').textContent = formatDateTime(data.lastSync);
+                    }
+                    return true;
                 }
+            } catch (error) {
+                console.error('Error loading from localStorage:', error);
             }
-            updateStats();
-            setTodayDate();
+            return false;
+        }
+
+        // FIREBASE FUNCTIONS
+        async function saveToFirebase(transaction) {
+            if (!currentUser || !db) return false;
+            
+            try {
+                setLoadingStatus();
+                
+                const docRef = db.collection('users').doc(currentUser.uid)
+                                 .collection('transactions').doc(transaction.id.toString());
+                
+                await docRef.set({
+                    ...transaction,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    userId: currentUser.uid
+                });
+                
+                updateConnectionStatus(true);
+                return true;
+            } catch (error) {
+                console.error('Error saving to Firebase:', error);
+                updateConnectionStatus(false);
+                return false;
+            }
+        }
+
+        async function loadFromFirebase() {
+            if (!currentUser || !db) return false;
+            
+            try {
+                setLoadingStatus();
+                
+                const snapshot = await db.collection('users').doc(currentUser.uid)
+                                         .collection('transactions')
+                                         .orderBy('createdAt', 'desc')
+                                         .get();
+                
+                const firebaseTransactions = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    firebaseTransactions.push({
+                        id: parseInt(doc.id),
+                        type: data.type,
+                        category: data.category,
+                        amount: data.amount,
+                        description: data.description || '',
+                        date: data.date,
+                        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.date,
+                        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.date
+                    });
+                });
+                
+                transactions = firebaseTransactions;
+                filteredTransactions = [...transactions];
+                
+                // Update last sync time
+                document.getElementById('lastSyncTime').textContent = formatDateTime(new Date());
+                
+                updateConnectionStatus(true);
+                return true;
+            } catch (error) {
+                console.error('Error loading from Firebase:', error);
+                updateConnectionStatus(false);
+                return false;
+            }
+        }
+
+        async function deleteFromFirebase(transactionId) {
+            if (!currentUser || !db) return false;
+            
+            try {
+                setLoadingStatus();
+                
+                await db.collection('users').doc(currentUser.uid)
+                        .collection('transactions').doc(transactionId.toString()).delete();
+                
+                updateConnectionStatus(true);
+                return true;
+            } catch (error) {
+                console.error('Error deleting from Firebase:', error);
+                updateConnectionStatus(false);
+                return false;
+            }
+        }
+
+        async function syncAllToFirebase() {
+            if (!currentUser || !db) return false;
+            
+            try {
+                setLoadingStatus();
+                const batch = db.batch();
+                
+                transactions.forEach(transaction => {
+                    const docRef = db.collection('users').doc(currentUser.uid)
+                                     .collection('transactions').doc(transaction.id.toString());
+                    
+                    batch.set(docRef, {
+                        ...transaction,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        userId: currentUser.uid,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+                
+                await batch.commit();
+                
+                updateConnectionStatus(true);
+                document.getElementById('lastSyncTime').textContent = formatDateTime(new Date());
+                return true;
+            } catch (error) {
+                console.error('Error syncing to Firebase:', error);
+                updateConnectionStatus(false);
+                return false;
+            }
+        }
+
+        // AUTHENTICATION FUNCTIONS
+        async function signInWithGoogle() {
+            if (!auth) {
+                showMessage('Firebase tidak tersedia', 'error');
+                return;
+            }
+            
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+                const result = await auth.signInWithPopup(provider);
+                currentUser = result.user;
+                
+                showMessage('✅ Login berhasil!');
+                updateUserInterface();
+                
+                // Load data from Firebase after login
+                await loadFromFirebase();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('❌ Login gagal: ' + error.message, 'error');
+            }
+        }
+
+        async function signOut() {
+            if (!auth) return;
+            
+            try {
+                await auth.signOut();
+                currentUser = null;
+                
+                showMessage('👋 Logout berhasil');
+                updateUserInterface();
+                
+                // Clear data and load from local storage
+                transactions = [];
+                loadFromLocal();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Logout error:', error);
+                showMessage('❌ Logout gagal', 'error');
+            }
+        }
+
+        function updateUserInterface() {
+            const loginSection = document.getElementById('loginSection');
+            const userSection = document.getElementById('userSection');
+            const userEmail = document.getElementById('userEmail');
+            
+            if (currentUser) {
+                loginSection.style.display = 'none';
+                userSection.style.display = 'block';
+                userEmail.textContent = currentUser.email;
+            } else {
+                loginSection.style.display = 'block';
+                userSection.style.display = 'none';
+            }
         }
 
         // TRANSACTION FUNCTIONS
-        function addTransaction(type, category, amount, description, date) {
+        async function addTransaction(type, category, amount, description, date) {
             const transaction = {
                 id: Date.now(),
                 type: type,
                 category: category,
                 amount: parseInt(amount),
                 description: description || '',
-                date: date || new Date().toISOString()
+                date: date || new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             };
 
+            // Add to local array
             transactions.unshift(transaction);
             filteredTransactions = [...transactions];
-            saveData();
+            
+            // Save to local storage
+            saveToLocal();
+            
+            // Try to save to Firebase if user is logged in
+            if (currentUser) {
+                const saved = await saveToFirebase(transaction);
+                if (!saved && isOnline) {
+                    showMessage('⚠️ Data tersimpan lokal, akan disync saat koneksi stabil', 'warning');
+                }
+            }
+            
             updateStats();
             
             const typeText = type === 'income' ? 'Pendapatan' : 'Pengeluaran';
             showMessage(`✅ ${typeText} ${category} berhasil ditambahkan!`);
         }
 
-        function deleteTransaction(id) {
+        async function deleteTransaction(id) {
             if (confirm('Yakin ingin menghapus transaksi ini?')) {
+                // Remove from local array
                 transactions = transactions.filter(t => t.id !== id);
                 filteredTransactions = transactions.filter(t => {
-                    const startDate = filterStartDate.value;
-                    const endDate = filterEndDate.value;
-                    const transactionDate = new Date(t.date).toISOString().split('T')[0];
+                    let match = true;
                     
-                    if (startDate && transactionDate < startDate) return false;
-                    if (endDate && transactionDate > endDate) return false;
+                    if (filterStartDate.value) {
+                        const transactionDate = new Date(t.date).toISOString().split('T')[0];
+                        if (transactionDate < filterStartDate.value) match = false;
+                    }
                     
-                    return true;
+                    if (filterEndDate.value) {
+                        const transactionDate = new Date(t.date).toISOString().split('T')[0];
+                        if (transactionDate > filterEndDate.value) match = false;
+                    }
+                    
+                    if (filterType.value && t.type !== filterType.value) match = false;
+                    if (filterCategory.value && t.category !== filterCategory.value) match = false;
+                    
+                    return match;
                 });
-                saveData();
+                
+                // Save to local storage
+                saveToLocal();
+                
+                // Try to delete from Firebase
+                if (currentUser) {
+                    await deleteFromFirebase(id);
+                }
+                
                 updateStats();
                 displayTransactions();
                 showMessage('✅ Transaksi berhasil dihapus!');
@@ -1072,6 +1561,18 @@
             document.getElementById('totalIncome').textContent = formatRupiah(totalIncome);
             document.getElementById('totalExpense').textContent = formatRupiah(totalExpense);
             document.getElementById('netBalance').textContent = formatRupiah(netBalance);
+            
+            // Update account stats
+            document.getElementById('totalTransactions').textContent = transactions.length.toLocaleString('id-ID');
+            
+            // Calculate data size
+            const dataSize = JSON.stringify(transactions).length;
+            const sizeKB = (dataSize / 1024).toFixed(1);
+            document.getElementById('dataSize').textContent = sizeKB + ' KB';
+            
+            // Update charts
+            updateBarChart();
+            updatePieChart();
         }
 
         function updateBarChart() {
@@ -1126,14 +1627,9 @@
 
             const total = data.reduce((a, b) => a + b, 0);
             const colors = [
-                '#ef4444',  // Red - Uang Makan
-                '#3b82f6',  // Blue - Servis Kendaraan
-                '#10b981',  // Green - Token
-                '#f59e0b',  // Yellow - Material Customer
-                '#8b5cf6',  // Purple - Material Project
-                '#06b6d4',  // Cyan - Material PKS
-                '#f97316',  // Orange - Kasbon
-                '#ec4899'   // Pink - Uang Makan Lembur
+                '#ef4444',  '#3b82f6',  '#10b981',  '#f59e0b',
+                '#8b5cf6',  '#06b6d4',  '#f97316',  '#ec4899',
+                '#64748b',  '#84cc16'
             ];
 
             let pieHTML = '';
@@ -1162,10 +1658,55 @@
             pieContainer.innerHTML = pieHTML;
         }
 
-        function refreshCharts() {
-            updateBarChart();
-            updatePieChart();
-            showMessage('✅ Charts berhasil diperbarui!');
+        // REFRESH AND SYNC FUNCTIONS
+        async function refreshData() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            const originalContent = refreshBtn.innerHTML;
+            
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<div class="spinner"></div><span>Loading...</span>';
+            
+            if (currentUser) {
+                const success = await loadFromFirebase();
+                if (success) {
+                    showMessage('✅ Data berhasil di-refresh dari server');
+                } else {
+                    showMessage('⚠️ Gagal refresh dari server, menggunakan data lokal', 'warning');
+                }
+            } else {
+                loadFromLocal();
+                showMessage('ℹ️ Data di-refresh dari penyimpanan lokal', 'warning');
+            }
+            
+            updateStats();
+            displayTransactions();
+            
+            refreshBtn.disabled = false;
+            refreshBtn.innerHTML = originalContent;
+        }
+
+        async function syncData() {
+            const syncBtn = document.getElementById('syncBtn');
+            const originalContent = syncBtn.innerHTML;
+            
+            if (!currentUser) {
+                showMessage('⚠️ Login terlebih dahulu untuk sync data', 'warning');
+                return;
+            }
+            
+            syncBtn.disabled = true;
+            syncBtn.innerHTML = '<div class="spinner"></div><span>Syncing...</span>';
+            
+            const success = await syncAllToFirebase();
+            
+            if (success) {
+                showMessage('✅ Data berhasil disync ke server');
+            } else {
+                showMessage('❌ Gagal sync data ke server', 'error');
+            }
+            
+            syncBtn.disabled = false;
+            syncBtn.innerHTML = originalContent;
         }
 
         // DISPLAY FUNCTIONS
@@ -1207,42 +1748,138 @@
             `).join('');
         }
 
+        function populateFilterCategories() {
+            const allCategories = [...categories.income, ...categories.expense];
+            const uniqueCategories = [...new Set(allCategories)].sort();
+            
+            filterCategory.innerHTML = '<option value="">Semua</option>';
+            uniqueCategories.forEach(cat => {
+                filterCategory.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+        }
+
         // FILTER FUNCTIONS
         function applyFilter() {
-            const startDate = filterStartDate.value;
-            const endDate = filterEndDate.value;
-
-            if (!startDate && !endDate) {
-                filteredTransactions = [...transactions];
-            } else {
+            const filterBtn = document.getElementById('filterBtn');
+            const originalContent = filterBtn.innerHTML;
+            
+            filterBtn.disabled = true;
+            filterBtn.innerHTML = '<div class="spinner"></div><span>Filtering...</span>';
+            
+            setTimeout(() => {
                 filteredTransactions = transactions.filter(transaction => {
-                    const transactionDate = new Date(transaction.date).toISOString().split('T')[0];
+                    let match = true;
                     
-                    if (startDate && transactionDate < startDate) return false;
-                    if (endDate && transactionDate > endDate) return false;
+                    if (filterStartDate.value) {
+                        const transactionDate = new Date(transaction.date).toISOString().split('T')[0];
+                        if (transactionDate < filterStartDate.value) match = false;
+                    }
                     
-                    return true;
+                    if (filterEndDate.value) {
+                        const transactionDate = new Date(transaction.date).toISOString().split('T')[0];
+                        if (transactionDate > filterEndDate.value) match = false;
+                    }
+                    
+                    if (filterType.value && transaction.type !== filterType.value) match = false;
+                    if (filterCategory.value && transaction.category !== filterCategory.value) match = false;
+                    
+                    return match;
                 });
-            }
 
-            updateStats();
-            displayTransactions();
-            showMessage(`✅ Filter diterapkan. Ditemukan ${filteredTransactions.length} transaksi.`);
+                updateStats();
+                displayTransactions();
+                showMessage(`✅ Filter diterapkan. Ditemukan ${filteredTransactions.length} transaksi.`);
+                
+                filterBtn.disabled = false;
+                filterBtn.innerHTML = originalContent;
+            }, 500);
         }
 
         function clearFilter() {
             filterStartDate.value = '';
             filterEndDate.value = '';
+            filterType.value = '';
+            filterCategory.value = '';
+            
             filteredTransactions = [...transactions];
             updateStats();
             displayTransactions();
             showMessage('✅ Filter dibersihkan.');
         }
 
+        // BACKUP AND RESTORE FUNCTIONS
+        function backupToLocal() {
+            try {
+                const backupData = {
+                    transactions: transactions,
+                    timestamp: new Date().toISOString(),
+                    version: '2.0'
+                };
+                
+                const dataStr = JSON.stringify(backupData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `nala-aircon-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                URL.revokeObjectURL(link.href);
+                showMessage('✅ Backup berhasil diunduh!');
+            } catch (error) {
+                console.error('Backup error:', error);
+                showMessage('❌ Gagal membuat backup', 'error');
+            }
+        }
+
+        function restoreFromLocal() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const backupData = JSON.parse(e.target.result);
+                        
+                        if (backupData.transactions && Array.isArray(backupData.transactions)) {
+                            if (confirm('Restore akan mengganti semua data saat ini. Lanjutkan?')) {
+                                transactions = backupData.transactions;
+                                filteredTransactions = [...transactions];
+                                
+                                saveToLocal();
+                                updateStats();
+                                displayTransactions();
+                                
+                                showMessage(`✅ Restore berhasil! ${transactions.length} transaksi dipulihkan.`);
+                                
+                                // Sync to Firebase if user is logged in
+                                if (currentUser) {
+                                    syncAllToFirebase();
+                                }
+                            }
+                        } else {
+                            showMessage('❌ File backup tidak valid', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Restore error:', error);
+                        showMessage('❌ Gagal membaca file backup', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
         // EXPORT FUNCTION
         function exportData() {
             if (filteredTransactions.length === 0) {
-                showMessage('⚠️ Tidak ada data untuk diekspor!', true);
+                showMessage('⚠️ Tidak ada data untuk diekspor!', 'warning');
                 return;
             }
 
@@ -1260,7 +1897,7 @@
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `nala-aircon-mobile-${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `nala-aircon-export-${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
             URL.revokeObjectURL(link.href);
             
@@ -1280,11 +1917,11 @@
             // Update display based on tab
             if (tabName === 'dashboard') {
                 updateStats();
-                updateBarChart();
-                updatePieChart();
             } else if (tabName === 'history') {
                 updateStats();
                 displayTransactions();
+            } else if (tabName === 'account') {
+                updateStats();
             }
             
             // Scroll to top
@@ -1292,8 +1929,11 @@
         }
 
         // FORM HANDLERS
-        incomeForm.addEventListener('submit', function(e) {
+        incomeForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            const submitBtn = document.getElementById('incomeSubmitBtn');
+            const originalContent = submitBtn.innerHTML;
             
             const date = document.getElementById('incomeDate').value;
             const category = document.getElementById('incomeCategory').value;
@@ -1301,18 +1941,28 @@
             const description = document.getElementById('incomeDescription').value;
             
             if (!date || !category || !amount) {
-                showMessage('⚠️ Semua field wajib diisi!', true);
+                showMessage('⚠️ Semua field wajib diisi!', 'warning');
                 return;
             }
             
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div><span>Saving...</span>';
+            
             const dateISO = new Date(date + 'T12:00:00').toISOString();
-            addTransaction('income', category, amount, description, dateISO);
+            await addTransaction('income', category, amount, description, dateISO);
+            
             incomeForm.reset();
             setTodayDate();
+            
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalContent;
         });
 
-        expenseForm.addEventListener('submit', function(e) {
+        expenseForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            const submitBtn = document.getElementById('expenseSubmitBtn');
+            const originalContent = submitBtn.innerHTML;
             
             const date = document.getElementById('expenseDate').value;
             const category = document.getElementById('expenseCategory').value;
@@ -1320,15 +1970,61 @@
             const description = document.getElementById('expenseDescription').value;
             
             if (!date || !category || !amount) {
-                showMessage('⚠️ Semua field wajib diisi!', true);
+                showMessage('⚠️ Semua field wajib diisi!', 'warning');
                 return;
             }
             
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div><span>Saving...</span>';
+            
             const dateISO = new Date(date + 'T12:00:00').toISOString();
-            addTransaction('expense', category, amount, description, dateISO);
+            await addTransaction('expense', category, amount, description, dateISO);
+            
             expenseForm.reset();
             setTodayDate();
+            
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalContent;
         });
+
+        // NETWORK EVENT LISTENERS
+        window.addEventListener('online', () => {
+            updateConnectionStatus(true);
+            showMessage('🌐 Koneksi internet aktif', 'success');
+            
+            // Auto sync when back online if user is logged in
+            if (currentUser) {
+                setTimeout(() => {
+                    refreshData();
+                }, 2000);
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            updateConnectionStatus(false);
+            showMessage('📶 Mode offline aktif', 'warning');
+        });
+
+        // AUTH STATE LISTENER
+        if (auth) {
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                updateUserInterface();
+                
+                if (user) {
+                    console.log('User signed in:', user.email);
+                    // Load data from Firebase
+                    await loadFromFirebase();
+                } else {
+                    console.log('User signed out');
+                    // Load data from local storage
+                    loadFromLocal();
+                }
+                
+                updateStats();
+                populateFilterCategories();
+            });
+        }
 
         // GLOBAL FUNCTIONS
         window.showTab = showTab;
@@ -1336,12 +2032,23 @@
         window.applyFilter = applyFilter;
         window.clearFilter = clearFilter;
         window.exportData = exportData;
-        window.refreshCharts = refreshCharts;
+        window.refreshData = refreshData;
+        window.syncData = syncData;
+        window.signInWithGoogle = signInWithGoogle;
+        window.signOut = signOut;
+        window.backupToLocal = backupToLocal;
+        window.restoreFromLocal = restoreFromLocal;
 
         // INITIALIZE APP
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
-            console.log('Nala Aircon Mobile Finance Tracker initialized');
+            // Load data from local storage first
+            loadFromLocal();
+            setTodayDate();
+            updateStats();
+            populateFilterCategories();
+            updateConnectionStatus(navigator.onLine);
+            
+            console.log('Nala Aircon Firebase Finance Tracker v2.0 initialized');
         });
     </script>
 </body>
