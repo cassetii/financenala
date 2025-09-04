@@ -364,7 +364,82 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Stats Cards */
+        /* Messages */
+        .message {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #047857;
+            border: 1px solid #6ee7b7;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #b91c1c;
+            border: 1px solid #f87171;
+        }
+
+        .message.warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        /* Auth Section */
+        .auth-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(30, 64, 175, 0.08);
+            border: 1px solid rgba(30, 64, 175, 0.1);
+            text-align: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .user-details {
+            text-align: left;
+        }
+
+        .user-email {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* Stats and other styles remain the same... */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -435,387 +510,24 @@
             font-weight: 600;
         }
 
-        /* Charts */
-        .chart-card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 30px rgba(30, 64, 175, 0.08);
-            border: 1px solid rgba(30, 64, 175, 0.1);
-        }
-
-        .chart-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .chart-title {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #1e40af;
-            margin-bottom: 5px;
-        }
-
-        .chart-subtitle {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .bar-chart {
-            display: flex;
-            align-items: end;
-            justify-content: space-around;
-            height: 200px;
-            background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
-            border-radius: 15px;
-            padding: 20px;
+        /* Debug Console */
+        .debug-console {
+            background: #1f2937;
+            color: #f3f4f6;
+            border-radius: 8px;
+            padding: 10px;
             margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
         }
 
-        .bar-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            max-width: 80px;
-        }
-
-        .bar {
-            width: 40px;
-            border-radius: 8px 8px 0 0;
+        .debug-toggle {
             margin-bottom: 10px;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            min-height: 20px;
-        }
-
-        .bar.income {
-            background: linear-gradient(to top, #059669, #10b981);
-            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
-        }
-
-        .bar.expense {
-            background: linear-gradient(to top, #dc2626, #ef4444);
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-        }
-
-        .bar-label {
             font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        .bar-amount {
-            font-size: 11px;
-            color: #6b7280;
-            text-align: center;
-        }
-
-        /* Pie Chart */
-        .pie-chart {
-            background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .pie-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin-bottom: 8px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .pie-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.1);
-        }
-
-        .pie-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 6px;
-            margin-right: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-
-        .pie-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .pie-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 4px;
-        }
-
-        .pie-bar {
-            background: #e5e7eb;
-            height: 6px;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .pie-progress {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .pie-values {
-            text-align: right;
-            min-width: 80px;
-        }
-
-        .pie-amount {
-            font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .pie-percentage {
-            font-size: 11px;
-            color: #6b7280;
-        }
-
-        /* Transaction List */
-        .transaction-item {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.05);
-            border: 1px solid rgba(30, 64, 175, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .transaction-item:hover {
-            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .transaction-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            border-radius: 0 4px 4px 0;
-        }
-
-        .transaction-item.income::before {
-            background: linear-gradient(to bottom, #059669, #047857);
-        }
-
-        .transaction-item.expense::before {
-            background: linear-gradient(to bottom, #dc2626, #b91c1c);
-        }
-
-        .transaction-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .transaction-type {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .transaction-type.income {
-            color: #059669;
-        }
-
-        .transaction-type.expense {
-            color: #dc2626;
-        }
-
-        .transaction-amount {
-            font-size: 16px;
-            font-weight: 800;
-        }
-
-        .transaction-amount.income {
-            color: #059669;
-        }
-
-        .transaction-amount.expense {
-            color: #dc2626;
-        }
-
-        .transaction-details {
-            margin-bottom: 12px;
-        }
-
-        .transaction-category {
-            font-size: 15px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 4px;
-        }
-
-        .transaction-description {
-            font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 4px;
-            font-style: italic;
-        }
-
-        .transaction-date {
-            font-size: 12px;
-            color: #9ca3af;
-        }
-
-        .transaction-actions {
-            text-align: center;
-        }
-
-        /* Messages */
-        .message {
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-weight: 600;
-            text-align: center;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-15px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.success {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            color: #047857;
-            border: 1px solid #6ee7b7;
-        }
-
-        .message.error {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            color: #b91c1c;
-            border: 1px solid #f87171;
-        }
-
-        .message.warning {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            color: #92400e;
-            border: 1px solid #fbbf24;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            color: #6b7280;
-        }
-
-        .empty-state .icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 1.2em;
-            margin-bottom: 8px;
-            color: #374151;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* Filter */
-        .filter-section {
-            background: white;
-            border-radius: 20px;
-            padding: 25px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 30px rgba(30, 64, 175, 0.08);
-            border: 1px solid rgba(30, 64, 175, 0.1);
-        }
-
-        .filter-title {
-            font-size: 1.1em;
-            font-weight: 700;
-            color: #1e40af;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .filter-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .filter-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        /* Refresh Button */
-        .refresh-section {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        /* Auth Section */
-        .auth-section {
-            background: white;
-            border-radius: 20px;
-            padding: 25px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 30px rgba(30, 64, 175, 0.08);
-            border: 1px solid rgba(30, 64, 175, 0.1);
-            text-align: center;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        .user-details {
-            text-align: left;
-        }
-
-        .user-email {
-            font-size: 14px;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .user-status {
-            font-size: 12px;
-            color: #6b7280;
+            padding: 8px 16px;
         }
 
         /* Animations */
@@ -857,15 +569,15 @@
                 <span id="connectionText">Offline</span>
             </div>
             <h1>💰 Nala Aircon</h1>
-            <p>Firebase Finance Tracker</p>
+            <p>Firebase Finance Tracker (Fixed)</p>
         </div>
 
         <!-- Navigation -->
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="showTab('input')">📝 Input</button>
             <button class="nav-tab" onclick="showTab('dashboard')">📊 Dashboard</button>
-            <button class="nav-tab" onclick="showTab('history')">📋 History</button>
             <button class="nav-tab" onclick="showTab('account')">👤 Account</button>
+            <button class="nav-tab" onclick="showTab('debug')">🔧 Debug</button>
         </div>
 
         <div class="content">
@@ -972,88 +684,9 @@
                     </div>
                 </div>
 
-                <div class="refresh-section">
+                <div style="text-align: center; margin-bottom: 25px;">
                     <button class="btn btn-primary" onclick="refreshData()" id="refreshBtn">
                         <span>🔄 Refresh Data</span>
-                    </button>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="chart-title">📊 Freshmo vs Pengeluaran</div>
-                        <div class="chart-subtitle">Perbandingan pendapatan dan pengeluaran</div>
-                    </div>
-                    <div class="bar-chart">
-                        <div class="bar-item">
-                            <div class="bar income" id="freshmoBar" style="height: 30px;"></div>
-                            <div class="bar-label">Freshmo</div>
-                            <div class="bar-amount" id="freshmoAmount">Rp 0</div>
-                        </div>
-                        <div class="bar-item">
-                            <div class="bar expense" id="expenseBar" style="height: 30px;"></div>
-                            <div class="bar-label">Pengeluaran</div>
-                            <div class="bar-amount" id="totalExpenseAmount">Rp 0</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="chart-title">🥧 Distribusi Pengeluaran</div>
-                        <div class="chart-subtitle">Breakdown kategori pengeluaran</div>
-                    </div>
-                    <div class="pie-chart" id="pieChart">
-                        <div class="empty-state">
-                            <div class="icon">📊</div>
-                            <h3>Belum ada data</h3>
-                            <p>Tambahkan pengeluaran untuk melihat distribusi</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HISTORY TAB -->
-            <div id="history" class="tab-content">
-                <div class="filter-section">
-                    <div class="filter-title">🔍 Filter Transaksi</div>
-                    <div class="filter-grid">
-                        <div class="form-group">
-                            <label class="form-label">Dari Tanggal</label>
-                            <input type="date" class="form-input" id="filterStartDate">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Sampai Tanggal</label>
-                            <input type="date" class="form-input" id="filterEndDate">
-                        </div>
-                    </div>
-                    <div class="filter-grid">
-                        <div class="form-group">
-                            <label class="form-label">Tipe</label>
-                            <select class="form-select" id="filterType">
-                                <option value="">Semua</option>
-                                <option value="income">Pendapatan</option>
-                                <option value="expense">Pengeluaran</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Kategori</label>
-                            <select class="form-select" id="filterCategory">
-                                <option value="">Semua</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="filter-actions">
-                        <button class="btn btn-primary" onclick="applyFilter()" id="filterBtn">
-                            <span>🔍 Filter</span>
-                        </button>
-                        <button class="btn btn-secondary" onclick="clearFilter()">🗑️ Clear</button>
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin-bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button class="btn btn-success" onclick="exportData()">📁 Export CSV</button>
-                    <button class="btn btn-primary" onclick="syncData()" id="syncBtn">
-                        <span>🔄 Sync</span>
                     </button>
                 </div>
 
@@ -1080,12 +713,9 @@
                             <div style="color: #059669;">✅</div>
                         </div>
                         
-                        <div style="margin: 25px 0;">
-                            <h4 style="color: #1e40af; margin-bottom: 15px;">⚙️ Pengaturan</h4>
-                            <div style="display: grid; gap: 10px;">
-                                <button class="btn btn-secondary" onclick="backupToLocal()">💾 Backup ke Local</button>
-                                <button class="btn btn-secondary" onclick="restoreFromLocal()">📤 Restore dari Local</button>
-                            </div>
+                        <div style="display: grid; gap: 10px; margin: 20px 0;">
+                            <button class="btn btn-secondary" onclick="testFirebaseRules()">🔍 Test Database Rules</button>
+                            <button class="btn btn-secondary" onclick="syncData()">🔄 Sync All Data</button>
                         </div>
                         
                         <button class="btn btn-danger" onclick="signOut()" id="logoutBtn">
@@ -1112,6 +742,30 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- DEBUG TAB -->
+            <div id="debug" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🔧</span>
+                        <h3>Debug & Test</h3>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-secondary debug-toggle" onclick="toggleDebug()">
+                            <span id="debugToggleText">Show Debug Console</span>
+                        </button>
+                        
+                        <div id="debugConsole" class="debug-console" style="display: none;"></div>
+                        
+                        <div style="display: grid; gap: 10px; margin-top: 20px;">
+                            <button class="btn btn-primary" onclick="testFirebaseConnection()">🔍 Test Firebase Connection</button>
+                            <button class="btn btn-secondary" onclick="testFirebaseRules()">🔒 Test Firestore Rules</button>
+                            <button class="btn btn-secondary" onclick="clearLocalData()">🗑️ Clear Local Data</button>
+                            <button class="btn btn-secondary" onclick="exportDebugLog()">📄 Export Debug Log</button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card">
                     <div class="card-header">
@@ -1120,7 +774,7 @@
                     </div>
                     <div class="card-body" style="text-align: center;">
                         <p style="color: #6b7280; line-height: 1.6; margin-bottom: 15px;">
-                            Nala Aircon Finance Tracker v2.0<br>
+                            Nala Aircon Finance Tracker v2.1 (Fixed)<br>
                             Aplikasi pencatat keuangan dengan Firebase<br>
                             © 2024 Nala Aircon
                         </p>
@@ -1133,14 +787,68 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <!-- Firebase SDKs - Updated to latest version -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
     <script>
+        // DEBUG LOGGING SYSTEM
+        let debugLog = [];
+        let debugVisible = false;
+
+        function addDebugLog(message, type = 'info') {
+            const timestamp = new Date().toISOString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            debugLog.push(logEntry);
+            
+            // Keep only last 100 entries
+            if (debugLog.length > 100) {
+                debugLog.shift();
+            }
+            
+            if (debugVisible) {
+                updateDebugConsole();
+            }
+            
+            console.log(logEntry);
+        }
+
+        function updateDebugConsole() {
+            const console = document.getElementById('debugConsole');
+            if (console) {
+                console.textContent = debugLog.slice(-20).join('\n');
+                console.scrollTop = console.scrollHeight;
+            }
+        }
+
+        function toggleDebug() {
+            debugVisible = !debugVisible;
+            const console = document.getElementById('debugConsole');
+            const toggleText = document.getElementById('debugToggleText');
+            
+            if (debugVisible) {
+                console.style.display = 'block';
+                toggleText.textContent = 'Hide Debug Console';
+                updateDebugConsole();
+            } else {
+                console.style.display = 'none';
+                toggleText.textContent = 'Show Debug Console';
+            }
+        }
+
+        function exportDebugLog() {
+            const logContent = debugLog.join('\n');
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `nala-debug-${new Date().toISOString().split('T')[0]}.log`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            showMessage('Debug log exported successfully!');
+        }
+
         // FIREBASE CONFIGURATION
-        // PENTING: Ganti dengan konfigurasi Firebase Anda sendiri!
         const firebaseConfig = {
             apiKey: "AIzaSyASArMgCz6lXELa92V1BFe-5ecY__Seauc",
             authDomain: "financenala.firebaseapp.com",
@@ -1150,47 +858,54 @@
             appId: "1:259185907850:web:7278f2e27f658add34f573"
         };
 
-        // Initialize Firebase
+        // Initialize Firebase with enhanced error handling
         let app, auth, db;
         let currentUser = null;
         let isOnline = navigator.onLine;
 
         try {
+            addDebugLog('Initializing Firebase...');
             app = firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
             
-            // Enable offline persistence
-            db.enablePersistence().catch((err) => {
+            addDebugLog('Firebase initialized successfully');
+            
+            // Configure Firestore settings
+            db.settings({
+                cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+            });
+            
+            // Enable offline persistence with better error handling
+            db.enablePersistence({
+                synchronizeTabs: true
+            }).then(() => {
+                addDebugLog('Firestore offline persistence enabled');
+            }).catch((err) => {
+                addDebugLog(`Persistence error: ${err.code} - ${err.message}`, 'warn');
                 if (err.code === 'failed-precondition') {
-                    console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+                    addDebugLog('Multiple tabs open, persistence can only be enabled in one tab at a time.', 'warn');
                 } else if (err.code === 'unimplemented') {
-                    console.log('The current browser does not support all features required for persistence.');
+                    addDebugLog('The current browser does not support all features required for persistence.', 'warn');
                 }
             });
             
             updateConnectionStatus(true);
         } catch (error) {
+            addDebugLog(`Firebase initialization error: ${error.message}`, 'error');
             console.error('Firebase initialization error:', error);
             updateConnectionStatus(false);
+            showMessage('Firebase initialization failed: ' + error.message, 'error');
         }
 
         // GLOBAL VARIABLES
         let transactions = [];
         let filteredTransactions = [];
-        let categories = {
-            income: ['Uang Ops', 'Freshmo', 'Bonus', 'Lainnya'],
-            expense: ['Uang Makan', 'Servis Kendaraan', 'Token', 'Material Customer', 'Uang Makan Lembur', 'BBM', 'Parkir', 'Lainnya']
-        };
 
         // DOM ELEMENTS
         const incomeForm = document.getElementById('incomeForm');
         const expenseForm = document.getElementById('expenseForm');
         const messageDiv = document.getElementById('message');
-        const filterStartDate = document.getElementById('filterStartDate');
-        const filterEndDate = document.getElementById('filterEndDate');
-        const filterType = document.getElementById('filterType');
-        const filterCategory = document.getElementById('filterCategory');
         
         // UTILITY FUNCTIONS
         function formatRupiah(amount) {
@@ -1234,9 +949,11 @@
             if (online) {
                 statusIndicator.className = 'status-indicator status-online';
                 statusText.textContent = 'Online';
+                addDebugLog('Connection status: Online');
             } else {
                 statusIndicator.className = 'status-indicator status-offline';
                 statusText.textContent = 'Offline';
+                addDebugLog('Connection status: Offline');
             }
         }
 
@@ -1249,6 +966,7 @@
 
         // SHOW MESSAGE
         function showMessage(text, type = 'success') {
+            addDebugLog(`Message: ${text} (${type})`);
             messageDiv.textContent = text;
             messageDiv.className = `message ${type}`;
             messageDiv.style.display = 'block';
@@ -1262,69 +980,119 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // STORAGE FUNCTIONS
-        function saveToLocal() {
+        // ENHANCED FIREBASE FUNCTIONS
+        async function testFirebaseConnection() {
+            addDebugLog('Testing Firebase connection...');
+            
+            if (!db) {
+                addDebugLog('Database not initialized', 'error');
+                showMessage('Database not initialized', 'error');
+                return false;
+            }
+
             try {
-                const data = {
-                    transactions: transactions,
-                    lastSync: new Date().toISOString(),
-                    user: currentUser ? currentUser.uid : null
-                };
-                localStorage.setItem('nalaAirconFirebase', JSON.stringify(data));
+                // Test basic Firestore connection
+                await db.collection('test').limit(1).get();
+                addDebugLog('Firebase connection test: SUCCESS');
+                showMessage('✅ Firebase connection successful!');
+                return true;
             } catch (error) {
-                console.error('Error saving to localStorage:', error);
+                addDebugLog(`Firebase connection test failed: ${error.message}`, 'error');
+                showMessage('❌ Firebase connection failed: ' + error.message, 'error');
+                return false;
             }
         }
 
-        function loadFromLocal() {
-            try {
-                const saved = localStorage.getItem('nalaAirconFirebase');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    transactions = data.transactions || [];
-                    filteredTransactions = [...transactions];
-                    
-                    // Update last sync time
-                    if (data.lastSync) {
-                        document.getElementById('lastSyncTime').textContent = formatDateTime(data.lastSync);
-                    }
-                    return true;
-                }
-            } catch (error) {
-                console.error('Error loading from localStorage:', error);
+        async function testFirebaseRules() {
+            if (!currentUser) {
+                addDebugLog('User not authenticated for rules test', 'warn');
+                showMessage('⚠️ Please login first to test rules', 'warning');
+                return;
             }
-            return false;
-        }
 
-        // FIREBASE FUNCTIONS
-        async function saveToFirebase(transaction) {
-            if (!currentUser || !db) return false;
+            addDebugLog('Testing Firestore security rules...');
             
             try {
+                const testDoc = {
+                    test: true,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    userId: currentUser.uid
+                };
+
+                // Test write permission
+                const testRef = db.collection('users').doc(currentUser.uid).collection('test').doc('ruletest');
+                await testRef.set(testDoc);
+                addDebugLog('Write test: SUCCESS');
+
+                // Test read permission
+                const doc = await testRef.get();
+                if (doc.exists) {
+                    addDebugLog('Read test: SUCCESS');
+                    
+                    // Clean up test document
+                    await testRef.delete();
+                    addDebugLog('Cleanup test: SUCCESS');
+                    
+                    showMessage('✅ Firestore rules test passed!');
+                } else {
+                    addDebugLog('Read test: FAILED - Document not found', 'error');
+                    showMessage('❌ Read test failed', 'error');
+                }
+            } catch (error) {
+                addDebugLog(`Firestore rules test failed: ${error.code} - ${error.message}`, 'error');
+                
+                if (error.code === 'permission-denied') {
+                    showMessage('❌ Permission denied. Check Firestore rules!', 'error');
+                } else {
+                    showMessage('❌ Rules test failed: ' + error.message, 'error');
+                }
+            }
+        }
+
+        async function saveToFirebase(transaction) {
+            if (!currentUser || !db) {
+                addDebugLog('Cannot save to Firebase: user not authenticated or db not available', 'warn');
+                return false;
+            }
+            
+            try {
+                addDebugLog(`Saving transaction ${transaction.id} to Firebase...`);
                 setLoadingStatus();
                 
                 const docRef = db.collection('users').doc(currentUser.uid)
                                  .collection('transactions').doc(transaction.id.toString());
                 
-                await docRef.set({
+                const docData = {
                     ...transaction,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     userId: currentUser.uid
-                });
+                };
+
+                await docRef.set(docData);
                 
+                addDebugLog(`Transaction ${transaction.id} saved successfully`);
                 updateConnectionStatus(true);
                 return true;
             } catch (error) {
+                addDebugLog(`Error saving transaction ${transaction.id}: ${error.code} - ${error.message}`, 'error');
                 console.error('Error saving to Firebase:', error);
                 updateConnectionStatus(false);
+                
+                if (error.code === 'permission-denied') {
+                    showMessage('❌ Permission denied. Please check Firestore rules!', 'error');
+                }
                 return false;
             }
         }
 
         async function loadFromFirebase() {
-            if (!currentUser || !db) return false;
+            if (!currentUser || !db) {
+                addDebugLog('Cannot load from Firebase: user not authenticated or db not available', 'warn');
+                return false;
+            }
             
             try {
+                addDebugLog('Loading transactions from Firebase...');
                 setLoadingStatus();
                 
                 const snapshot = await db.collection('users').doc(currentUser.uid)
@@ -1350,41 +1118,35 @@
                 transactions = firebaseTransactions;
                 filteredTransactions = [...transactions];
                 
+                addDebugLog(`Loaded ${firebaseTransactions.length} transactions from Firebase`);
+                
                 // Update last sync time
                 document.getElementById('lastSyncTime').textContent = formatDateTime(new Date());
                 
                 updateConnectionStatus(true);
                 return true;
             } catch (error) {
+                addDebugLog(`Error loading from Firebase: ${error.code} - ${error.message}`, 'error');
                 console.error('Error loading from Firebase:', error);
                 updateConnectionStatus(false);
-                return false;
-            }
-        }
-
-        async function deleteFromFirebase(transactionId) {
-            if (!currentUser || !db) return false;
-            
-            try {
-                setLoadingStatus();
                 
-                await db.collection('users').doc(currentUser.uid)
-                        .collection('transactions').doc(transactionId.toString()).delete();
-                
-                updateConnectionStatus(true);
-                return true;
-            } catch (error) {
-                console.error('Error deleting from Firebase:', error);
-                updateConnectionStatus(false);
+                if (error.code === 'permission-denied') {
+                    showMessage('❌ Permission denied loading data. Check Firestore rules!', 'error');
+                }
                 return false;
             }
         }
 
         async function syncAllToFirebase() {
-            if (!currentUser || !db) return false;
+            if (!currentUser || !db) {
+                showMessage('⚠️ Please login first to sync data', 'warning');
+                return false;
+            }
             
             try {
+                addDebugLog(`Starting sync of ${transactions.length} transactions...`);
                 setLoadingStatus();
+                
                 const batch = db.batch();
                 
                 transactions.forEach(transaction => {
@@ -1401,24 +1163,86 @@
                 
                 await batch.commit();
                 
+                addDebugLog('All transactions synced successfully');
                 updateConnectionStatus(true);
                 document.getElementById('lastSyncTime').textContent = formatDateTime(new Date());
+                showMessage('✅ All data synced to Firebase!');
                 return true;
             } catch (error) {
+                addDebugLog(`Error syncing to Firebase: ${error.code} - ${error.message}`, 'error');
                 console.error('Error syncing to Firebase:', error);
                 updateConnectionStatus(false);
+                showMessage('❌ Sync failed: ' + error.message, 'error');
                 return false;
+            }
+        }
+
+        // STORAGE FUNCTIONS
+        function saveToLocal() {
+            try {
+                const data = {
+                    transactions: transactions,
+                    lastSync: new Date().toISOString(),
+                    user: currentUser ? currentUser.uid : null
+                };
+                localStorage.setItem('nalaAirconFirebase', JSON.stringify(data));
+                addDebugLog('Data saved to local storage');
+            } catch (error) {
+                addDebugLog(`Error saving to localStorage: ${error.message}`, 'error');
+                console.error('Error saving to localStorage:', error);
+            }
+        }
+
+        function loadFromLocal() {
+            try {
+                const saved = localStorage.getItem('nalaAirconFirebase');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    transactions = data.transactions || [];
+                    filteredTransactions = [...transactions];
+                    
+                    addDebugLog(`Loaded ${transactions.length} transactions from local storage`);
+                    
+                    // Update last sync time
+                    if (data.lastSync) {
+                        document.getElementById('lastSyncTime').textContent = formatDateTime(data.lastSync);
+                    }
+                    return true;
+                }
+            } catch (error) {
+                addDebugLog(`Error loading from localStorage: ${error.message}`, 'error');
+                console.error('Error loading from localStorage:', error);
+            }
+            return false;
+        }
+
+        function clearLocalData() {
+            if (confirm('Are you sure you want to clear all local data?')) {
+                try {
+                    localStorage.removeItem('nalaAirconFirebase');
+                    transactions = [];
+                    filteredTransactions = [];
+                    updateStats();
+                    displayTransactions();
+                    addDebugLog('Local data cleared');
+                    showMessage('✅ Local data cleared!');
+                } catch (error) {
+                    addDebugLog(`Error clearing local data: ${error.message}`, 'error');
+                    showMessage('❌ Error clearing data', 'error');
+                }
             }
         }
 
         // AUTHENTICATION FUNCTIONS
         async function signInWithGoogle() {
             if (!auth) {
-                showMessage('Firebase tidak tersedia', 'error');
+                addDebugLog('Firebase Auth not available', 'error');
+                showMessage('Firebase Auth not available', 'error');
                 return;
             }
             
             try {
+                addDebugLog('Starting Google sign-in...');
                 const provider = new firebase.auth.GoogleAuthProvider();
                 provider.addScope('profile');
                 provider.addScope('email');
@@ -1426,6 +1250,7 @@
                 const result = await auth.signInWithPopup(provider);
                 currentUser = result.user;
                 
+                addDebugLog(`User signed in: ${currentUser.email}`);
                 showMessage('✅ Login berhasil!');
                 updateUserInterface();
                 
@@ -1434,8 +1259,16 @@
                 updateStats();
                 
             } catch (error) {
+                addDebugLog(`Login error: ${error.code} - ${error.message}`, 'error');
                 console.error('Login error:', error);
-                showMessage('❌ Login gagal: ' + error.message, 'error');
+                
+                if (error.code === 'auth/popup-blocked') {
+                    showMessage('❌ Pop-up blocked. Please allow pop-ups for this site.', 'error');
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    showMessage('⚠️ Login cancelled by user', 'warning');
+                } else {
+                    showMessage('❌ Login gagal: ' + error.message, 'error');
+                }
             }
         }
 
@@ -1446,6 +1279,7 @@
                 await auth.signOut();
                 currentUser = null;
                 
+                addDebugLog('User signed out');
                 showMessage('👋 Logout berhasil');
                 updateUserInterface();
                 
@@ -1455,6 +1289,7 @@
                 updateStats();
                 
             } catch (error) {
+                addDebugLog(`Logout error: ${error.message}`, 'error');
                 console.error('Logout error:', error);
                 showMessage('❌ Logout gagal', 'error');
             }
@@ -1469,9 +1304,11 @@
                 loginSection.style.display = 'none';
                 userSection.style.display = 'block';
                 userEmail.textContent = currentUser.email;
+                addDebugLog(`UI updated for user: ${currentUser.email}`);
             } else {
                 loginSection.style.display = 'block';
                 userSection.style.display = 'none';
+                addDebugLog('UI updated for logged out state');
             }
         }
 
@@ -1487,6 +1324,8 @@
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
+
+            addDebugLog(`Adding transaction: ${type} - ${category} - ${formatRupiah(amount)}`);
 
             // Add to local array
             transactions.unshift(transaction);
@@ -1507,43 +1346,6 @@
             
             const typeText = type === 'income' ? 'Pendapatan' : 'Pengeluaran';
             showMessage(`✅ ${typeText} ${category} berhasil ditambahkan!`);
-        }
-
-        async function deleteTransaction(id) {
-            if (confirm('Yakin ingin menghapus transaksi ini?')) {
-                // Remove from local array
-                transactions = transactions.filter(t => t.id !== id);
-                filteredTransactions = transactions.filter(t => {
-                    let match = true;
-                    
-                    if (filterStartDate.value) {
-                        const transactionDate = new Date(t.date).toISOString().split('T')[0];
-                        if (transactionDate < filterStartDate.value) match = false;
-                    }
-                    
-                    if (filterEndDate.value) {
-                        const transactionDate = new Date(t.date).toISOString().split('T')[0];
-                        if (transactionDate > filterEndDate.value) match = false;
-                    }
-                    
-                    if (filterType.value && t.type !== filterType.value) match = false;
-                    if (filterCategory.value && t.category !== filterCategory.value) match = false;
-                    
-                    return match;
-                });
-                
-                // Save to local storage
-                saveToLocal();
-                
-                // Try to delete from Firebase
-                if (currentUser) {
-                    await deleteFromFirebase(id);
-                }
-                
-                updateStats();
-                displayTransactions();
-                showMessage('✅ Transaksi berhasil dihapus!');
-            }
         }
 
         // UPDATE FUNCTIONS
@@ -1569,96 +1371,40 @@
             const dataSize = JSON.stringify(transactions).length;
             const sizeKB = (dataSize / 1024).toFixed(1);
             document.getElementById('dataSize').textContent = sizeKB + ' KB';
-            
-            // Update charts
-            updateBarChart();
-            updatePieChart();
         }
 
-        function updateBarChart() {
-            const freshmoIncome = filteredTransactions
-                .filter(t => t.type === 'income' && t.category === 'Freshmo')
-                .reduce((sum, t) => sum + t.amount, 0);
-
-            const totalExpenses = filteredTransactions
-                .filter(t => t.type === 'expense')
-                .reduce((sum, t) => sum + t.amount, 0);
-
-            const maxValue = Math.max(freshmoIncome, totalExpenses, 100000);
+        function displayTransactions() {
+            const container = document.getElementById('transactionList');
             
-            const freshmoHeight = Math.max((freshmoIncome / maxValue) * 150, 20);
-            const expenseHeight = Math.max((totalExpenses / maxValue) * 150, 20);
-
-            const freshmoBar = document.getElementById('freshmoBar');
-            const expenseBar = document.getElementById('expenseBar');
-            const freshmoAmount = document.getElementById('freshmoAmount');
-            const totalExpenseAmount = document.getElementById('totalExpenseAmount');
-
-            if (freshmoBar) freshmoBar.style.height = freshmoHeight + 'px';
-            if (expenseBar) expenseBar.style.height = expenseHeight + 'px';
-            if (freshmoAmount) freshmoAmount.textContent = formatRupiah(freshmoIncome);
-            if (totalExpenseAmount) totalExpenseAmount.textContent = formatRupiah(totalExpenses);
-        }
-
-        function updatePieChart() {
-            const pieContainer = document.getElementById('pieChart');
-            if (!pieContainer) return;
-
-            const expenseCategories = {};
-            filteredTransactions
-                .filter(t => t.type === 'expense')
-                .forEach(t => {
-                    expenseCategories[t.category] = (expenseCategories[t.category] || 0) + t.amount;
-                });
-
-            const labels = Object.keys(expenseCategories);
-            const data = Object.values(expenseCategories);
-
-            if (labels.length === 0) {
-                pieContainer.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📊</div>
-                        <h3>Belum ada data</h3>
-                        <p>Tambahkan pengeluaran untuk melihat distribusi</p>
+            if (filteredTransactions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 50px 20px; color: #6b7280;">
+                        <div style="font-size: 4em; margin-bottom: 20px; opacity: 0.5;">📭</div>
+                        <h3>Belum ada transaksi</h3>
+                        <p>Mulai tambahkan pendapatan dan pengeluaran untuk melihat riwayat</p>
                     </div>
                 `;
                 return;
             }
 
-            const total = data.reduce((a, b) => a + b, 0);
-            const colors = [
-                '#ef4444',  '#3b82f6',  '#10b981',  '#f59e0b',
-                '#8b5cf6',  '#06b6d4',  '#f97316',  '#ec4899',
-                '#64748b',  '#84cc16'
-            ];
-
-            let pieHTML = '';
-            labels.forEach((label, index) => {
-                const value = data[index];
-                const percentage = ((value / total) * 100).toFixed(1);
-                const width = Math.max((value / total) * 100, 2);
-                
-                pieHTML += `
-                    <div class="pie-item">
-                        <div class="pie-color" style="background: ${colors[index % colors.length]};"></div>
-                        <div class="pie-info">
-                            <div class="pie-label">${label}</div>
-                            <div class="pie-bar">
-                                <div class="pie-progress" style="background: ${colors[index % colors.length]}; width: ${width}%;"></div>
-                            </div>
+            container.innerHTML = filteredTransactions.slice(0, 10).map(transaction => `
+                <div style="background: white; border-radius: 15px; padding: 20px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(30, 64, 175, 0.05); border-left: 4px solid ${transaction.type === 'income' ? '#059669' : '#dc2626'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-weight: 600; color: ${transaction.type === 'income' ? '#059669' : '#dc2626'};">
+                            ${transaction.type === 'income' ? '💰 Pendapatan' : '💸 Pengeluaran'}
                         </div>
-                        <div class="pie-values">
-                            <div class="pie-amount">${formatRupiah(value)}</div>
-                            <div class="pie-percentage">${percentage}%</div>
+                        <div style="font-size: 16px; font-weight: 800; color: ${transaction.type === 'income' ? '#059669' : '#dc2626'};">
+                            ${transaction.type === 'income' ? '+' : '-'}${formatRupiah(transaction.amount)}
                         </div>
                     </div>
-                `;
-            });
-
-            pieContainer.innerHTML = pieHTML;
+                    <div style="color: #374151; font-weight: 600; margin-bottom: 5px;">${transaction.category}</div>
+                    ${transaction.description ? `<div style="color: #6b7280; font-style: italic; font-size: 13px; margin-bottom: 5px;">${transaction.description}</div>` : ''}
+                    <div style="color: #9ca3af; font-size: 12px;">${formatDate(transaction.date)}</div>
+                </div>
+            `).join('');
         }
 
-        // REFRESH AND SYNC FUNCTIONS
+        // REFRESH FUNCTIONS
         async function refreshData() {
             const refreshBtn = document.getElementById('refreshBtn');
             const originalContent = refreshBtn.innerHTML;
@@ -1686,222 +1432,12 @@
         }
 
         async function syncData() {
-            const syncBtn = document.getElementById('syncBtn');
-            const originalContent = syncBtn.innerHTML;
-            
             if (!currentUser) {
                 showMessage('⚠️ Login terlebih dahulu untuk sync data', 'warning');
                 return;
             }
             
-            syncBtn.disabled = true;
-            syncBtn.innerHTML = '<div class="spinner"></div><span>Syncing...</span>';
-            
-            const success = await syncAllToFirebase();
-            
-            if (success) {
-                showMessage('✅ Data berhasil disync ke server');
-            } else {
-                showMessage('❌ Gagal sync data ke server', 'error');
-            }
-            
-            syncBtn.disabled = false;
-            syncBtn.innerHTML = originalContent;
-        }
-
-        // DISPLAY FUNCTIONS
-        function displayTransactions() {
-            const container = document.getElementById('transactionList');
-            
-            if (filteredTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📭</div>
-                        <h3>Belum ada transaksi</h3>
-                        <p>Mulai tambahkan pendapatan dan pengeluaran untuk melihat riwayat</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = filteredTransactions.map(transaction => `
-                <div class="transaction-item ${transaction.type}">
-                    <div class="transaction-header">
-                        <div class="transaction-type ${transaction.type}">
-                            ${transaction.type === 'income' ? '💰 Pendapatan' : '💸 Pengeluaran'}
-                        </div>
-                        <div class="transaction-amount ${transaction.type}">
-                            ${transaction.type === 'income' ? '+' : '-'}${formatRupiah(transaction.amount)}
-                        </div>
-                    </div>
-                    <div class="transaction-details">
-                        <div class="transaction-category">${transaction.category}</div>
-                        ${transaction.description ? `<div class="transaction-description">${transaction.description}</div>` : ''}
-                        <div class="transaction-date">${formatDate(transaction.date)}</div>
-                    </div>
-                    <div class="transaction-actions">
-                        <button class="btn btn-danger" onclick="deleteTransaction(${transaction.id})" style="font-size: 12px; padding: 8px 16px;">
-                            🗑️ Hapus
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function populateFilterCategories() {
-            const allCategories = [...categories.income, ...categories.expense];
-            const uniqueCategories = [...new Set(allCategories)].sort();
-            
-            filterCategory.innerHTML = '<option value="">Semua</option>';
-            uniqueCategories.forEach(cat => {
-                filterCategory.innerHTML += `<option value="${cat}">${cat}</option>`;
-            });
-        }
-
-        // FILTER FUNCTIONS
-        function applyFilter() {
-            const filterBtn = document.getElementById('filterBtn');
-            const originalContent = filterBtn.innerHTML;
-            
-            filterBtn.disabled = true;
-            filterBtn.innerHTML = '<div class="spinner"></div><span>Filtering...</span>';
-            
-            setTimeout(() => {
-                filteredTransactions = transactions.filter(transaction => {
-                    let match = true;
-                    
-                    if (filterStartDate.value) {
-                        const transactionDate = new Date(transaction.date).toISOString().split('T')[0];
-                        if (transactionDate < filterStartDate.value) match = false;
-                    }
-                    
-                    if (filterEndDate.value) {
-                        const transactionDate = new Date(transaction.date).toISOString().split('T')[0];
-                        if (transactionDate > filterEndDate.value) match = false;
-                    }
-                    
-                    if (filterType.value && transaction.type !== filterType.value) match = false;
-                    if (filterCategory.value && transaction.category !== filterCategory.value) match = false;
-                    
-                    return match;
-                });
-
-                updateStats();
-                displayTransactions();
-                showMessage(`✅ Filter diterapkan. Ditemukan ${filteredTransactions.length} transaksi.`);
-                
-                filterBtn.disabled = false;
-                filterBtn.innerHTML = originalContent;
-            }, 500);
-        }
-
-        function clearFilter() {
-            filterStartDate.value = '';
-            filterEndDate.value = '';
-            filterType.value = '';
-            filterCategory.value = '';
-            
-            filteredTransactions = [...transactions];
-            updateStats();
-            displayTransactions();
-            showMessage('✅ Filter dibersihkan.');
-        }
-
-        // BACKUP AND RESTORE FUNCTIONS
-        function backupToLocal() {
-            try {
-                const backupData = {
-                    transactions: transactions,
-                    timestamp: new Date().toISOString(),
-                    version: '2.0'
-                };
-                
-                const dataStr = JSON.stringify(backupData, null, 2);
-                const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = `nala-aircon-backup-${new Date().toISOString().split('T')[0]}.json`;
-                link.click();
-                
-                URL.revokeObjectURL(link.href);
-                showMessage('✅ Backup berhasil diunduh!');
-            } catch (error) {
-                console.error('Backup error:', error);
-                showMessage('❌ Gagal membuat backup', 'error');
-            }
-        }
-
-        function restoreFromLocal() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            
-            input.onchange = function(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const backupData = JSON.parse(e.target.result);
-                        
-                        if (backupData.transactions && Array.isArray(backupData.transactions)) {
-                            if (confirm('Restore akan mengganti semua data saat ini. Lanjutkan?')) {
-                                transactions = backupData.transactions;
-                                filteredTransactions = [...transactions];
-                                
-                                saveToLocal();
-                                updateStats();
-                                displayTransactions();
-                                
-                                showMessage(`✅ Restore berhasil! ${transactions.length} transaksi dipulihkan.`);
-                                
-                                // Sync to Firebase if user is logged in
-                                if (currentUser) {
-                                    syncAllToFirebase();
-                                }
-                            }
-                        } else {
-                            showMessage('❌ File backup tidak valid', 'error');
-                        }
-                    } catch (error) {
-                        console.error('Restore error:', error);
-                        showMessage('❌ Gagal membaca file backup', 'error');
-                    }
-                };
-                reader.readAsText(file);
-            };
-            
-            input.click();
-        }
-
-        // EXPORT FUNCTION
-        function exportData() {
-            if (filteredTransactions.length === 0) {
-                showMessage('⚠️ Tidak ada data untuk diekspor!', 'warning');
-                return;
-            }
-
-            const csvContent = [
-                ['Tanggal', 'Tipe', 'Kategori', 'Jumlah', 'Keterangan'],
-                ...filteredTransactions.map(t => [
-                    formatDate(t.date),
-                    t.type === 'income' ? 'Pendapatan' : 'Pengeluaran',
-                    t.category,
-                    t.amount,
-                    t.description || ''
-                ])
-            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `nala-aircon-export-${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-            
-            showMessage('✅ Data berhasil diekspor ke CSV!');
+            await syncAllToFirebase();
         }
 
         // TAB SWITCHING
@@ -1916,8 +1452,6 @@
             
             // Update display based on tab
             if (tabName === 'dashboard') {
-                updateStats();
-            } else if (tabName === 'history') {
                 updateStats();
                 displayTransactions();
             } else if (tabName === 'account') {
@@ -2012,43 +1546,45 @@
                 updateUserInterface();
                 
                 if (user) {
-                    console.log('User signed in:', user.email);
+                    addDebugLog(`User authenticated: ${user.email}`);
                     // Load data from Firebase
                     await loadFromFirebase();
                 } else {
-                    console.log('User signed out');
+                    addDebugLog('User signed out');
                     // Load data from local storage
                     loadFromLocal();
                 }
                 
                 updateStats();
-                populateFilterCategories();
+                displayTransactions();
             });
         }
 
         // GLOBAL FUNCTIONS
         window.showTab = showTab;
-        window.deleteTransaction = deleteTransaction;
-        window.applyFilter = applyFilter;
-        window.clearFilter = clearFilter;
-        window.exportData = exportData;
         window.refreshData = refreshData;
         window.syncData = syncData;
         window.signInWithGoogle = signInWithGoogle;
         window.signOut = signOut;
-        window.backupToLocal = backupToLocal;
-        window.restoreFromLocal = restoreFromLocal;
+        window.testFirebaseConnection = testFirebaseConnection;
+        window.testFirebaseRules = testFirebaseRules;
+        window.clearLocalData = clearLocalData;
+        window.toggleDebug = toggleDebug;
+        window.exportDebugLog = exportDebugLog;
 
         // INITIALIZE APP
         document.addEventListener('DOMContentLoaded', function() {
+            addDebugLog('Application starting...');
+            
             // Load data from local storage first
             loadFromLocal();
             setTodayDate();
             updateStats();
-            populateFilterCategories();
+            displayTransactions();
             updateConnectionStatus(navigator.onLine);
             
-            console.log('Nala Aircon Firebase Finance Tracker v2.0 initialized');
+            addDebugLog('Nala Aircon Firebase Finance Tracker v2.1 (Fixed) initialized');
+            console.log('Nala Aircon Firebase Finance Tracker v2.1 (Fixed) initialized');
         });
     </script>
 </body>
