@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nala Aircon - Firebase Finance Tracker v9</title>
+    <title>Nala Aircon - Firebase Finance Tracker</title>
     <style>
         * {
             margin: 0;
@@ -331,6 +331,12 @@
             border: 1px solid #fbbf24;
         }
 
+        .message.info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
         /* Stats */
         .stats-grid {
             display: grid;
@@ -401,42 +407,6 @@
             font-weight: 600;
         }
 
-        /* Auth Section */
-        .auth-section {
-            background: white;
-            border-radius: 20px;
-            padding: 25px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 30px rgba(30, 64, 175, 0.08);
-            border: 1px solid rgba(30, 64, 175, 0.1);
-            text-align: center;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-
-        .user-details {
-            text-align: left;
-        }
-
-        .user-email {
-            font-size: 14px;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .user-status {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
         /* Transaction List */
         .transaction-item {
             background: white;
@@ -446,6 +416,7 @@
             box-shadow: 0 4px 15px rgba(30, 64, 175, 0.05);
             border: 1px solid rgba(30, 64, 175, 0.1);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .transaction-item:hover {
@@ -527,10 +498,6 @@
             color: #9ca3af;
         }
 
-        .transaction-actions {
-            text-align: center;
-        }
-
         /* Debug Console */
         .debug-console {
             background: #1f2937;
@@ -575,26 +542,20 @@
                 <span id="connectionText">Connecting...</span>
             </div>
             <h1>💰 Nala Aircon</h1>
-            <p>Firebase Finance Tracker v9</p>
+            <p>Firebase Finance Tracker</p>
         </div>
 
         <!-- Navigation -->
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="showTab('input')">📝 Input</button>
             <button class="nav-tab" onclick="showTab('dashboard')">📊 Dashboard</button>
-            <button class="nav-tab" onclick="showTab('account')">👤 Account</button>
-            <button class="nav-tab" onclick="showTab('debug')">🔧 Debug</button>
+            <button class="nav-tab" onclick="showTab('info')">📱 Info</button>
         </div>
 
         <div class="content">
             <!-- INPUT TAB -->
             <div id="input" class="tab-content active">
                 <div id="message" class="message" style="display: none;"></div>
-
-                <!-- Login Required Notice -->
-                <div id="loginRequired" class="message warning" style="display: none;">
-                    ⚠️ Silakan login terlebih dahulu di tab Account untuk menyimpan data ke Firebase
-                </div>
 
                 <!-- Income Card -->
                 <div class="card">
@@ -627,7 +588,7 @@
                                 <textarea class="form-textarea" id="incomeDescription" placeholder="Tambahkan keterangan..."></textarea>
                             </div>
                             <button type="submit" class="btn btn-success" id="incomeSubmitBtn">
-                                <span>💾 Simpan Pendapatan</span>
+                                <span>💾 Simpan ke Firebase</span>
                             </button>
                         </form>
                     </div>
@@ -668,7 +629,7 @@
                                 <textarea class="form-textarea" id="expenseDescription" placeholder="Tambahkan keterangan..."></textarea>
                             </div>
                             <button type="submit" class="btn btn-danger" id="expenseSubmitBtn">
-                                <span>💾 Simpan Pengeluaran</span>
+                                <span>💾 Simpan ke Firebase</span>
                             </button>
                         </form>
                     </div>
@@ -697,79 +658,77 @@
 
                 <div style="text-align: center; margin-bottom: 25px;">
                     <button class="btn btn-primary" onclick="loadTransactions()" id="refreshBtn">
-                        <span>🔄 Refresh Data</span>
+                        <span>🔄 Refresh dari Firebase</span>
                     </button>
                 </div>
 
                 <div id="transactionList"></div>
             </div>
 
-            <!-- ACCOUNT TAB -->
-            <div id="account" class="tab-content">
-                <div class="auth-section">
-                    <div id="loginSection">
-                        <h3 style="margin-bottom: 20px; color: #1e40af;">🔐 Login dengan Google</h3>
-                        <p style="margin-bottom: 25px; color: #6b7280;">Login untuk menyimpan data Anda di Firebase</p>
-                        <button class="btn btn-primary" onclick="signInWithGoogle()" id="loginBtn">
-                            <span>🔑 Login dengan Google</span>
-                        </button>
+            <!-- INFO TAB -->
+            <div id="info" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🔧</span>
+                        <h3>Firebase Status & Debug</h3>
                     </div>
-                    
-                    <div id="userSection" style="display: none;">
-                        <div class="user-info">
-                            <div class="user-details">
-                                <div class="user-email" id="userEmail"></div>
-                                <div class="user-status" id="userStatus">Online - Connected to Firebase</div>
-                            </div>
-                            <div style="color: #059669;">✅</div>
+                    <div class="card-body">
+                        <div style="display: grid; gap: 10px; margin-bottom: 20px;">
+                            <button class="btn btn-primary" onclick="testFirebaseConnection()">🔍 Test Firebase</button>
+                            <button class="btn btn-secondary" onclick="clearDebugLog()">🗑️ Clear Debug Log</button>
                         </div>
                         
-                        <div style="display: grid; gap: 10px; margin: 20px 0;">
-                            <button class="btn btn-secondary" onclick="testFirebaseConnection()">🔍 Test Firebase Connection</button>
-                            <button class="btn btn-secondary" onclick="loadTransactions()">🔄 Load All Data</button>
+                        <div id="debugConsole" class="debug-console">
+                            Firebase Debug Console - Ready...
                         </div>
-                        
-                        <button class="btn btn-danger" onclick="signOut()">
-                            <span>🚪 Logout</span>
-                        </button>
                     </div>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
                         <span class="icon">📊</span>
-                        <h3>Statistik Firebase</h3>
+                        <h3>Statistik Database</h3>
                     </div>
                     <div class="card-body">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center; margin-bottom: 20px;">
                             <div>
                                 <div style="font-size: 2em; font-weight: 800; color: #1e40af;" id="totalTransactions">0</div>
                                 <div style="font-size: 12px; color: #6b7280;">Total Transaksi</div>
                             </div>
                             <div>
-                                <div style="font-size: 1.5em; font-weight: 800; color: #059669;" id="connectionStatus">🔄</div>
+                                <div style="font-size: 1.5em; font-weight: 800; color: #059669;" id="firebaseStatus">🔄</div>
                                 <div style="font-size: 12px; color: #6b7280;">Firebase Status</div>
                             </div>
                         </div>
+                        
+                        <div style="font-size: 12px; color: #6b7280; text-align: center;">
+                            User ID: <span id="currentUserId">-</span><br>
+                            Last Sync: <span id="lastSyncTime">-</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- DEBUG TAB -->
-            <div id="debug" class="tab-content">
                 <div class="card">
                     <div class="card-header">
-                        <span class="icon">🔧</span>
-                        <h3>Firebase Debug Console</h3>
+                        <span class="icon">⚙️</span>
+                        <h3>Pengaturan Firestore Rules</h3>
                     </div>
                     <div class="card-body">
-                        <div style="display: grid; gap: 10px; margin-bottom: 20px;">
-                            <button class="btn btn-primary" onclick="testFirebaseConnection()">🔍 Test Firebase</button>
-                            <button class="btn btn-secondary" onclick="clearDebugLog()">🗑️ Clear Log</button>
+                        <div class="message info" style="display: block; font-size: 12px; text-align: left;">
+                            Untuk aplikasi ini berfungsi, pastikan Firestore Rules Anda:
                         </div>
                         
-                        <div id="debugConsole" class="debug-console">
-                            Firebase Debug Console - Ready...
+                        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 11px; margin: 15px 0; white-space: pre-wrap;">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /transactions/{transactionId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}</div>
+                        
+                        <div style="font-size: 12px; color: #6b7280; line-height: 1.4;">
+                            Rules ini mengizinkan anonymous users (otomatis dibuat saat app dimuat) untuk membaca dan menulis data ke koleksi 'transactions'.
                         </div>
                     </div>
                 </div>
@@ -781,14 +740,12 @@
                     </div>
                     <div class="card-body" style="text-align: center;">
                         <p style="color: #6b7280; line-height: 1.6; margin-bottom: 15px;">
-                            Nala Aircon Firebase v9 Finance Tracker<br>
-                            Firebase Modular SDK v9+<br>
-                            Direct Firestore Connection<br>
+                            Nala Aircon Firebase Finance Tracker<br>
+                            Firebase v9+ Modular SDK<br>
+                            Anonymous Authentication<br>
+                            Direct Firestore Storage<br>
                             © 2024 Nala Aircon
                         </p>
-                        <div style="font-size: 12px; color: #9ca3af;">
-                            Last Updated: <span id="lastSyncTime">-</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -799,8 +756,8 @@
     <script type="module">
         // Import Firebase v9+ modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, enableNetwork, disableNetwork, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -824,7 +781,7 @@
             const logEntry = `[${timestamp}] ${message}\n`;
             debugConsole.textContent += logEntry;
             debugConsole.scrollTop = debugConsole.scrollHeight;
-            console.log(`Firebase Debug: ${message}`);
+            console.log(`Firebase: ${message}`);
         }
 
         function clearDebugLog() {
@@ -848,55 +805,58 @@
         function updateConnectionStatus(status) {
             const statusIndicator = document.getElementById('connectionStatus');
             const statusText = document.getElementById('connectionText');
-            const connectionStatusCard = document.getElementById('connectionStatus');
+            const firebaseStatus = document.getElementById('firebaseStatus');
             
             if (status === 'online') {
                 statusIndicator.className = 'status-indicator status-online';
                 statusText.textContent = 'Connected';
-                if (connectionStatusCard) connectionStatusCard.textContent = '🟢';
+                if (firebaseStatus) firebaseStatus.textContent = '🟢 Online';
                 addDebugLog('Status: Firebase Connected');
             } else if (status === 'offline') {
                 statusIndicator.className = 'status-indicator status-offline';
                 statusText.textContent = 'Offline';
-                if (connectionStatusCard) connectionStatusCard.textContent = '🔴';
+                if (firebaseStatus) firebaseStatus.textContent = '🔴 Offline';
                 addDebugLog('Status: Firebase Offline');
             } else {
                 statusIndicator.className = 'status-indicator status-loading';
                 statusText.textContent = 'Connecting...';
-                if (connectionStatusCard) connectionStatusCard.textContent = '🔄';
+                if (firebaseStatus) firebaseStatus.textContent = '🔄 Connecting';
                 addDebugLog('Status: Connecting to Firebase');
             }
         }
 
         async function initializeFirebase() {
             try {
-                addDebugLog('Initializing Firebase v9...');
+                addDebugLog('Initializing Firebase v9 with anonymous auth...');
+                updateConnectionStatus('loading');
+                
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
                 
-                addDebugLog('Firebase v9 initialized successfully');
-                updateConnectionStatus('online');
+                addDebugLog('Firebase initialized, signing in anonymously...');
+                
+                // Sign in anonymously automatically
+                await signInAnonymously(auth);
                 
                 // Setup auth state listener
                 onAuthStateChanged(auth, async (user) => {
-                    currentUser = user;
-                    updateUserInterface();
-                    
                     if (user) {
-                        addDebugLog(`User authenticated: ${user.email}`);
+                        currentUser = user;
+                        addDebugLog(`Anonymous user authenticated: ${user.uid}`);
+                        document.getElementById('currentUserId').textContent = user.uid.substring(0, 8) + '...';
+                        updateConnectionStatus('online');
                         await loadTransactions();
                     } else {
-                        addDebugLog('User signed out');
-                        transactions = [];
-                        updateStats();
-                        updateLoginRequiredNotice();
+                        addDebugLog('No user authenticated');
+                        currentUser = null;
+                        updateConnectionStatus('offline');
                     }
                 });
                 
                 return true;
             } catch (error) {
-                addDebugLog(`Firebase initialization error: ${error.message}`);
+                addDebugLog(`Firebase initialization error: ${error.code} - ${error.message}`);
                 console.error('Firebase initialization error:', error);
                 updateConnectionStatus('offline');
                 showMessage('Firebase initialization failed: ' + error.message, 'error');
@@ -914,15 +874,15 @@
             }
 
             if (!currentUser) {
-                addDebugLog('WARNING: User not authenticated');
-                showMessage('Please login first to test connection', 'warning');
+                addDebugLog('ERROR: User not authenticated');
+                showMessage('User not authenticated', 'error');
                 return false;
             }
 
             try {
                 addDebugLog('Testing Firestore read operation...');
                 
-                const transactionsRef = collection(db, `users/${currentUser.uid}/transactions`);
+                const transactionsRef = collection(db, 'transactions');
                 const snapshot = await getDocs(query(transactionsRef));
                 
                 addDebugLog(`Connection test successful - Found ${snapshot.size} documents`);
@@ -934,7 +894,7 @@
                 console.error('Firebase connection test error:', error);
                 
                 if (error.code === 'permission-denied') {
-                    showMessage('❌ Permission denied. Check Firestore rules!', 'error');
+                    showMessage('❌ Permission denied. Update your Firestore rules as shown in Info tab!', 'error');
                 } else {
                     showMessage('❌ Firebase connection failed: ' + error.message, 'error');
                 }
@@ -944,89 +904,9 @@
             }
         }
 
-        async function signInWithGoogle() {
-            if (!auth) {
-                showMessage('Firebase Auth not available', 'error');
-                return;
-            }
-            
-            try {
-                addDebugLog('Starting Google sign-in...');
-                const provider = new GoogleAuthProvider();
-                provider.addScope('profile');
-                provider.addScope('email');
-                
-                const result = await signInWithPopup(auth, provider);
-                currentUser = result.user;
-                
-                addDebugLog(`Google sign-in successful: ${currentUser.email}`);
-                showMessage('✅ Login berhasil!');
-                
-                await loadTransactions();
-                
-            } catch (error) {
-                addDebugLog(`Google sign-in error: ${error.code} - ${error.message}`);
-                console.error('Google sign-in error:', error);
-                
-                if (error.code === 'auth/popup-blocked') {
-                    showMessage('❌ Pop-up blocked. Please allow pop-ups for this site.', 'error');
-                } else if (error.code === 'auth/popup-closed-by-user') {
-                    showMessage('⚠️ Login cancelled by user', 'warning');
-                } else {
-                    showMessage('❌ Login failed: ' + error.message, 'error');
-                }
-            }
-        }
-
-        async function signOut() {
-            if (!auth) return;
-            
-            try {
-                await firebaseSignOut(auth);
-                currentUser = null;
-                transactions = [];
-                
-                addDebugLog('User signed out successfully');
-                showMessage('👋 Logout berhasil');
-                updateStats();
-                updateLoginRequiredNotice();
-                
-            } catch (error) {
-                addDebugLog(`Sign out error: ${error.message}`);
-                console.error('Sign out error:', error);
-                showMessage('❌ Logout failed', 'error');
-            }
-        }
-
-        function updateUserInterface() {
-            const loginSection = document.getElementById('loginSection');
-            const userSection = document.getElementById('userSection');
-            const userEmail = document.getElementById('userEmail');
-            
-            if (currentUser) {
-                loginSection.style.display = 'none';
-                userSection.style.display = 'block';
-                userEmail.textContent = currentUser.email;
-                updateLoginRequiredNotice();
-            } else {
-                loginSection.style.display = 'block';
-                userSection.style.display = 'none';
-                updateLoginRequiredNotice();
-            }
-        }
-
-        function updateLoginRequiredNotice() {
-            const loginRequired = document.getElementById('loginRequired');
-            if (currentUser) {
-                loginRequired.style.display = 'none';
-            } else {
-                loginRequired.style.display = 'block';
-            }
-        }
-
         async function addTransaction(type, category, amount, description, date) {
             if (!currentUser || !db) {
-                showMessage('⚠️ Please login first to save data to Firebase', 'warning');
+                showMessage('⚠️ Firebase not ready, please wait...', 'warning');
                 return false;
             }
 
@@ -1043,7 +923,7 @@
                     userId: currentUser.uid
                 };
 
-                const transactionsRef = collection(db, `users/${currentUser.uid}/transactions`);
+                const transactionsRef = collection(db, 'transactions');
                 const docRef = await addDoc(transactionsRef, transactionData);
                 
                 addDebugLog(`Transaction saved to Firebase with ID: ${docRef.id}`);
@@ -1070,7 +950,7 @@
                 console.error('Error adding transaction:', error);
                 
                 if (error.code === 'permission-denied') {
-                    showMessage('❌ Permission denied. Check Firestore rules!', 'error');
+                    showMessage('❌ Permission denied. Please check Firestore rules in Info tab!', 'error');
                 } else {
                     showMessage('❌ Failed to save to Firebase: ' + error.message, 'error');
                 }
@@ -1080,7 +960,7 @@
 
         async function loadTransactions() {
             if (!currentUser || !db) {
-                addDebugLog('Cannot load transactions: user not authenticated or db not available');
+                addDebugLog('Cannot load transactions: Firebase not ready');
                 return false;
             }
 
@@ -1088,7 +968,7 @@
                 addDebugLog('Loading transactions from Firebase...');
                 updateConnectionStatus('loading');
                 
-                const transactionsRef = collection(db, `users/${currentUser.uid}/transactions`);
+                const transactionsRef = collection(db, 'transactions');
                 const q = query(transactionsRef, orderBy('createdAt', 'desc'));
                 const snapshot = await getDocs(q);
                 
@@ -1180,14 +1060,14 @@
                     <div style="text-align: center; padding: 50px 20px; color: #6b7280;">
                         <div style="font-size: 4em; margin-bottom: 20px; opacity: 0.5;">📭</div>
                         <h3>Belum ada transaksi</h3>
-                        <p>Login dan mulai tambahkan transaksi untuk melihat data dari Firebase</p>
+                        <p>Mulai tambahkan transaksi untuk tersimpan di Firebase</p>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = transactions.slice(0, 20).map(transaction => `
-                <div class="transaction-item ${transaction.type}" style="position: relative;">
+                <div class="transaction-item ${transaction.type}">
                     <div class="transaction-header">
                         <div class="transaction-type ${transaction.type}">
                             ${transaction.type === 'income' ? '💰 Pendapatan' : '💸 Pengeluaran'}
@@ -1286,8 +1166,6 @@
 
         // Global functions
         window.showTab = showTab;
-        window.signInWithGoogle = signInWithGoogle;
-        window.signOut = signOut;
         window.testFirebaseConnection = testFirebaseConnection;
         window.loadTransactions = loadTransactions;
         window.clearDebugLog = clearDebugLog;
@@ -1300,8 +1178,7 @@
             if (initialized) {
                 setTodayDate();
                 updateStats();
-                updateLoginRequiredNotice();
-                addDebugLog('Nala Aircon Firebase v9 Finance Tracker initialized successfully');
+                addDebugLog('Nala Aircon Firebase Finance Tracker initialized successfully');
             } else {
                 addDebugLog('Application initialization failed');
             }
