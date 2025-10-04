@@ -154,6 +154,28 @@
             padding: 25px 20px;
         }
 
+        .period-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(30, 64, 175, 0.08);
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(30, 64, 175, 0.1);
+        }
+
+        .period-header {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+
+        .period-header.monthly {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+        }
+
         .filter-section {
             background: white;
             border-radius: 15px;
@@ -358,14 +380,14 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 15px;
-            margin-bottom: 25px;
+            padding: 20px;
         }
 
         .stat-card {
             background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 30px rgba(30, 64, 175, 0.08);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.05);
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -378,7 +400,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
         }
 
         .stat-card.income::before {
@@ -394,8 +416,8 @@
         }
 
         .stat-icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 2em;
+            margin-bottom: 8px;
         }
 
         .stat-card.income .stat-icon {
@@ -411,14 +433,14 @@
         }
 
         .stat-number {
-            font-size: 1.8em;
+            font-size: 1.5em;
             font-weight: 800;
             color: #111827;
             margin-bottom: 5px;
         }
 
         .stat-label {
-            font-size: 14px;
+            font-size: 13px;
             color: #6b7280;
             font-weight: 600;
         }
@@ -742,21 +764,51 @@
             </div>
 
             <div id="dashboard" class="tab-content">
-                <div class="stats-grid">
-                    <div class="stat-card income">
-                        <div class="stat-icon">💰</div>
-                        <div class="stat-number" id="totalIncome">Rp 0</div>
-                        <div class="stat-label">Total Pendapatan</div>
+                <!-- Statistik Minggu Ini -->
+                <div class="period-section">
+                    <div class="period-header">
+                        📅 Minggu Ini
                     </div>
-                    <div class="stat-card expense">
-                        <div class="stat-icon">💸</div>
-                        <div class="stat-number" id="totalExpense">Rp 0</div>
-                        <div class="stat-label">Total Pengeluaran</div>
+                    <div class="stats-grid">
+                        <div class="stat-card income">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-number" id="weeklyIncome">Rp 0</div>
+                            <div class="stat-label">Pendapatan</div>
+                        </div>
+                        <div class="stat-card expense">
+                            <div class="stat-icon">💸</div>
+                            <div class="stat-number" id="weeklyExpense">Rp 0</div>
+                            <div class="stat-label">Pengeluaran</div>
+                        </div>
+                        <div class="stat-card balance">
+                            <div class="stat-icon">💎</div>
+                            <div class="stat-number" id="weeklyBalance">Rp 0</div>
+                            <div class="stat-label">Saldo Bersih</div>
+                        </div>
                     </div>
-                    <div class="stat-card balance">
-                        <div class="stat-icon">💎</div>
-                        <div class="stat-number" id="netBalance">Rp 0</div>
-                        <div class="stat-label">Saldo Bersih</div>
+                </div>
+
+                <!-- Statistik Bulan Ini -->
+                <div class="period-section">
+                    <div class="period-header monthly">
+                        📆 Bulan Ini
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card income">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-number" id="monthlyIncome">Rp 0</div>
+                            <div class="stat-label">Pendapatan</div>
+                        </div>
+                        <div class="stat-card expense">
+                            <div class="stat-icon">💸</div>
+                            <div class="stat-number" id="monthlyExpense">Rp 0</div>
+                            <div class="stat-label">Pengeluaran</div>
+                        </div>
+                        <div class="stat-card balance">
+                            <div class="stat-icon">💎</div>
+                            <div class="stat-number" id="monthlyBalance">Rp 0</div>
+                            <div class="stat-label">Saldo Bersih</div>
+                        </div>
                     </div>
                 </div>
 
@@ -1169,6 +1221,7 @@ service cloud.firestore {
                 
                 applyFilters();
                 updateStats();
+                updatePeriodStats();
                 
                 const typeText = type === 'income' ? 'Pendapatan' : 'Pengeluaran';
                 showMessage(`${typeText} ${category} berhasil disimpan ke Firebase!`);
@@ -1219,6 +1272,7 @@ service cloud.firestore {
                 
                 applyFilters();
                 updateStats();
+                updatePeriodStats();
                 
                 const typeText = type === 'income' ? 'Pendapatan' : 'Pengeluaran';
                 showMessage(`${typeText} ${category} berhasil diupdate!`);
@@ -1260,6 +1314,7 @@ service cloud.firestore {
                 
                 applyFilters();
                 updateStats();
+                updatePeriodStats();
                 
                 showMessage(`Transaksi berhasil dihapus!`);
                 
@@ -1312,6 +1367,7 @@ service cloud.firestore {
                 updateConnectionStatus('online');
                 applyFilters();
                 updateStats();
+                updatePeriodStats();
                 
                 document.getElementById('lastSyncTime').textContent = new Date().toLocaleString('id-ID');
                 showMessage(`Loaded ${transactions.length} transactions from Firebase`);
@@ -1401,6 +1457,72 @@ service cloud.firestore {
             });
         }
 
+        function getWeekStartEnd() {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() + diff);
+            weekStart.setHours(0, 0, 0, 0);
+            
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            weekEnd.setHours(23, 59, 59, 999);
+            
+            return { start: weekStart, end: weekEnd };
+        }
+
+        function getMonthStartEnd() {
+            const now = new Date();
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            monthStart.setHours(0, 0, 0, 0);
+            
+            const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            monthEnd.setHours(23, 59, 59, 999);
+            
+            return { start: monthStart, end: monthEnd };
+        }
+
+        function updatePeriodStats() {
+            const week = getWeekStartEnd();
+            const month = getMonthStartEnd();
+            
+            const weeklyTransactions = transactions.filter(t => {
+                const transactionDate = new Date(t.date);
+                return transactionDate >= week.start && transactionDate <= week.end;
+            });
+            
+            const monthlyTransactions = transactions.filter(t => {
+                const transactionDate = new Date(t.date);
+                return transactionDate >= month.start && transactionDate <= month.end;
+            });
+            
+            const weeklyIncome = weeklyTransactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const weeklyExpense = weeklyTransactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const monthlyIncome = monthlyTransactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const monthlyExpense = monthlyTransactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            document.getElementById('weeklyIncome').textContent = formatRupiah(weeklyIncome);
+            document.getElementById('weeklyExpense').textContent = formatRupiah(weeklyExpense);
+            document.getElementById('weeklyBalance').textContent = formatRupiah(weeklyIncome - weeklyExpense);
+            
+            document.getElementById('monthlyIncome').textContent = formatRupiah(monthlyIncome);
+            document.getElementById('monthlyExpense').textContent = formatRupiah(monthlyExpense);
+            document.getElementById('monthlyBalance').textContent = formatRupiah(monthlyIncome - monthlyExpense);
+        }
+
         function isInPeriod(date, period) {
             const now = new Date();
             const transactionDate = new Date(date);
@@ -1409,11 +1531,11 @@ service cloud.firestore {
                 case 'today':
                     return transactionDate.toDateString() === now.toDateString();
                 case 'week':
-                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                    return transactionDate >= weekAgo;
+                    const week = getWeekStartEnd();
+                    return transactionDate >= week.start && transactionDate <= week.end;
                 case 'month':
-                    const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-                    return transactionDate >= monthAgo;
+                    const month = getMonthStartEnd();
+                    return transactionDate >= month.start && transactionDate <= month.end;
                 default:
                     return true;
             }
@@ -1468,7 +1590,6 @@ service cloud.firestore {
             });
             
             displayTransactions();
-            updateFilteredStats();
         }
 
         function resetFilters() {
@@ -1494,38 +1615,7 @@ service cloud.firestore {
         }
 
         function updateStats() {
-            const totalIncome = transactions
-                .filter(t => t.type === 'income')
-                .reduce((sum, t) => sum + t.amount, 0);
-
-            const totalExpense = transactions
-                .filter(t => t.type === 'expense')
-                .reduce((sum, t) => sum + t.amount, 0);
-
-            const netBalance = totalIncome - totalExpense;
-
-            document.getElementById('totalIncome').textContent = formatRupiah(totalIncome);
-            document.getElementById('totalExpense').textContent = formatRupiah(totalExpense);
-            document.getElementById('netBalance').textContent = formatRupiah(netBalance);
             document.getElementById('totalTransactions').textContent = transactions.length.toString();
-        }
-
-        function updateFilteredStats() {
-            const totalIncome = filteredTransactions
-                .filter(t => t.type === 'income')
-                .reduce((sum, t) => sum + t.amount, 0);
-
-            const totalExpense = filteredTransactions
-                .filter(t => t.type === 'expense')
-                .reduce((sum, t) => sum + t.amount, 0);
-
-            const netBalance = totalIncome - totalExpense;
-
-            if (currentFilters.type !== 'all' || currentFilters.category !== 'all' || currentFilters.period !== 'all' || currentFilters.startDate || currentFilters.endDate) {
-                document.getElementById('totalIncome').textContent = formatRupiah(totalIncome);
-                document.getElementById('totalExpense').textContent = formatRupiah(totalExpense);
-                document.getElementById('netBalance').textContent = formatRupiah(netBalance);
-            }
         }
 
         function displayTransactions() {
@@ -1583,6 +1673,7 @@ service cloud.firestore {
             if (tabName === 'dashboard') {
                 applyFilters();
                 updateStats();
+                updatePeriodStats();
             }
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1783,6 +1874,7 @@ service cloud.firestore {
             if (initialized) {
                 setTodayDate();
                 updateStats();
+                updatePeriodStats();
                 addDebugLog('Nala Aircon Firebase Finance Tracker initialized successfully');
             } else {
                 addDebugLog('Application initialization failed');
