@@ -1277,7 +1277,7 @@
 
     <!-- Firebase & Chart.js -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
 
     <script>
@@ -1294,7 +1294,7 @@
         };
 
         // Initialize Firebase
-        let app, database;
+        let app, db;
         let transactions = [];
         let charts = { trends: null, topExpenses: null };
         let currentMonth = new Date();
@@ -1337,11 +1337,11 @@
 
         async function initializeFirebase() {
             try {
-                addDebugLog('Initializing Firebase...');
+                addDebugLog('Initializing Firebase with Firestore...');
                 app = firebase.initializeApp(firebaseConfig);
-                database = firebase.database();
+                db = firebase.firestore();
                 
-                addDebugLog('Firebase initialized successfully');
+                addDebugLog('Firebase & Firestore initialized successfully');
                 updateConnectionStatus('online', 'Connected');
                 
                 await loadTransactions();
@@ -1356,42 +1356,35 @@
         }
 
         async function testFirebaseConnection() {
-            addDebugLog('Testing Firebase connection...');
+            addDebugLog('Testing Firestore connection...');
             updateConnectionStatus('loading', 'Testing...');
             
             try {
-                const testRef = database.ref('.info/connected');
-                const snapshot = await testRef.once('value');
-                const connected = snapshot.val();
+                // Test dengan membaca collection
+                const testQuery = await db.collection('transactions').limit(1).get();
                 
-                if (connected) {
-                    addDebugLog('✅ Firebase connection test successful');
-                    updateConnectionStatus('online', 'Connected');
-                    showMessage('Koneksi berhasil!', 'success');
-                } else {
-                    addDebugLog('❌ Firebase connection test failed');
-                    updateConnectionStatus('offline', 'Not Connected');
-                    showMessage('Koneksi gagal!', 'error');
-                }
+                addDebugLog('✅ Firestore connection test successful');
+                addDebugLog(`Found ${testQuery.size} documents in test query`);
+                updateConnectionStatus('online', 'Connected');
+                showMessage('Koneksi berhasil!', 'success');
             } catch (error) {
                 addDebugLog(`❌ Connection test error: ${error.message}`);
                 updateConnectionStatus('offline', 'Error');
-                showMessage('Error saat test koneksi', 'error');
+                showMessage('Koneksi gagal: ' + error.message, 'error');
             }
         }
 
         async function loadTransactions() {
             try {
-                addDebugLog('Loading transactions from Firebase...');
+                addDebugLog('Loading transactions from Firestore...');
                 updateConnectionStatus('loading', 'Loading...');
                 
-                const snapshot = await database.ref('transactions').once('value');
-                const data = snapshot.val();
+                const snapshot = await db.collection('transactions').get();
                 
-                if (data) {
-                    transactions = Object.keys(data).map(key => ({
-                        id: key,
-                        ...data[key]
+                if (!snapshot.empty) {
+                    transactions = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
                     }));
                     
                     // SORT BY DATE (NEWEST FIRST) - IMPORTANT FOR PAGINATION
@@ -1401,7 +1394,7 @@
                     showMessage(`${transactions.length} transaksi dimuat`, 'success');
                 } else {
                     transactions = [];
-                    addDebugLog('No transactions found in database');
+                    addDebugLog('No transactions found in Firestore');
                 }
                 
                 updateConnectionStatus('online', 'Connected');
@@ -1415,13 +1408,13 @@
             } catch (error) {
                 addDebugLog(`❌ Error loading transactions: ${error.message}`);
                 updateConnectionStatus('offline', 'Load Error');
-                showMessage('Gagal memuat transaksi', 'error');
+                showMessage('Gagal memuat transaksi: ' + error.message, 'error');
             }
         }
 
         async function addTransaction(type, category, amount, description, date) {
             try {
-                addDebugLog(`Adding ${type} transaction...`);
+                addDebugLog(`Adding ${type} transaction to Firestore...`);
                 
                 const transaction = {
                     type,
@@ -1432,7 +1425,7 @@
                     createdAt: new Date().toISOString()
                 };
                 
-                await database.ref('transactions').push(transaction);
+                await db.collection('transactions').add(transaction);
                 
                 addDebugLog(`✅ ${type} transaction added successfully`);
                 showMessage('Transaksi berhasil ditambahkan!', 'success');
@@ -1442,14 +1435,14 @@
                 
             } catch (error) {
                 addDebugLog(`❌ Error adding transaction: ${error.message}`);
-                showMessage('Gagal menambahkan transaksi', 'error');
+                showMessage('Gagal menambahkan transaksi: ' + error.message, 'error');
                 return false;
             }
         }
 
         async function updateTransaction(id, type, category, amount, description, date) {
             try {
-                addDebugLog(`Updating transaction ${id}...`);
+                addDebugLog(`Updating transaction ${id} in Firestore...`);
                 
                 const updates = {
                     type,
@@ -1460,7 +1453,7 @@
                     updatedAt: new Date().toISOString()
                 };
                 
-                await database.ref(`transactions/${id}`).update(updates);
+                await db.collection('transactions').doc(id).update(updates);
                 
                 addDebugLog(`✅ Transaction ${id} updated successfully`);
                 showMessage('Transaksi berhasil diupdate!', 'success');
@@ -1470,16 +1463,16 @@
                 
             } catch (error) {
                 addDebugLog(`❌ Error updating transaction: ${error.message}`);
-                showMessage('Gagal mengupdate transaksi', 'error');
+                showMessage('Gagal mengupdate transaksi: ' + error.message, 'error');
                 return false;
             }
         }
 
         async function deleteTransaction(id) {
             try {
-                addDebugLog(`Deleting transaction ${id}...`);
+                addDebugLog(`Deleting transaction ${id} from Firestore...`);
                 
-                await database.ref(`transactions/${id}`).remove();
+                await db.collection('transactions').doc(id).delete();
                 
                 addDebugLog(`✅ Transaction ${id} deleted successfully`);
                 showMessage('Transaksi berhasil dihapus!', 'success');
@@ -1489,7 +1482,7 @@
                 
             } catch (error) {
                 addDebugLog(`❌ Error deleting transaction: ${error.message}`);
-                showMessage('Gagal menghapus transaksi', 'error');
+                showMessage('Gagal menghapus transaksi: ' + error.message, 'error');
                 return false;
             }
         }
