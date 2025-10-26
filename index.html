@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://cdn.jsdelivr.net; 
+        style-src 'self' 'unsafe-inline'; 
+        img-src 'self' data: https:; 
+        font-src 'self' data:; 
+        connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com;
+    ">
     <title>Nala Aircon - Enhanced Finance Tracker</title>
     <style>
         * {
@@ -1338,8 +1346,14 @@
         async function initializeFirebase() {
             try {
                 addDebugLog('Initializing Firebase with Firestore...');
+                addDebugLog('Firebase Config - Project ID: ' + firebaseConfig.projectId);
+                
                 app = firebase.initializeApp(firebaseConfig);
+                addDebugLog('✅ Firebase app initialized');
+                
                 db = firebase.firestore();
+                addDebugLog('✅ Firestore instance created');
+                addDebugLog('Firestore settings applied');
                 
                 addDebugLog('Firebase & Firestore initialized successfully');
                 updateConnectionStatus('online', 'Connected');
@@ -1348,9 +1362,11 @@
                 
                 return true;
             } catch (error) {
-                addDebugLog(`Firebase initialization error: ${error.message}`);
+                addDebugLog(`❌ Firebase initialization error: ${error.message}`);
+                addDebugLog(`Error code: ${error.code}`);
+                addDebugLog(`Error stack: ${error.stack}`);
                 updateConnectionStatus('offline', 'Connection Failed');
-                showMessage('Gagal menghubungkan ke Firebase', 'error');
+                showMessage('Gagal menghubungkan ke Firebase: ' + error.message, 'error');
                 return false;
             }
         }
@@ -1377,15 +1393,22 @@
         async function loadTransactions() {
             try {
                 addDebugLog('Loading transactions from Firestore...');
+                addDebugLog('Firestore DB object: ' + (db ? 'OK' : 'NULL'));
                 updateConnectionStatus('loading', 'Loading...');
                 
+                addDebugLog('Attempting to get transactions collection...');
                 const snapshot = await db.collection('transactions').get();
+                addDebugLog('Snapshot received. Empty: ' + snapshot.empty + ', Size: ' + snapshot.size);
                 
                 if (!snapshot.empty) {
-                    transactions = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    }));
+                    transactions = snapshot.docs.map(doc => {
+                        const data = doc.data();
+                        addDebugLog('Document ID: ' + doc.id + ', Type: ' + data.type);
+                        return {
+                            id: doc.id,
+                            ...data
+                        };
+                    });
                     
                     // SORT BY DATE (NEWEST FIRST) - IMPORTANT FOR PAGINATION
                     transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1394,7 +1417,8 @@
                     showMessage(`${transactions.length} transaksi dimuat`, 'success');
                 } else {
                     transactions = [];
-                    addDebugLog('No transactions found in Firestore');
+                    addDebugLog('⚠️ No transactions found in Firestore (collection is empty)');
+                    showMessage('Belum ada transaksi', 'warning');
                 }
                 
                 updateConnectionStatus('online', 'Connected');
@@ -1407,8 +1431,20 @@
                 
             } catch (error) {
                 addDebugLog(`❌ Error loading transactions: ${error.message}`);
+                addDebugLog(`Error code: ${error.code}`);
+                addDebugLog(`Error stack: ${error.stack}`);
                 updateConnectionStatus('offline', 'Load Error');
-                showMessage('Gagal memuat transaksi: ' + error.message, 'error');
+                
+                // Pesan error yang lebih spesifik
+                let errorMsg = 'Gagal memuat transaksi: ';
+                if (error.code === 'permission-denied') {
+                    errorMsg += 'Permission denied. Cek Firebase Rules!';
+                    addDebugLog('💡 Solusi: Ubah Firestore Rules menjadi: allow read, write: if true;');
+                } else {
+                    errorMsg += error.message;
+                }
+                
+                showMessage(errorMsg, 'error');
             }
         }
 
