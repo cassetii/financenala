@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self'; 
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://cdn.jsdelivr.net; 
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://cdn.jsdelivr.net https://cdn.sheetjs.com; 
         style-src 'self' 'unsafe-inline'; 
         img-src 'self' data: https:; 
         font-src 'self' data:; 
@@ -1152,9 +1152,14 @@
                             <option value="all">Semua Kategori</option>
                         </select>
                     </div>
-                    <button onclick="resetFilters()" class="btn btn-primary" style="margin-top: 15px; padding: 10px;">
-                        🔄 Reset Filter
-                    </button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                        <button onclick="resetFilters()" class="btn btn-primary" style="padding: 10px;">
+                            🔄 Reset Filter
+                        </button>
+                        <button onclick="exportToExcel()" class="btn btn-success" style="padding: 10px;">
+                            📥 Export Excel
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Pagination Info & Controls -->
@@ -1287,6 +1292,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <script>
         // Firebase Configuration
@@ -1848,6 +1855,104 @@
             applyFilters();
         }
 
+        function exportToExcel() {
+            if (filteredTransactions.length === 0) {
+                showMessage('Tidak ada data untuk diexport', 'warning');
+                return;
+            }
+
+            try {
+                addDebugLog('Exporting data to Excel...');
+                
+                // Prepare data for export
+                const exportData = filteredTransactions.map((t, index) => ({
+                    'No': index + 1,
+                    'Tanggal': formatDate(t.date),
+                    'Tipe': t.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
+                    'Kategori': t.category,
+                    'Jumlah': t.amount,
+                    'Keterangan': t.description || '-'
+                }));
+
+                // Calculate summary
+                const totalIncome = filteredTransactions
+                    .filter(t => t.type === 'income')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const totalExpense = filteredTransactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const balance = totalIncome - totalExpense;
+
+                // Add summary rows
+                exportData.push({});
+                exportData.push({
+                    'No': '',
+                    'Tanggal': 'RINGKASAN',
+                    'Tipe': '',
+                    'Kategori': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+                exportData.push({
+                    'No': '',
+                    'Tanggal': 'Total Pemasukan',
+                    'Tipe': '',
+                    'Kategori': '',
+                    'Jumlah': totalIncome,
+                    'Keterangan': ''
+                });
+                exportData.push({
+                    'No': '',
+                    'Tanggal': 'Total Pengeluaran',
+                    'Tipe': '',
+                    'Kategori': '',
+                    'Jumlah': totalExpense,
+                    'Keterangan': ''
+                });
+                exportData.push({
+                    'No': '',
+                    'Tanggal': 'Saldo',
+                    'Tipe': '',
+                    'Kategori': '',
+                    'Jumlah': balance,
+                    'Keterangan': ''
+                });
+
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(exportData);
+
+                // Set column widths
+                ws['!cols'] = [
+                    { wch: 5 },   // No
+                    { wch: 15 },  // Tanggal
+                    { wch: 15 },  // Tipe
+                    { wch: 20 },  // Kategori
+                    { wch: 15 },  // Jumlah
+                    { wch: 30 }   // Keterangan
+                ];
+
+                // Add worksheet to workbook
+                XLSX.utils.book_append_sheet(wb, ws, 'Transaksi');
+
+                // Generate filename with current date
+                const now = new Date();
+                const filename = `Nala_Aircon_Finance_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.xlsx`;
+
+                // Download file
+                XLSX.writeFile(wb, filename);
+
+                addDebugLog(`✅ Exported ${filteredTransactions.length} transactions to ${filename}`);
+                showMessage(`Data berhasil diexport! (${filteredTransactions.length} transaksi)`, 'success');
+
+            } catch (error) {
+                addDebugLog(`❌ Export error: ${error.message}`);
+                showMessage('Gagal export data: ' + error.message, 'error');
+            }
+        }
+
         function editTransaction(id) {
             const transaction = transactions.find(t => t.id === id);
             if (!transaction) return;
@@ -2022,10 +2127,19 @@
 
         function renderTrendsChart() {
             const canvas = document.getElementById('trendsLineChart');
+            if (!canvas) return;
+            
             const ctx = canvas.getContext('2d');
             
             if (charts.trends) {
                 charts.trends.destroy();
+                charts.trends = null;
+            }
+            
+            // Reset canvas parent if needed
+            const parent = canvas.parentElement;
+            if (!canvas.parentElement.querySelector('canvas')) {
+                parent.innerHTML = '<canvas id="trendsLineChart" height="250"></canvas>';
             }
             
             const last7Days = [];
@@ -2053,7 +2167,7 @@
             });
             
             if (incomeData.every(v => v === 0) && expenseData.every(v => v === 0)) {
-                canvas.parentElement.innerHTML = '<div class="chart-no-data">📊 Belum ada data 7 hari terakhir</div>';
+                parent.innerHTML = '<div class="chart-no-data">📊 Belum ada data 7 hari terakhir</div>';
                 return;
             }
             
@@ -2124,16 +2238,25 @@
 
         function renderTopExpensesChart() {
             const canvas = document.getElementById('topExpensesBarChart');
+            if (!canvas) return;
+            
             const ctx = canvas.getContext('2d');
             
             if (charts.topExpenses) {
                 charts.topExpenses.destroy();
+                charts.topExpenses = null;
+            }
+            
+            // Reset canvas parent if needed
+            const parent = canvas.parentElement;
+            if (!canvas.parentElement.querySelector('canvas')) {
+                parent.innerHTML = '<canvas id="topExpensesBarChart" height="250"></canvas>';
             }
             
             const expenseTransactions = transactions.filter(t => t.type === 'expense');
             
             if (expenseTransactions.length === 0) {
-                canvas.parentElement.innerHTML = '<div class="chart-no-data">📊 Belum ada data pengeluaran</div>';
+                parent.innerHTML = '<div class="chart-no-data">📊 Belum ada data pengeluaran</div>';
                 return;
             }
             
@@ -2312,6 +2435,7 @@
         window.nextMonth = nextMonth;
         window.goToPage = goToPage;
         window.changeItemsPerPage = changeItemsPerPage;
+        window.exportToExcel = exportToExcel;
 
         window.addEventListener('click', function(e) {
             if (e.target.classList.contains('modal')) {
