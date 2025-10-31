@@ -9,7 +9,7 @@
         style-src 'self' 'unsafe-inline'; 
         img-src 'self' data: https:; 
         font-src 'self' data:; 
-        connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com;
+        connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com https://www.gstatic.com;
     ">
     <title>Nala Aircon - Finance Dashboard</title>
     <style>
@@ -1388,9 +1388,9 @@
                         id: doc.id,
                         ...doc.data()
                     }));
-                    console.log(`✅ Loaded ${expenseCategories.length} expense categories`);
+                    console.log(`✅ Loaded ${expenseCategories.length} expense categories from Firestore`);
                 } else {
-                    // Default categories
+                    // Default categories - collection exists but empty
                     expenseCategories = [
                         { icon: '🍽️', name: 'Uang Makan', order: 1 },
                         { icon: '🔧', name: 'Servis Kendaraan', order: 2 },
@@ -1401,14 +1401,26 @@
                         { icon: '🏗️', name: 'Material Project', order: 7 },
                         { icon: '🧾', name: 'Kasbon', order: 8 }
                     ];
-                    console.log('⚠️ Using default expense categories');
+                    console.log('⚠️ Collection exists but empty - using default expense categories');
                 }
                 
                 renderExpenseCategoryGrid();
                 
             } catch (error) {
-                console.error('❌ Error loading expense categories:', error);
-                showMessage('Gagal memuat kategori pengeluaran', 'error');
+                // Permission error or collection doesn't exist - use defaults
+                console.warn('⚠️ Cannot access expense_categories collection:', error.message);
+                expenseCategories = [
+                    { icon: '🍽️', name: 'Uang Makan', order: 1 },
+                    { icon: '🔧', name: 'Servis Kendaraan', order: 2 },
+                    { icon: '⚡', name: 'Token', order: 3 },
+                    { icon: '🛠️', name: 'Material Customer', order: 4 },
+                    { icon: '🌙', name: 'Uang Makan Lembur', order: 5 },
+                    { icon: '⛽', name: 'BBM', order: 6 },
+                    { icon: '🏗️', name: 'Material Project', order: 7 },
+                    { icon: '🧾', name: 'Kasbon', order: 8 }
+                ];
+                console.log('✅ Using default expense categories (collection not found)');
+                renderExpenseCategoryGrid();
             }
         }
 
@@ -1424,22 +1436,31 @@
                         id: doc.id,
                         ...doc.data()
                     }));
-                    console.log(`✅ Loaded ${incomeCategories.length} income categories`);
+                    console.log(`✅ Loaded ${incomeCategories.length} income categories from Firestore`);
                 } else {
-                    // Default income categories
+                    // Default income categories - collection exists but empty
                     incomeCategories = [
                         { icon: '💰', name: 'Pemasukan Customer', order: 1 },
                         { icon: '🏢', name: 'Project', order: 2 },
                         { icon: '🔧', name: 'Service', order: 3 },
                         { icon: '📦', name: 'Penjualan', order: 4 }
                     ];
-                    console.log('⚠️ Using default income categories');
+                    console.log('⚠️ Collection exists but empty - using default income categories');
                 }
                 
                 renderIncomeCategoryGrid();
                 
             } catch (error) {
-                console.error('❌ Error loading income categories:', error);
+                // Permission error or collection doesn't exist - use defaults
+                console.warn('⚠️ Cannot access income_categories collection:', error.message);
+                incomeCategories = [
+                    { icon: '💰', name: 'Pemasukan Customer', order: 1 },
+                    { icon: '🏢', name: 'Project', order: 2 },
+                    { icon: '🔧', name: 'Service', order: 3 },
+                    { icon: '📦', name: 'Penjualan', order: 4 }
+                ];
+                console.log('✅ Using default income categories (collection not found)');
+                renderIncomeCategoryGrid();
             }
         }
 
