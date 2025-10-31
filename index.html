@@ -45,54 +45,54 @@
             background-attachment: fixed;
             min-height: 100vh;
             color: var(--gray-900);
-            padding-bottom: 80px;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 480px;
+            max-width: 1400px;
             margin: 0 auto;
             background: var(--gray-50);
             min-height: 100vh;
-            position: relative;
             box-shadow: 0 0 50px rgba(0,0,0,0.2);
         }
 
-        /* HEADER - STICKY */
+        /* HEADER */
         .header {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
             color: white;
-            padding: 20px 20px 30px;
+            padding: 25px 40px;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3);
         }
 
-        .header-top {
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            max-width: 1320px;
+            margin: 0 auto;
         }
 
         .header h1 {
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: 800;
         }
 
         .connection-status {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 11px;
+            gap: 8px;
+            font-size: 13px;
             background: rgba(255,255,255,0.15);
-            padding: 5px 10px;
+            padding: 8px 16px;
             border-radius: 20px;
         }
 
         .status-indicator {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
         }
 
@@ -100,84 +100,96 @@
         .status-offline { background: #ef4444; }
         .status-loading { background: #f59e0b; animation: pulse 1.5s infinite; }
 
-        /* BALANCE CARD - Prominent */
+        /* MAIN CONTENT */
+        .main-content {
+            padding: 30px 40px 40px;
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+
+        /* BALANCE CARD */
         .balance-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
             border-radius: 20px;
-            padding: 25px;
-            margin: -15px 20px 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            position: relative;
-            z-index: 50;
+            padding: 35px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .balance-main {
+            text-align: center;
+            border-right: 2px solid var(--gray-200);
         }
 
         .balance-label {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--gray-600);
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .balance-amount {
-            font-size: 2.2em;
+            font-size: 2.8em;
             font-weight: 800;
             color: var(--primary-blue);
-            margin-bottom: 15px;
         }
 
         .balance-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            display: flex;
+            gap: 40px;
+            grid-column: 2 / 4;
         }
 
         .balance-stat {
+            flex: 1;
             text-align: center;
-            padding: 12px;
+            padding: 20px;
             background: var(--gray-50);
-            border-radius: 12px;
+            border-radius: 15px;
         }
 
         .balance-stat-label {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--gray-500);
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .balance-stat-value {
-            font-size: 1.1em;
+            font-size: 1.6em;
             font-weight: 700;
         }
 
         .balance-stat.income .balance-stat-value { color: var(--success-green); }
         .balance-stat.expense .balance-stat-value { color: var(--danger-red); }
 
-        /* CONTENT */
-        .content {
-            padding: 0 20px 20px;
-        }
-
-        /* TAB NAVIGATION - Modern Pills */
+        /* TAB NAVIGATION */
         .nav-tabs {
             display: flex;
             background: white;
-            padding: 5px;
+            padding: 6px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-            gap: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            gap: 6px;
+            max-width: 800px;
+            margin: 0 auto 30px;
         }
 
         .nav-tab {
             flex: 1;
-            padding: 12px 8px;
+            padding: 14px 20px;
             text-align: center;
             background: transparent;
             border: none;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--gray-600);
             cursor: pointer;
@@ -210,19 +222,19 @@
             background: white;
             border-radius: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             overflow: hidden;
         }
 
         .card-header {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
             color: white;
-            padding: 20px;
+            padding: 25px 30px;
             text-align: center;
         }
 
         .card-header h3 {
-            font-size: 1.3em;
+            font-size: 1.4em;
             font-weight: 700;
         }
 
@@ -233,25 +245,97 @@
         }
 
         .card-body {
-            padding: 25px 20px;
+            padding: 30px;
+        }
+
+        /* DASHBOARD GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .dashboard-grid-full {
+            grid-column: 1 / -1;
+        }
+
+        /* PERIOD SECTION */
+        .period-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .period-header {
+            background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
+            color: white;
+            padding: 18px 25px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+
+        .period-header.monthly {
+            background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%);
+        }
+
+        .period-body {
+            padding: 25px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            border: 1px solid var(--gray-100);
+        }
+
+        .stat-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--gray-500);
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--gray-900);
         }
 
         /* FORM STYLES */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: var(--gray-700);
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .form-control {
             width: 100%;
-            padding: 14px 16px;
+            padding: 14px 18px;
             border: 2px solid var(--gray-200);
             border-radius: 12px;
             font-size: 15px;
@@ -267,23 +351,19 @@
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
 
-        .form-control::placeholder {
-            color: var(--gray-400);
-        }
-
-        /* CATEGORY GRID - Visual Selection */
+        /* CATEGORY GRID */
         .category-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .category-option {
             background: var(--gray-50);
             border: 2px solid var(--gray-200);
             border-radius: 15px;
-            padding: 16px;
+            padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -294,7 +374,7 @@
             border-color: var(--primary-blue);
             background: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.1);
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.15);
         }
 
         .category-option.selected {
@@ -304,13 +384,13 @@
         }
 
         .category-option .icon {
-            font-size: 2em;
-            margin-bottom: 8px;
+            font-size: 2.5em;
+            margin-bottom: 10px;
             display: block;
         }
 
         .category-option .label {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--gray-700);
         }
@@ -334,7 +414,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             font-family: inherit;
         }
 
@@ -348,7 +428,8 @@
         }
 
         .btn-primary:hover {
-            box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3);
+            transform: translateY(-2px);
         }
 
         .btn-success {
@@ -357,7 +438,8 @@
         }
 
         .btn-success:hover {
-            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+            transform: translateY(-2px);
         }
 
         .btn-danger {
@@ -366,103 +448,48 @@
         }
 
         .btn-danger:hover {
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
+            transform: translateY(-2px);
         }
 
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-        }
-
-        /* QUICK STATS GRID */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-        }
-
-        .stat-card .icon {
-            font-size: 2em;
-            margin-bottom: 8px;
-        }
-
-        .stat-card .label {
-            font-size: 11px;
-            color: var(--gray-500);
-            font-weight: 600;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-card .value {
-            font-size: 1.3em;
-            font-weight: 800;
-            color: var(--gray-900);
-        }
-
-        /* PERIOD SECTION */
-        .period-section {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .period-header {
-            background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            font-size: 1em;
-            font-weight: 700;
-        }
-
-        .period-header.monthly {
-            background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%);
+            transform: none !important;
         }
 
         /* TRANSACTIONS LIST */
         .transaction-item {
             background: white;
-            padding: 16px;
+            padding: 20px;
             border-radius: 12px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
             border: 1px solid var(--gray-100);
             transition: all 0.3s ease;
         }
 
-        .transaction-item:active {
-            transform: scale(0.98);
+        .transaction-item:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
         }
 
         .transaction-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .transaction-category {
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
             color: var(--gray-900);
         }
 
         .transaction-amount {
             font-weight: 800;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .transaction-amount.income { color: var(--success-green); }
@@ -472,30 +499,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
         .transaction-date {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--gray-500);
             font-weight: 500;
         }
 
         .transaction-description {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--gray-600);
-            margin: 8px 0;
+            margin: 10px 0;
             font-style: italic;
         }
 
         .transaction-actions {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
 
         .btn-small {
-            padding: 6px 12px;
-            font-size: 11px;
+            padding: 8px 16px;
+            font-size: 12px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
@@ -508,17 +535,27 @@
             color: white;
         }
 
+        .btn-edit:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
         .btn-delete {
             background: #ef4444;
             color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
         }
 
         /* SEARCH & FILTER */
         .search-section {
             background: white;
             border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.04);
         }
 
@@ -528,19 +565,19 @@
 
         .search-icon {
             position: absolute;
-            left: 16px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 16px;
+            font-size: 18px;
             color: var(--gray-400);
         }
 
         .search-input {
             width: 100%;
-            padding: 12px 16px 12px 45px;
+            padding: 14px 18px 14px 50px;
             border: 2px solid var(--gray-200);
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 15px;
             background: var(--gray-50);
             transition: all 0.3s ease;
         }
@@ -554,14 +591,14 @@
 
         .clear-search {
             position: absolute;
-            right: 12px;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             color: var(--gray-400);
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
             display: none;
         }
 
@@ -570,29 +607,29 @@
         .filter-section {
             background: white;
             border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.04);
         }
 
         .filter-tabs {
             display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
+            gap: 8px;
+            margin-bottom: 15px;
             background: var(--gray-100);
-            padding: 4px;
+            padding: 5px;
             border-radius: 10px;
         }
 
         .filter-tab {
             flex: 1;
-            padding: 8px;
+            padding: 10px;
             text-align: center;
             background: transparent;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--gray-600);
             transition: all 0.3s ease;
@@ -601,22 +638,28 @@
         .filter-tab.active {
             background: white;
             color: var(--primary-blue);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
         }
 
         /* PAGINATION */
         .pagination-container {
             background: white;
             border-radius: 15px;
-            padding: 15px;
-            margin: 15px 0;
+            padding: 20px;
+            margin: 20px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.04);
         }
 
         .pagination-info {
             text-align: center;
-            margin-bottom: 12px;
-            font-size: 13px;
+            margin-bottom: 15px;
+            font-size: 14px;
             color: var(--gray-600);
         }
 
@@ -624,18 +667,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .pagination-btn {
-            padding: 8px 14px;
+            padding: 10px 18px;
             border: 2px solid var(--gray-200);
             background: white;
             color: var(--gray-700);
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             transition: all 0.3s ease;
         }
@@ -643,6 +686,7 @@
         .pagination-btn:hover:not(:disabled) {
             border-color: var(--primary-blue);
             color: var(--primary-blue);
+            transform: translateY(-1px);
         }
 
         .pagination-btn:disabled {
@@ -656,172 +700,14 @@
             border-color: var(--primary-blue);
         }
 
-        /* MODALS */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-        }
-
-        .modal.show {
-            display: block;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .modal-content {
-            background: white;
-            margin: 10% auto;
-            padding: 0;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 20px 20px 0 0;
-            text-align: center;
-            position: relative;
-        }
-
-        .modal-header h3 {
-            font-size: 1.3em;
-            font-weight: 700;
-        }
-
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            color: white;
-            font-size: 28px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .close:hover {
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            padding: 25px;
-        }
-
-        /* MESSAGE TOAST */
-        .message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            z-index: 2000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: slideInRight 0.3s ease-out;
-            max-width: 300px;
-        }
-
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .message.success {
-            background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
-        }
-
-        .message.error {
-            background: linear-gradient(135deg, var(--danger-red) 0%, var(--danger-red-dark) 100%);
-        }
-
-        .message.warning {
-            background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%);
-        }
-
-        /* SPINNER */
-        .spinner {
-            width: 16px;
-            height: 16px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* DEBUG SECTION */
-        .debug-section {
-            background: var(--gray-800);
-            color: var(--gray-200);
-            padding: 20px;
-            border-radius: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .debug-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .debug-header h4 {
-            color: var(--success-green);
-            font-size: 13px;
-        }
-
-        .btn-clear-log {
-            background: var(--danger-red);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .debug-log div {
-            padding: 4px 0;
-            border-bottom: 1px solid var(--gray-700);
-        }
-
         /* CALENDAR */
         .calendar-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             background: white;
-            padding: 12px;
+            padding: 15px 20px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
@@ -830,31 +716,37 @@
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-nav button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
         }
 
         .calendar-nav h4 {
-            font-size: 1em;
+            font-size: 1.2em;
             font-weight: 700;
+            color: var(--gray-900);
         }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin-bottom: 20px;
+            gap: 10px;
         }
 
         .calendar-day-header {
             text-align: center;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--gray-600);
-            padding: 6px 0;
+            padding: 10px 0;
         }
 
         .calendar-day {
@@ -864,11 +756,11 @@
             align-items: center;
             justify-content: center;
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
         }
 
@@ -899,69 +791,208 @@
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
         }
 
-        /* CHART CONTAINER */
+        .day-number {
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .day-indicator {
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        /* CHART CONTAINER - FIXED FOR DESKTOP */
         .chart-container {
             background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         }
 
         .chart-title {
-            font-size: 1em;
+            font-size: 1.2em;
             font-weight: 700;
             color: var(--gray-900);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .chart-wrapper canvas {
+            max-height: 300px !important;
         }
 
         .chart-no-data {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: var(--gray-400);
-            font-size: 1em;
+            font-size: 1.1em;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+        /* MODALS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+        }
 
-            .category-grid {
-                grid-template-columns: 1fr;
-            }
+        .modal.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
 
-            .balance-stats {
-                grid-template-columns: 1fr;
-            }
+        .modal-content {
+            background: white;
+            margin: 80px auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .close {
+            position: absolute;
+            right: 25px;
+            top: 25px;
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        /* MESSAGE TOAST */
+        .message {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 18px 25px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideInRight 0.3s ease-out;
+            max-width: 400px;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, var(--danger-red) 0%, var(--danger-red-dark) 100%);
+        }
+
+        .message.warning {
+            background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%);
+        }
+
+        /* SPINNER */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         /* EMPTY STATE */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 30px;
             color: var(--gray-400);
         }
 
         .empty-state .icon {
-            font-size: 4em;
+            font-size: 5em;
             margin-bottom: 20px;
         }
 
         .empty-state h3 {
             color: var(--gray-600);
             margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        /* LOADING STATE */
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-state .spinner {
+            width: 40px;
+            height: 40px;
+            border-width: 4px;
+            border-color: var(--primary-blue);
+            border-top-color: transparent;
+            margin: 0 auto 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- HEADER - STICKY -->
+        <!-- HEADER -->
         <div class="header">
-            <div class="header-top">
-                <h1>💼 Nala Aircon</h1>
+            <div class="header-content">
+                <h1>💼 Nala Aircon Finance Dashboard</h1>
                 <div class="connection-status">
                     <div class="status-indicator status-loading" id="statusIndicator"></div>
                     <span id="statusText">Connecting...</span>
@@ -969,100 +1000,115 @@
             </div>
         </div>
 
-        <!-- BALANCE CARD - Prominent -->
-        <div class="balance-card">
-            <div class="balance-label">💰 Saldo Saat Ini</div>
-            <div class="balance-amount" id="balanceAmount">Rp 0</div>
-            <div class="balance-stats">
-                <div class="balance-stat income">
-                    <div class="balance-stat-label">PEMASUKAN</div>
-                    <div class="balance-stat-value" id="totalIncomeHeader">Rp 0</div>
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- BALANCE CARD -->
+            <div class="balance-card">
+                <div class="balance-main">
+                    <div class="balance-label">💰 Saldo Saat Ini</div>
+                    <div class="balance-amount" id="balanceAmount">Rp 0</div>
                 </div>
-                <div class="balance-stat expense">
-                    <div class="balance-stat-label">PENGELUARAN</div>
-                    <div class="balance-stat-value" id="totalExpenseHeader">Rp 0</div>
+                <div class="balance-stats">
+                    <div class="balance-stat income">
+                        <div class="balance-stat-label">PEMASUKAN</div>
+                        <div class="balance-stat-value" id="totalIncomeHeader">Rp 0</div>
+                    </div>
+                    <div class="balance-stat expense">
+                        <div class="balance-stat-label">PENGELUARAN</div>
+                        <div class="balance-stat-value" id="totalExpenseHeader">Rp 0</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- TAB NAVIGATION -->
-        <div class="content">
+            <!-- TAB NAVIGATION -->
             <div class="nav-tabs">
                 <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
-                <button class="nav-tab" onclick="showTab('income')">💰 Masuk</button>
-                <button class="nav-tab" onclick="showTab('expense')">💳 Keluar</button>
+                <button class="nav-tab" onclick="showTab('income')">💰 Pemasukan</button>
+                <button class="nav-tab" onclick="showTab('expense')">💳 Pengeluaran</button>
                 <button class="nav-tab" onclick="showTab('history')">📜 Riwayat</button>
             </div>
 
             <!-- DASHBOARD TAB -->
             <div id="dashboard" class="tab-content active">
-                <!-- Period Stats -->
-                <div class="period-section">
-                    <div class="period-header">🗓️ Statistik Harian</div>
-                    <div class="card-body">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="icon" style="color: var(--success-green);">💰</div>
-                                <div class="label">Pemasukan</div>
-                                <div class="value" id="dailyIncome">Rp 0</div>
+                <!-- Period Stats Grid -->
+                <div class="dashboard-grid">
+                    <!-- Daily Stats -->
+                    <div class="period-section">
+                        <div class="period-header">🗓️ Statistik Harian</div>
+                        <div class="period-body">
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="icon" style="color: var(--success-green);">💰</div>
+                                    <div class="label">Pemasukan</div>
+                                    <div class="value" id="dailyIncome">Rp 0</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="icon" style="color: var(--danger-red);">💳</div>
+                                    <div class="label">Pengeluaran</div>
+                                    <div class="value" id="dailyExpense">Rp 0</div>
+                                </div>
                             </div>
-                            <div class="stat-card">
-                                <div class="icon" style="color: var(--danger-red);">💳</div>
-                                <div class="label">Pengeluaran</div>
-                                <div class="value" id="dailyExpense">Rp 0</div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Stats -->
+                    <div class="period-section">
+                        <div class="period-header monthly">📅 Statistik Bulanan</div>
+                        <div class="period-body">
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="icon" style="color: var(--success-green);">💰</div>
+                                    <div class="label">Pemasukan</div>
+                                    <div class="value" id="monthlyIncome">Rp 0</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="icon" style="color: var(--danger-red);">💳</div>
+                                    <div class="label">Pengeluaran</div>
+                                    <div class="value" id="monthlyExpense">Rp 0</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="period-section">
-                    <div class="period-header monthly">📅 Statistik Bulanan</div>
-                    <div class="card-body">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="icon" style="color: var(--success-green);">💰</div>
-                                <div class="label">Pemasukan</div>
-                                <div class="value" id="monthlyIncome">Rp 0</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="icon" style="color: var(--danger-red);">💳</div>
-                                <div class="label">Pengeluaran</div>
-                                <div class="value" id="monthlyExpense">Rp 0</div>
-                            </div>
+                <!-- Charts Grid -->
+                <div class="dashboard-grid">
+                    <!-- Trends Chart -->
+                    <div class="chart-container">
+                        <div class="chart-title">📈 Tren Keuangan (7 Hari)</div>
+                        <div class="chart-wrapper">
+                            <canvas id="trendsLineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Expenses Chart -->
+                    <div class="chart-container">
+                        <div class="chart-title">🏆 Top 5 Kategori Pengeluaran</div>
+                        <div class="chart-wrapper">
+                            <canvas id="topExpensesBarChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <!-- Calendar -->
-                <div class="card">
+                <div class="card dashboard-grid-full">
                     <div class="card-header">
                         <h3>📅 Kalender Transaksi</h3>
                     </div>
                     <div class="card-body">
                         <div class="calendar-nav">
-                            <button onclick="previousMonth()">‹ Prev</button>
+                            <button onclick="previousMonth()">‹ Bulan Sebelumnya</button>
                             <h4 id="calendarMonth">-</h4>
-                            <button onclick="nextMonth()">Next ›</button>
+                            <button onclick="nextMonth()">Bulan Berikutnya ›</button>
                         </div>
                         <div class="calendar-grid" id="calendarGrid"></div>
                     </div>
-                </div>
-
-                <!-- Charts -->
-                <div class="chart-container">
-                    <div class="chart-title">📈 Tren Keuangan (7 Hari)</div>
-                    <canvas id="trendsLineChart" height="200"></canvas>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-title">🏆 Top 5 Kategori Pengeluaran</div>
-                    <canvas id="topExpensesBarChart" height="200"></canvas>
                 </div>
             </div>
 
             <!-- INCOME TAB -->
             <div id="income" class="tab-content">
-                <div class="card">
+                <div class="card" style="max-width: 900px; margin: 0 auto;">
                     <div class="card-header">
                         <span class="icon">💰</span>
                         <h3>Tambah Pemasukan</h3>
@@ -1076,7 +1122,10 @@
                             <div class="form-group">
                                 <label>📂 Kategori Pemasukan</label>
                                 <div class="category-grid" id="incomeCategoryGrid">
-                                    <!-- Dynamic income categories will be loaded here -->
+                                    <div class="loading-state" style="grid-column: 1 / -1;">
+                                        <div class="spinner"></div>
+                                        <p>Memuat kategori...</p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -1095,9 +1144,9 @@
                 </div>
             </div>
 
-            <!-- EXPENSE TAB - IMPROVED WITH DYNAMIC CATEGORIES -->
+            <!-- EXPENSE TAB -->
             <div id="expense" class="tab-content">
-                <div class="card">
+                <div class="card" style="max-width: 900px; margin: 0 auto;">
                     <div class="card-header">
                         <span class="icon">💳</span>
                         <h3>Tambah Pengeluaran</h3>
@@ -1111,9 +1160,8 @@
                             <div class="form-group">
                                 <label>📂 Kategori Pengeluaran</label>
                                 <div class="category-grid" id="expenseCategoryGrid">
-                                    <!-- Dynamic expense categories from Firestore will be loaded here -->
-                                    <div class="empty-state" style="grid-column: 1 / -1;">
-                                        <div class="spinner" style="margin: 0 auto 10px;"></div>
+                                    <div class="loading-state" style="grid-column: 1 / -1;">
+                                        <div class="spinner"></div>
                                         <p>Memuat kategori...</p>
                                     </div>
                                 </div>
@@ -1141,10 +1189,11 @@
                     <div class="search-container">
                         <span class="search-icon">🔍</span>
                         <input type="text" id="searchInput" class="search-input" 
-                               placeholder="Cari transaksi..." oninput="handleSearch()">
+                               placeholder="Cari transaksi berdasarkan kategori, keterangan, atau jumlah..." 
+                               oninput="handleSearch()">
                         <button class="clear-search" id="clearSearchBtn" onclick="clearSearch()">✕</button>
                     </div>
-                    <div class="search-results-info" id="searchResultsInfo"></div>
+                    <div id="searchResultsInfo" style="margin-top: 10px; text-align: center; color: var(--gray-500); font-size: 14px;"></div>
                 </div>
 
                 <!-- Filters -->
@@ -1152,10 +1201,10 @@
                     <div class="filter-tabs">
                         <button class="filter-tab active" onclick="setFilterPeriod('all')">Semua</button>
                         <button class="filter-tab" onclick="setFilterPeriod('today')">Hari Ini</button>
-                        <button class="filter-tab" onclick="setFilterPeriod('week')">Minggu</button>
-                        <button class="filter-tab" onclick="setFilterPeriod('month')">Bulan</button>
+                        <button class="filter-tab" onclick="setFilterPeriod('week')">Minggu Ini</button>
+                        <button class="filter-tab" onclick="setFilterPeriod('month')">Bulan Ini</button>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="filter-controls">
                         <select id="filterType" class="form-control" onchange="applyFilters()">
                             <option value="all">Semua Tipe</option>
                             <option value="income">Pemasukan</option>
@@ -1164,13 +1213,11 @@
                         <select id="filterCategory" class="form-control" onchange="applyFilters()">
                             <option value="all">Semua Kategori</option>
                         </select>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                        <button onclick="resetFilters()" class="btn btn-primary" style="padding: 10px; font-size: 13px;">
-                            🔄 Reset
+                        <button onclick="resetFilters()" class="btn btn-primary">
+                            🔄 Reset Filter
                         </button>
-                        <button onclick="exportToExcel()" class="btn btn-success" style="padding: 10px; font-size: 13px;">
-                            📥 Export
+                        <button onclick="exportToExcel()" class="btn btn-success">
+                            📥 Export Excel
                         </button>
                     </div>
                 </div>
@@ -1179,10 +1226,10 @@
                 <div class="pagination-container">
                     <div class="pagination-info" id="paginationInfo">Menampilkan 0 dari 0</div>
                     <div class="pagination-controls" id="paginationControls"></div>
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
-                        <label style="font-size: 12px; color: var(--gray-600);">Tampilkan:</label>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
+                        <label style="font-size: 14px; color: var(--gray-600); font-weight: 600;">Tampilkan per halaman:</label>
                         <select id="itemsPerPage" class="form-control" onchange="changeItemsPerPage()" 
-                                style="width: auto; padding: 6px 10px; font-size: 12px;">
+                                style="width: auto; padding: 8px 12px;">
                             <option value="10">10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
@@ -1253,10 +1300,11 @@
                 <h3>⚠️ Konfirmasi Hapus</h3>
             </div>
             <div class="modal-body">
-                <p style="text-align: center; font-size: 1.1em; margin-bottom: 25px;">
-                    Apakah Anda yakin ingin menghapus transaksi ini?
+                <p style="text-align: center; font-size: 1.1em; margin-bottom: 30px; color: var(--gray-700);">
+                    Apakah Anda yakin ingin menghapus transaksi ini?<br>
+                    <strong>Tindakan ini tidak dapat dibatalkan.</strong>
                 </p>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 15px;">
                     <button onclick="closeDeleteModal()" class="btn btn-primary" style="flex: 1;">
                         ❌ Batal
                     </button>
@@ -1305,21 +1353,23 @@
         // Initialize Firebase
         async function initializeFirebase() {
             try {
-                addDebugLog('Initializing Firebase...');
+                console.log('🔵 Initializing Firebase...');
                 app = firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
                 
                 updateConnectionStatus('online', 'Connected');
-                addDebugLog('✅ Firebase initialized');
+                console.log('✅ Firebase initialized');
                 
                 // Load categories and transactions
-                await loadExpenseCategories();
-                await loadIncomeCategories();
-                await loadTransactions();
+                await Promise.all([
+                    loadExpenseCategories(),
+                    loadIncomeCategories(),
+                    loadTransactions()
+                ]);
                 
                 return true;
             } catch (error) {
-                addDebugLog(`❌ Firebase error: ${error.message}`);
+                console.error('❌ Firebase error:', error);
                 updateConnectionStatus('offline', 'Failed');
                 showMessage('Gagal menghubungkan ke Firebase: ' + error.message, 'error');
                 return false;
@@ -1329,7 +1379,7 @@
         // Load Expense Categories from Firestore
         async function loadExpenseCategories() {
             try {
-                addDebugLog('Loading expense categories from Firestore...');
+                console.log('🔵 Loading expense categories...');
                 
                 const snapshot = await db.collection('expense_categories').orderBy('order').get();
                 
@@ -1338,9 +1388,9 @@
                         id: doc.id,
                         ...doc.data()
                     }));
-                    addDebugLog(`✅ Loaded ${expenseCategories.length} expense categories`);
+                    console.log(`✅ Loaded ${expenseCategories.length} expense categories`);
                 } else {
-                    // Default categories if none exist
+                    // Default categories
                     expenseCategories = [
                         { icon: '🍽️', name: 'Uang Makan', order: 1 },
                         { icon: '🔧', name: 'Servis Kendaraan', order: 2 },
@@ -1351,13 +1401,13 @@
                         { icon: '🏗️', name: 'Material Project', order: 7 },
                         { icon: '🧾', name: 'Kasbon', order: 8 }
                     ];
-                    addDebugLog('⚠️ No categories in Firestore, using defaults');
+                    console.log('⚠️ Using default expense categories');
                 }
                 
                 renderExpenseCategoryGrid();
                 
             } catch (error) {
-                addDebugLog(`❌ Error loading expense categories: ${error.message}`);
+                console.error('❌ Error loading expense categories:', error);
                 showMessage('Gagal memuat kategori pengeluaran', 'error');
             }
         }
@@ -1365,7 +1415,7 @@
         // Load Income Categories
         async function loadIncomeCategories() {
             try {
-                addDebugLog('Loading income categories...');
+                console.log('🔵 Loading income categories...');
                 
                 const snapshot = await db.collection('income_categories').orderBy('order').get();
                 
@@ -1374,7 +1424,7 @@
                         id: doc.id,
                         ...doc.data()
                     }));
-                    addDebugLog(`✅ Loaded ${incomeCategories.length} income categories`);
+                    console.log(`✅ Loaded ${incomeCategories.length} income categories`);
                 } else {
                     // Default income categories
                     incomeCategories = [
@@ -1383,13 +1433,13 @@
                         { icon: '🔧', name: 'Service', order: 3 },
                         { icon: '📦', name: 'Penjualan', order: 4 }
                     ];
-                    addDebugLog('⚠️ No income categories, using defaults');
+                    console.log('⚠️ Using default income categories');
                 }
                 
                 renderIncomeCategoryGrid();
                 
             } catch (error) {
-                addDebugLog(`❌ Error loading income categories: ${error.message}`);
+                console.error('❌ Error loading income categories:', error);
             }
         }
 
@@ -1402,7 +1452,7 @@
                     <div class="empty-state" style="grid-column: 1 / -1;">
                         <div class="icon">📂</div>
                         <h3>Tidak ada kategori</h3>
-                        <p style="color: var(--gray-400);">Tambahkan kategori di Firestore</p>
+                        <p>Tambahkan kategori di Firestore</p>
                     </div>
                 `;
                 return;
@@ -1412,7 +1462,7 @@
             expenseCategories.forEach(category => {
                 html += `
                     <label class="category-option ${selectedExpenseCategory === category.name ? 'selected' : ''}" 
-                           onclick="selectExpenseCategory('${category.name}')">
+                           onclick="selectExpenseCategory('${category.name.replace(/'/g, "\\'")}')">
                         <input type="radio" name="expenseCategory" value="${category.name}">
                         <div class="icon">${category.icon}</div>
                         <div class="label">${category.name}</div>
@@ -1428,7 +1478,12 @@
             const grid = document.getElementById('incomeCategoryGrid');
             
             if (incomeCategories.length === 0) {
-                grid.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;">Tidak ada kategori</div>`;
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="icon">📂</div>
+                        <h3>Tidak ada kategori</h3>
+                    </div>
+                `;
                 return;
             }
             
@@ -1436,7 +1491,7 @@
             incomeCategories.forEach(category => {
                 html += `
                     <label class="category-option ${selectedIncomeCategory === category.name ? 'selected' : ''}" 
-                           onclick="selectIncomeCategory('${category.name}')">
+                           onclick="selectIncomeCategory('${category.name.replace(/'/g, "\\'")}')">
                         <input type="radio" name="incomeCategory" value="${category.name}">
                         <div class="icon">${category.icon}</div>
                         <div class="label">${category.name}</div>
@@ -1461,7 +1516,7 @@
         // Load Transactions
         async function loadTransactions() {
             try {
-                addDebugLog('Loading transactions...');
+                console.log('🔵 Loading transactions...');
                 updateConnectionStatus('loading', 'Loading...');
                 
                 const snapshot = await db.collection('transactions').get();
@@ -1474,11 +1529,11 @@
                     
                     transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
                     
-                    addDebugLog(`✅ Loaded ${transactions.length} transactions`);
+                    console.log(`✅ Loaded ${transactions.length} transactions`);
                     showMessage(`${transactions.length} transaksi dimuat`, 'success');
                 } else {
                     transactions = [];
-                    addDebugLog('⚠️ No transactions found');
+                    console.log('⚠️ No transactions found');
                 }
                 
                 updateConnectionStatus('online', 'Connected');
@@ -1490,7 +1545,7 @@
                 applyFilters();
                 
             } catch (error) {
-                addDebugLog(`❌ Error loading transactions: ${error.message}`);
+                console.error('❌ Error loading transactions:', error);
                 updateConnectionStatus('offline', 'Error');
                 
                 let errorMsg = 'Gagal memuat transaksi: ';
@@ -1507,7 +1562,7 @@
         // Add Transaction
         async function addTransaction(type, category, amount, description, date) {
             try {
-                addDebugLog(`Adding ${type} transaction...`);
+                console.log(`🔵 Adding ${type} transaction...`);
                 
                 const transaction = {
                     type,
@@ -1520,14 +1575,14 @@
                 
                 await db.collection('transactions').add(transaction);
                 
-                addDebugLog(`✅ Transaction added`);
+                console.log('✅ Transaction added');
                 showMessage('Transaksi berhasil ditambahkan!', 'success');
                 
                 await loadTransactions();
                 return true;
                 
             } catch (error) {
-                addDebugLog(`❌ Error adding: ${error.message}`);
+                console.error('❌ Error adding:', error);
                 showMessage('Gagal menambahkan transaksi: ' + error.message, 'error');
                 return false;
             }
@@ -1536,7 +1591,7 @@
         // Update Transaction
         async function updateTransaction(id, type, category, amount, description, date) {
             try {
-                addDebugLog(`Updating transaction ${id}...`);
+                console.log(`🔵 Updating transaction ${id}...`);
                 
                 const updates = {
                     type,
@@ -1549,14 +1604,14 @@
                 
                 await db.collection('transactions').doc(id).update(updates);
                 
-                addDebugLog(`✅ Transaction updated`);
+                console.log('✅ Transaction updated');
                 showMessage('Transaksi berhasil diupdate!', 'success');
                 
                 await loadTransactions();
                 return true;
                 
             } catch (error) {
-                addDebugLog(`❌ Error updating: ${error.message}`);
+                console.error('❌ Error updating:', error);
                 showMessage('Gagal mengupdate transaksi: ' + error.message, 'error');
                 return false;
             }
@@ -1565,18 +1620,18 @@
         // Delete Transaction
         async function deleteTransaction(id) {
             try {
-                addDebugLog(`Deleting transaction ${id}...`);
+                console.log(`🔵 Deleting transaction ${id}...`);
                 
                 await db.collection('transactions').doc(id).delete();
                 
-                addDebugLog(`✅ Transaction deleted`);
+                console.log('✅ Transaction deleted');
                 showMessage('Transaksi berhasil dihapus!', 'success');
                 
                 await loadTransactions();
                 return true;
                 
             } catch (error) {
-                addDebugLog(`❌ Error deleting: ${error.message}`);
+                console.error('❌ Error deleting:', error);
                 showMessage('Gagal menghapus transaksi: ' + error.message, 'error');
                 return false;
             }
@@ -1681,10 +1736,6 @@
             document.getElementById('expenseDate').value = today;
         }
 
-        function addDebugLog(message) {
-            console.log(message);
-        }
-
         // Calendar Functions
         function renderCalendar() {
             const year = currentMonth.getFullYear();
@@ -1701,7 +1752,7 @@
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
             
-            const dayHeaders = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            const dayHeaders = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             dayHeaders.forEach(day => {
                 const header = document.createElement('div');
                 header.className = 'calendar-day-header';
@@ -1742,7 +1793,7 @@
                 
                 dayDiv.innerHTML = `
                     <div class="day-number">${day}</div>
-                    ${dayTransactions.length > 0 ? `<div class="day-indicator" style="font-size: 8px; margin-top: 2px;">${dayTransactions.length}</div>` : ''}
+                    ${dayTransactions.length > 0 ? `<div class="day-indicator">${dayTransactions.length}</div>` : ''}
                 `;
                 
                 grid.appendChild(dayDiv);
@@ -1759,7 +1810,7 @@
             renderCalendar();
         }
 
-        // Chart Functions
+        // Chart Functions - FIXED WITH HEIGHT CONSTRAINT
         function renderCharts() {
             renderTrendsChart();
             renderTopExpensesChart();
@@ -1771,8 +1822,10 @@
             
             const ctx = canvas.getContext('2d');
             
+            // Destroy existing chart
             if (charts.trends) {
                 charts.trends.destroy();
+                charts.trends = null;
             }
             
             const last7Days = [];
@@ -1800,7 +1853,7 @@
             });
             
             if (incomeData.every(v => v === 0) && expenseData.every(v => v === 0)) {
-                canvas.parentElement.innerHTML = '<div class="chart-no-data">📊 Belum ada data</div>';
+                canvas.parentElement.innerHTML = '<div class="chart-no-data">📊 Belum ada data 7 hari terakhir</div>';
                 return;
             }
             
@@ -1816,7 +1869,9 @@
                             backgroundColor: 'rgba(5, 150, 105, 0.1)',
                             tension: 0.4,
                             fill: true,
-                            borderWidth: 3
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
                         },
                         {
                             label: 'Pengeluaran',
@@ -1825,7 +1880,9 @@
                             backgroundColor: 'rgba(220, 38, 38, 0.1)',
                             tension: 0.4,
                             fill: true,
-                            borderWidth: 3
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
                         }
                     ]
                 },
@@ -1837,18 +1894,38 @@
                             beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
-                                    return 'Rp ' + (value / 1000) + 'k';
+                                    if (value >= 1000000) {
+                                        return 'Rp ' + (value / 1000000) + 'jt';
+                                    } else if (value >= 1000) {
+                                        return 'Rp ' + (value / 1000) + 'k';
+                                    }
+                                    return 'Rp ' + value;
                                 }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
                             }
                         }
                     },
                     plugins: {
                         legend: {
-                            position: 'bottom',
+                            position: 'top',
                             labels: {
-                                boxWidth: 12,
-                                font: { size: 10 },
-                                padding: 8
+                                boxWidth: 15,
+                                font: { size: 12 },
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatRupiah(context.parsed.y);
+                                }
                             }
                         }
                     }
@@ -1862,14 +1939,16 @@
             
             const ctx = canvas.getContext('2d');
             
+            // Destroy existing chart
             if (charts.topExpenses) {
                 charts.topExpenses.destroy();
+                charts.topExpenses = null;
             }
             
             const expenseTransactions = transactions.filter(t => t.type === 'expense');
             
             if (expenseTransactions.length === 0) {
-                canvas.parentElement.innerHTML = '<div class="chart-no-data">📊 Belum ada data</div>';
+                canvas.parentElement.innerHTML = '<div class="chart-no-data">📊 Belum ada data pengeluaran</div>';
                 return;
             }
             
@@ -1898,7 +1977,9 @@
                             '#f59e0b',
                             '#eab308',
                             '#84cc16'
-                        ]
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 8
                     }]
                 },
                 options: {
@@ -1910,13 +1991,35 @@
                             beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
-                                    return 'Rp ' + (value / 1000) + 'k';
+                                    if (value >= 1000000) {
+                                        return 'Rp ' + (value / 1000000) + 'jt';
+                                    } else if (value >= 1000) {
+                                        return 'Rp ' + (value / 1000) + 'k';
+                                    }
+                                    return 'Rp ' + value;
                                 }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
                             }
                         }
                     },
                     plugins: {
-                        legend: { display: false }
+                        legend: { 
+                            display: false 
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return formatRupiah(context.parsed.x);
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -2009,6 +2112,8 @@
             document.getElementById('filterType').value = 'all';
             document.getElementById('filterCategory').value = 'all';
             document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').classList.remove('show');
+            document.getElementById('searchResultsInfo').textContent = '';
             
             const tabs = document.querySelectorAll('.filter-tab');
             tabs.forEach(tab => tab.classList.remove('active'));
@@ -2021,19 +2126,26 @@
         function handleSearch() {
             const searchInput = document.getElementById('searchInput');
             const clearBtn = document.getElementById('clearSearchBtn');
+            const resultsInfo = document.getElementById('searchResultsInfo');
             
             if (searchInput.value.length > 0) {
                 clearBtn.classList.add('show');
             } else {
                 clearBtn.classList.remove('show');
+                resultsInfo.textContent = '';
             }
             
             applyFilters();
+            
+            if (searchInput.value.length > 0) {
+                resultsInfo.textContent = `Ditemukan ${filteredTransactions.length} transaksi`;
+            }
         }
 
         function clearSearch() {
             document.getElementById('searchInput').value = '';
             document.getElementById('clearSearchBtn').classList.remove('show');
+            document.getElementById('searchResultsInfo').textContent = '';
             applyFilters();
         }
 
@@ -2045,7 +2157,7 @@
             const endItem = Math.min(currentPage * itemsPerPage, totalItems);
             
             document.getElementById('paginationInfo').textContent = 
-                `Menampilkan ${startItem}-${endItem} dari ${totalItems}`;
+                `Menampilkan ${startItem}-${endItem} dari ${totalItems} transaksi`;
             
             const controlsHTML = generatePaginationHTML(totalPages);
             document.getElementById('paginationControls').innerHTML = controlsHTML;
@@ -2054,13 +2166,13 @@
 
         function generatePaginationHTML(totalPages) {
             if (totalPages <= 1) {
-                return '<div style="color: var(--gray-400); font-size: 13px;">Hanya 1 halaman</div>';
+                return '<div style="color: var(--gray-400); font-size: 14px;">Hanya 1 halaman</div>';
             }
             
             let html = '';
             
             html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                        ‹ Prev
+                        ‹ Sebelumnya
                     </button>`;
             
             const maxButtons = 5;
@@ -2074,7 +2186,7 @@
             if (startPage > 1) {
                 html += `<button class="pagination-btn" onclick="goToPage(1)">1</button>`;
                 if (startPage > 2) {
-                    html += `<span style="padding: 8px; color: var(--gray-400);">...</span>`;
+                    html += `<span style="padding: 10px; color: var(--gray-400); font-weight: 600;">...</span>`;
                 }
             }
             
@@ -2085,13 +2197,13 @@
             
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) {
-                    html += `<span style="padding: 8px; color: var(--gray-400);">...</span>`;
+                    html += `<span style="padding: 10px; color: var(--gray-400); font-weight: 600;">...</span>`;
                 }
                 html += `<button class="pagination-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`;
             }
             
             html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                        Next ›
+                        Berikutnya ›
                     </button>`;
             
             return html;
@@ -2104,6 +2216,12 @@
             currentPage = page;
             renderTransactionsList();
             renderPaginationControls();
+            
+            // Smooth scroll to top of transactions
+            document.getElementById('transactionsList').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
         }
 
         function changeItemsPerPage() {
@@ -2181,6 +2299,48 @@
                     'Keterangan': t.description || '-'
                 }));
 
+                const totalIncome = filteredTransactions
+                    .filter(t => t.type === 'income')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const totalExpense = filteredTransactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+
+                exportData.push({});
+                exportData.push({
+                    'No': '',
+                    'Tanggal': 'RINGKASAN',
+                    'Tipe': '',
+                    'Kategori': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+                exportData.push({
+                    'No': '',
+                    'Tanggal': 'Total Pemasukan',
+                    'Tipe': '',
+                    'Kategori': '',
+                    'Jumlah': totalIncome,
+                    'Keterangan': ''
+                });
+                exportData.push({
+                    'No': '',
+                    'Tanggal': 'Total Pengeluaran',
+                    'Tipe': '',
+                    'Kategori': '',
+                    'Jumlah': totalExpense,
+                    'Keterangan': ''
+                });
+                exportData.push({
+                    'No': '',
+                    'Tanggal': 'Saldo',
+                    'Tipe': '',
+                    'Kategori': '',
+                    'Jumlah': totalIncome - totalExpense,
+                    'Keterangan': ''
+                });
+
                 const wb = XLSX.utils.book_new();
                 const ws = XLSX.utils.json_to_sheet(exportData);
 
@@ -2188,9 +2348,9 @@
                     { wch: 5 },
                     { wch: 15 },
                     { wch: 15 },
-                    { wch: 20 },
+                    { wch: 25 },
                     { wch: 15 },
-                    { wch: 30 }
+                    { wch: 35 }
                 ];
 
                 XLSX.utils.book_append_sheet(wb, ws, 'Transaksi');
@@ -2200,9 +2360,10 @@
 
                 XLSX.writeFile(wb, filename);
 
-                showMessage(`Data berhasil diexport!`, 'success');
+                showMessage(`Data berhasil diexport! (${filteredTransactions.length} transaksi)`, 'success');
 
             } catch (error) {
+                console.error('❌ Export error:', error);
                 showMessage('Gagal export data: ' + error.message, 'error');
             }
         }
@@ -2239,7 +2400,7 @@
             categories.forEach(cat => {
                 const option = document.createElement('option');
                 option.value = cat.name;
-                option.textContent = cat.name;
+                option.textContent = `${cat.icon} ${cat.name}`;
                 categorySelect.appendChild(option);
             });
         }
@@ -2398,9 +2559,13 @@
 
         // Initialize App
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Nala Aircon Finance Dashboard Starting...');
             const initialized = await initializeFirebase();
             if (initialized) {
                 setTodayDate();
+                console.log('✅ Application Ready!');
+            } else {
+                console.error('❌ Application Failed to Initialize');
             }
         });
 
