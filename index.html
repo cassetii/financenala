@@ -1705,6 +1705,7 @@
                     <table class="inventory-table">
                         <thead>
                             <tr>
+                                <th>Tanggal</th>
                                 <th>Material</th>
                                 <th>Merk</th>
                                 <th>Stock Masuk</th>
@@ -1718,7 +1719,7 @@
                         </thead>
                         <tbody id="inventoryTableBody">
                             <tr>
-                                <td colspan="9" class="empty-state" style="padding: 60px;">
+                                <td colspan="10" class="empty-state" style="padding: 60px;">
                                     <div class="icon">📦</div>
                                     <h3>Belum ada inventory</h3>
                                     <p>Inventory akan otomatis terisi saat Anda membeli material</p>
@@ -2537,6 +2538,7 @@
                         avgPrice: newAvgPrice,
                         totalValue: currentStock * newAvgPrice,
                         purchases,
+                        lastUpdated: new Date().toISOString().split('T')[0],
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
@@ -2562,6 +2564,7 @@
                             price: pricePerUnit,
                             transactionId
                         }],
+                        lastUpdated: new Date().toISOString().split('T')[0],
                         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     };
@@ -2744,7 +2747,7 @@
             if (inventory.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="9" style="text-align: center; padding: 60px;">
+                        <td colspan="10" style="text-align: center; padding: 60px;">
                             <div style="font-size: 4em; margin-bottom: 15px;">📦</div>
                             <h3 style="color: var(--gray-600); margin-bottom: 10px;">Belum ada inventory</h3>
                             <p style="color: var(--gray-400);">Inventory akan otomatis terisi saat Anda membeli material</p>
@@ -2754,12 +2757,24 @@
                 return;
             }
             
-            tbody.innerHTML = inventory.map(item => {
+            // Sort by date (newest first)
+            const sortedInventory = [...inventory].sort((a, b) => {
+                const dateA = a.lastUpdated || a.createdAt || '';
+                const dateB = b.lastUpdated || b.createdAt || '';
+                return dateB.localeCompare(dateA);
+            });
+            
+            tbody.innerHTML = sortedInventory.map(item => {
                 const remaining = item.currentStock || 0;
                 const status = getStockStatus(item, remaining);
                 
+                // Format date
+                const itemDate = item.lastUpdated || item.createdAt || '';
+                const formattedDate = itemDate ? formatTanggalShort(itemDate) : '-';
+                
                 return `
                     <tr>
+                        <td style="font-size: 12px; color: var(--gray-600);">${formattedDate}</td>
                         <td><strong>${item.displayName || '-'}</strong></td>
                         <td>${item.merk || '-'}</td>
                         <td>${item.totalQtyIn || 0} ${item.unit || ''}</td>
@@ -2775,6 +2790,19 @@
                     </tr>
                 `;
             }).join('');
+        }
+        
+        function formatTanggalShort(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString.split('T')[0] || '-';
+            
+            const day = date.getDate().toString().padStart(2, '0');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const month = monthNames[date.getMonth()];
+            const year = date.getFullYear();
+            
+            return `${day} ${month} ${year}`;
         }
 
         function getStockStatus(item, remaining) {
