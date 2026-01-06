@@ -1382,15 +1382,16 @@
             <!-- BALANCE CARD -->
             <div class="balance-card">
                 <div class="balance-main">
-                    <div class="balance-label">💰 Saldo Saat Ini</div>
+                    <div class="balance-label">💰 Saldo Bulan Ini</div>
                     <div class="balance-amount" id="balanceAmount">Rp 0</div>
+                    <div class="balance-period" id="balancePeriod" style="font-size: 12px; opacity: 0.8; margin-top: 5px;"></div>
                 </div>
                 <div class="balance-stat income">
-                    <div class="balance-stat-label">PEMASUKAN</div>
+                    <div class="balance-stat-label">PEMASUKAN BULAN INI</div>
                     <div class="balance-stat-value" id="totalIncomeHeader">Rp 0</div>
                 </div>
                 <div class="balance-stat expense">
-                    <div class="balance-stat-label">PENGELUARAN</div>
+                    <div class="balance-stat-label">PENGELUARAN BULAN INI</div>
                     <div class="balance-stat-value" id="totalExpenseHeader">Rp 0</div>
                 </div>
                 <div class="balance-stat inventory">
@@ -1605,6 +1606,22 @@
                         <button class="filter-tab" onclick="setFilterPeriod('week')">Minggu Ini</button>
                         <button class="filter-tab" onclick="setFilterPeriod('month')">Bulan Ini</button>
                     </div>
+                    
+                    <!-- Date Range Filter -->
+                    <div class="date-range-filter" style="display: flex; gap: 15px; align-items: center; margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label style="font-size: 13px; font-weight: 600; color: #495057;">📅 Dari:</label>
+                            <input type="date" id="filterStartDate" class="form-control" style="width: auto;" onchange="applyDateRangeFilter()">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label style="font-size: 13px; font-weight: 600; color: #495057;">Sampai:</label>
+                            <input type="date" id="filterEndDate" class="form-control" style="width: auto;" onchange="applyDateRangeFilter()">
+                        </div>
+                        <button onclick="clearDateRange()" class="btn" style="padding: 8px 15px; font-size: 12px; background: #6c757d; color: white;">
+                            ✕ Clear
+                        </button>
+                    </div>
+                    
                     <div class="filter-controls">
                         <select id="filterType" class="form-control" onchange="applyFilters()">
                             <option value="all">Semua Tipe</option>
@@ -2641,11 +2658,21 @@
         }
 
         function updateStats() {
-            const totalIncome = transactions
+            const now = new Date();
+            const currentMonth = now.toISOString().slice(0, 7); // YYYY-MM
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+                               'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const monthName = monthNames[now.getMonth()];
+            const year = now.getFullYear();
+            
+            // Filter transactions for current month
+            const monthlyTransactions = transactions.filter(t => t.date && t.date.startsWith(currentMonth));
+            
+            const totalIncome = monthlyTransactions
                 .filter(t => t.type === 'income')
                 .reduce((sum, t) => sum + t.amount, 0);
             
-            const totalExpense = transactions
+            const totalExpense = monthlyTransactions
                 .filter(t => t.type === 'expense')
                 .reduce((sum, t) => sum + t.amount, 0);
             
@@ -2657,6 +2684,12 @@
             document.getElementById('totalIncomeHeader').textContent = formatRupiah(totalIncome);
             document.getElementById('totalExpenseHeader').textContent = formatRupiah(totalExpense);
             document.getElementById('totalInventoryHeader').textContent = formatRupiah(totalInventoryValue);
+            
+            // Update period label
+            const periodLabel = document.getElementById('balancePeriod');
+            if (periodLabel) {
+                periodLabel.textContent = `📅 ${monthName} ${year}`;
+            }
         }
 
         function updatePeriodStats() {
@@ -3052,6 +3085,10 @@
         function setFilterPeriod(period) {
             filterPeriod = period;
             
+            // Clear date range inputs when using period tabs
+            document.getElementById('filterStartDate').value = '';
+            document.getElementById('filterEndDate').value = '';
+            
             const tabs = document.querySelectorAll('.filter-tab');
             tabs.forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
@@ -3084,7 +3121,23 @@
         function getFilteredTransactions() {
             let filtered = [...transactions];
             
-            if (filterPeriod !== 'all') {
+            // Check for custom date range first
+            const startDate = document.getElementById('filterStartDate')?.value;
+            const endDate = document.getElementById('filterEndDate')?.value;
+            
+            if (startDate || endDate) {
+                filtered = filtered.filter(t => {
+                    const tDate = t.date;
+                    if (startDate && endDate) {
+                        return tDate >= startDate && tDate <= endDate;
+                    } else if (startDate) {
+                        return tDate >= startDate;
+                    } else if (endDate) {
+                        return tDate <= endDate;
+                    }
+                    return true;
+                });
+            } else if (filterPeriod !== 'all') {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 
@@ -3123,6 +3176,38 @@
             return filtered;
         }
 
+        function applyDateRangeFilter() {
+            // Clear period filter tabs when using date range
+            filterPeriod = 'custom';
+            const tabs = document.querySelectorAll('.filter-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            currentPage = 1;
+            applyFilters();
+            
+            // Show date range info
+            const startDate = document.getElementById('filterStartDate').value;
+            const endDate = document.getElementById('filterEndDate').value;
+            if (startDate || endDate) {
+                const startStr = startDate ? formatTanggal(startDate) : 'Awal';
+                const endStr = endDate ? formatTanggal(endDate) : 'Sekarang';
+                showMessage(`📅 Filter: ${startStr} - ${endStr}`, 'info');
+            }
+        }
+        
+        function clearDateRange() {
+            document.getElementById('filterStartDate').value = '';
+            document.getElementById('filterEndDate').value = '';
+            filterPeriod = 'all';
+            
+            const tabs = document.querySelectorAll('.filter-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabs[0].classList.add('active');
+            
+            applyFilters();
+            showMessage('📅 Filter tanggal direset', 'info');
+        }
+
         function applyFilters() {
             filteredTransactions = getFilteredTransactions();
             currentPage = 1;
@@ -3137,6 +3222,10 @@
             document.getElementById('searchInput').value = '';
             document.getElementById('clearSearchBtn').classList.remove('show');
             document.getElementById('searchResultsInfo').textContent = '';
+            
+            // Clear date range
+            document.getElementById('filterStartDate').value = '';
+            document.getElementById('filterEndDate').value = '';
             
             const tabs = document.querySelectorAll('.filter-tab');
             tabs.forEach(tab => tab.classList.remove('active'));
