@@ -462,6 +462,107 @@
             animation: slideDown 0.3s ease-out;
         }
 
+        /* Multiple Material Rows */
+        .material-row {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .material-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .material-row-number {
+            font-weight: 600;
+            color: var(--purple);
+            font-size: 14px;
+        }
+
+        .btn-remove-material {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-remove-material:hover {
+            background: #fecaca;
+        }
+
+        .material-row-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .material-row-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        .material-row-grid .form-group label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .material-row-grid .form-control {
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+
+        .material-row-subtotal {
+            background: #f5f3ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .material-row-subtotal .label {
+            color: #6b7280;
+        }
+
+        .material-row-subtotal .amount {
+            font-weight: 700;
+            color: var(--purple);
+        }
+
+        .btn-add-material {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            border: 2px dashed var(--purple);
+            border-radius: 10px;
+            color: var(--purple);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .btn-add-material:hover {
+            background: #f5f3ff;
+            border-style: solid;
+        }
+
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -1255,6 +1356,9 @@
             .material-form-grid {
                 grid-template-columns: 1fr;
             }
+            .material-row-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
     </style>
 </head>
@@ -1446,54 +1550,17 @@
                             <!-- MATERIAL DETAIL PANEL (NEW!) -->
                             <div class="material-detail-panel" id="materialDetailPanel">
                                 <h4>📦 Detail Material (Otomatis masuk Inventory)</h4>
-                                <div class="material-form-grid">
-                                    <div class="form-group">
-                                        <label>Jenis Material</label>
-                                        <select id="materialCategory" class="form-control" onchange="updateMaterialOptions()">
-                                            <option value="">Pilih Jenis</option>
-                                            <option value="pipa">🔧 Pipa AC</option>
-                                            <option value="kabel">⚡ Kabel</option>
-                                            <option value="ducktape">📦 Ducktape</option>
-                                            <option value="bracket">🔩 Bracket</option>
-                                            <option value="freon">❄️ Freon</option>
-                                            <option value="other">📋 Lainnya</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Tipe</label>
-                                        <select id="materialType" class="form-control">
-                                            <option value="">Pilih jenis dulu</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Merk</label>
-                                        <select id="materialMerk" class="form-control">
-                                            <option value="">Pilih jenis dulu</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" id="freonSizeGroup" style="display: none;">
-                                        <label>Ukuran (Kg)</label>
-                                        <select id="materialFreonSize" class="form-control">
-                                            <option value="3">3 Kg</option>
-                                            <option value="5">5 Kg</option>
-                                            <option value="10">10 Kg</option>
-                                            <option value="13.6">13.6 Kg</option>
-                                            <option value="22.7">22.7 Kg</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Quantity</label>
-                                        <input type="number" id="materialQty" class="form-control" placeholder="0" min="1" oninput="calculateMaterialTotal()">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Satuan</label>
-                                        <input type="text" id="materialUnit" class="form-control" placeholder="meter/pcs/roll" readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Harga/Unit (Rp)</label>
-                                        <input type="number" id="materialPricePerUnit" class="form-control" placeholder="0" oninput="calculateMaterialTotal()">
-                                    </div>
+                                
+                                <!-- Material Items Container -->
+                                <div id="materialItemsContainer">
+                                    <!-- Material rows will be added here -->
                                 </div>
+                                
+                                <!-- Add Material Button -->
+                                <button type="button" class="btn-add-material" onclick="addMaterialRow()">
+                                    ➕ Tambah Material
+                                </button>
+                                
                                 <div class="material-total">
                                     <span>💰 Total Pembelian Material:</span>
                                     <span class="amount" id="materialTotalAmount">Rp 0</span>
@@ -2148,6 +2215,8 @@
         // ==========================================
         // SELECT CATEGORY
         // ==========================================
+        let materialRowCount = 0;
+        
         function selectExpenseCategory(categoryName) {
             selectedExpenseCategory = categoryName;
             renderExpenseCategoryGrid();
@@ -2160,15 +2229,11 @@
             if (isMaterial) {
                 materialPanel.classList.add('show');
                 amountGroup.style.display = 'none';
-                // Reset material form
-                document.getElementById('materialCategory').value = '';
-                document.getElementById('materialType').innerHTML = '<option value="">Pilih jenis dulu</option>';
-                document.getElementById('materialMerk').innerHTML = '<option value="">Pilih jenis dulu</option>';
-                document.getElementById('materialQty').value = '';
-                document.getElementById('materialPricePerUnit').value = '';
-                document.getElementById('materialUnit').value = '';
+                // Reset and add first material row
+                materialRowCount = 0;
+                document.getElementById('materialItemsContainer').innerHTML = '';
                 document.getElementById('materialTotalAmount').textContent = 'Rp 0';
-                document.getElementById('freonSizeGroup').style.display = 'none';
+                addMaterialRow();
             } else {
                 materialPanel.classList.remove('show');
                 amountGroup.style.display = 'block';
@@ -2181,35 +2246,179 @@
         }
 
         // ==========================================
-        // MATERIAL FORM FUNCTIONS
+        // MULTIPLE MATERIAL FUNCTIONS
         // ==========================================
-        function updateMaterialOptions() {
-            const cat = document.getElementById('materialCategory').value;
+        function addMaterialRow() {
+            materialRowCount++;
+            const rowId = `material-row-${materialRowCount}`;
+            
+            const rowHTML = `
+                <div class="material-row" id="${rowId}">
+                    <div class="material-row-header">
+                        <span class="material-row-number">📦 Material #${materialRowCount}</span>
+                        ${materialRowCount > 1 ? `<button type="button" class="btn-remove-material" onclick="removeMaterialRow('${rowId}')">🗑️ Hapus</button>` : ''}
+                    </div>
+                    <div class="material-row-grid">
+                        <div class="form-group">
+                            <label>Jenis Material</label>
+                            <select class="form-control mat-category" onchange="updateMaterialRowOptions('${rowId}')">
+                                <option value="">Pilih Jenis</option>
+                                <option value="pipa">🔧 Pipa AC</option>
+                                <option value="kabel">⚡ Kabel</option>
+                                <option value="ducktape">📦 Ducktape</option>
+                                <option value="bracket">🔩 Bracket</option>
+                                <option value="freon">❄️ Freon</option>
+                                <option value="other">📋 Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipe</label>
+                            <select class="form-control mat-type">
+                                <option value="">Pilih jenis dulu</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Merk</label>
+                            <select class="form-control mat-merk">
+                                <option value="">Pilih jenis dulu</option>
+                            </select>
+                        </div>
+                        <div class="form-group freon-size-group" style="display: none;">
+                            <label>Ukuran (Kg)</label>
+                            <select class="form-control mat-freon-size">
+                                <option value="3">3 Kg</option>
+                                <option value="5">5 Kg</option>
+                                <option value="10">10 Kg</option>
+                                <option value="13.6">13.6 Kg</option>
+                                <option value="22.7">22.7 Kg</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" class="form-control mat-qty" placeholder="0" min="1" oninput="calculateAllMaterialTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Satuan</label>
+                            <input type="text" class="form-control mat-unit" placeholder="meter/pcs/roll" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Harga/Unit (Rp)</label>
+                            <input type="number" class="form-control mat-price" placeholder="0" oninput="calculateAllMaterialTotal()">
+                        </div>
+                    </div>
+                    <div class="material-row-subtotal">
+                        <span class="label">Subtotal:</span>
+                        <span class="amount mat-subtotal">Rp 0</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('materialItemsContainer').insertAdjacentHTML('beforeend', rowHTML);
+        }
+        
+        function removeMaterialRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
+                calculateAllMaterialTotal();
+                renumberMaterialRows();
+            }
+        }
+        
+        function renumberMaterialRows() {
+            const rows = document.querySelectorAll('.material-row');
+            rows.forEach((row, index) => {
+                const numberSpan = row.querySelector('.material-row-number');
+                if (numberSpan) {
+                    numberSpan.textContent = `📦 Material #${index + 1}`;
+                }
+                // Show/hide remove button based on if it's the only row
+                const removeBtn = row.querySelector('.btn-remove-material');
+                if (rows.length === 1 && removeBtn) {
+                    removeBtn.style.display = 'none';
+                } else if (removeBtn) {
+                    removeBtn.style.display = 'block';
+                }
+            });
+        }
+        
+        function updateMaterialRowOptions(rowId) {
+            const row = document.getElementById(rowId);
+            if (!row) return;
+            
+            const cat = row.querySelector('.mat-category').value;
             const cfg = MATERIAL_CONFIG[cat];
             
+            const typeSelect = row.querySelector('.mat-type');
+            const merkSelect = row.querySelector('.mat-merk');
+            const unitInput = row.querySelector('.mat-unit');
+            const freonGroup = row.querySelector('.freon-size-group');
+            
             if (!cfg) {
-                document.getElementById('materialType').innerHTML = '<option value="">Pilih jenis dulu</option>';
-                document.getElementById('materialMerk').innerHTML = '<option value="">Pilih jenis dulu</option>';
-                document.getElementById('materialUnit').value = '';
-                document.getElementById('freonSizeGroup').style.display = 'none';
+                typeSelect.innerHTML = '<option value="">Pilih jenis dulu</option>';
+                merkSelect.innerHTML = '<option value="">Pilih jenis dulu</option>';
+                unitInput.value = '';
+                freonGroup.style.display = 'none';
                 return;
             }
             
-            document.getElementById('materialType').innerHTML = '<option value="">Pilih</option>' + 
+            typeSelect.innerHTML = '<option value="">Pilih</option>' + 
                 cfg.types.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
-            document.getElementById('materialMerk').innerHTML = '<option value="">Pilih</option>' + 
+            merkSelect.innerHTML = '<option value="">Pilih</option>' + 
                 cfg.merks.map(m => `<option value="${m}">${m}</option>`).join('');
-            document.getElementById('materialUnit').value = cfg.defaultUnit;
-            document.getElementById('freonSizeGroup').style.display = cfg.hasSize ? 'block' : 'none';
+            unitInput.value = cfg.defaultUnit;
+            freonGroup.style.display = cfg.hasSize ? 'block' : 'none';
         }
-
-        function calculateMaterialTotal() {
-            const qty = parseInt(document.getElementById('materialQty').value) || 0;
-            const price = parseInt(document.getElementById('materialPricePerUnit').value) || 0;
-            const total = qty * price;
+        
+        function calculateAllMaterialTotal() {
+            let grandTotal = 0;
             
-            document.getElementById('materialTotalAmount').textContent = formatRupiah(total);
-            document.getElementById('expenseAmount').value = total;
+            document.querySelectorAll('.material-row').forEach(row => {
+                const qty = parseInt(row.querySelector('.mat-qty').value) || 0;
+                const price = parseInt(row.querySelector('.mat-price').value) || 0;
+                const subtotal = qty * price;
+                
+                row.querySelector('.mat-subtotal').textContent = formatRupiah(subtotal);
+                grandTotal += subtotal;
+            });
+            
+            document.getElementById('materialTotalAmount').textContent = formatRupiah(grandTotal);
+            document.getElementById('expenseAmount').value = grandTotal;
+        }
+        
+        function getAllMaterialsData() {
+            const materials = [];
+            
+            document.querySelectorAll('.material-row').forEach(row => {
+                const category = row.querySelector('.mat-category').value;
+                const type = row.querySelector('.mat-type').value;
+                const merk = row.querySelector('.mat-merk').value;
+                const qty = parseInt(row.querySelector('.mat-qty').value) || 0;
+                const price = parseInt(row.querySelector('.mat-price').value) || 0;
+                const unit = row.querySelector('.mat-unit').value;
+                const freonSize = row.querySelector('.mat-freon-size')?.value;
+                
+                if (category && type && merk && qty > 0 && price > 0) {
+                    const typeLabel = MATERIAL_CONFIG[category]?.types.find(t => t.value === type)?.label || type;
+                    const displayName = category === 'freon' ? 
+                        `${typeLabel} ${freonSize}Kg - ${merk}` : 
+                        `${typeLabel} - ${merk}`;
+                    
+                    materials.push({
+                        category,
+                        type,
+                        merk,
+                        qty,
+                        unit,
+                        pricePerUnit: price,
+                        freonSize: category === 'freon' ? freonSize : null,
+                        displayName,
+                        totalCost: qty * price
+                    });
+                }
+            });
+            
+            return materials;
         }
 
         // ==========================================
@@ -3354,43 +3563,28 @@
                 return;
             }
             
-            let amount, inventoryData = null;
+            let amount;
+            let materialsData = [];
             
             // Check if this is a material category
             const isMaterial = MATERIAL_EXPENSE_CATEGORIES.includes(category);
             
             if (isMaterial) {
-                const matCategory = document.getElementById('materialCategory').value;
-                const matType = document.getElementById('materialType').value;
-                const matMerk = document.getElementById('materialMerk').value;
-                const matQty = parseInt(document.getElementById('materialQty').value);
-                const matPrice = parseInt(document.getElementById('materialPricePerUnit').value);
-                const matUnit = document.getElementById('materialUnit').value;
-                const matFreonSize = document.getElementById('materialFreonSize').value;
+                // Get all materials from the form
+                materialsData = getAllMaterialsData();
                 
-                if (!matCategory || !matType || !matMerk || !matQty || !matPrice) {
-                    showMessage('Lengkapi semua detail material!', 'warning');
+                if (materialsData.length === 0) {
+                    showMessage('Lengkapi minimal satu material dengan data lengkap!', 'warning');
                     return;
                 }
                 
-                amount = matQty * matPrice;
+                // Calculate total amount from all materials
+                amount = materialsData.reduce((sum, m) => sum + m.totalCost, 0);
                 
-                // Create display name
-                const typeLabel = MATERIAL_CONFIG[matCategory]?.types.find(t => t.value === matType)?.label || matType;
-                const displayName = matCategory === 'freon' ? 
-                    `${typeLabel} ${matFreonSize}Kg - ${matMerk}` : 
-                    `${typeLabel} - ${matMerk}`;
-                
-                inventoryData = {
-                    category: matCategory,
-                    type: matType,
-                    merk: matMerk,
-                    qty: matQty,
-                    unit: matUnit,
-                    pricePerUnit: matPrice,
-                    freonSize: matCategory === 'freon' ? matFreonSize : null,
-                    displayName
-                };
+                if (amount <= 0) {
+                    showMessage('Total pembelian harus lebih dari 0!', 'warning');
+                    return;
+                }
             } else {
                 amount = document.getElementById('expenseAmount').value;
                 if (!amount) {
@@ -3402,15 +3596,58 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<div class="spinner"></div><span>Menyimpan...</span>';
             
-            const success = await addTransaction('expense', category, amount, description, date, inventoryData);
-            
-            if (success) {
+            try {
+                // Create transaction first
+                const transaction = {
+                    type: 'expense',
+                    category,
+                    amount: parseFloat(amount),
+                    description: description || '',
+                    date,
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Add materials info if exists
+                if (materialsData.length > 0) {
+                    transaction.isInventoryItem = true;
+                    transaction.materialsCount = materialsData.length;
+                    transaction.materials = materialsData.map(m => ({
+                        displayName: m.displayName,
+                        qty: m.qty,
+                        unit: m.unit,
+                        totalCost: m.totalCost
+                    }));
+                }
+                
+                const docRef = await db.collection('transactions').add(transaction);
+                console.log('✅ Transaction added');
+                
+                // Add each material to inventory
+                if (materialsData.length > 0) {
+                    for (const mat of materialsData) {
+                        await addToInventory(mat, docRef.id);
+                    }
+                    console.log(`✅ ${materialsData.length} materials added to inventory`);
+                }
+                
+                showMessage(`Transaksi berhasil! ${materialsData.length > 0 ? `(${materialsData.length} material ditambahkan ke inventory)` : ''}`, 'success');
+                
+                await loadTransactions();
+                await loadInventory();
+                
+                // Reset form
                 this.reset();
                 setTodayDate();
                 selectedExpenseCategory = '';
                 renderExpenseCategoryGrid();
                 document.getElementById('materialDetailPanel').classList.remove('show');
+                document.getElementById('materialItemsContainer').innerHTML = '';
+                materialRowCount = 0;
                 document.getElementById('expenseAmountGroup').style.display = 'block';
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showMessage('Gagal menyimpan: ' + error.message, 'error');
             }
             
             submitBtn.disabled = false;
