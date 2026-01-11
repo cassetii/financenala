@@ -930,7 +930,7 @@
             <div class="header-content">
                 <h1>💼 Nala Aircon - Finance & Inventory</h1>
                 <div class="header-right">
-                    <span class="version-badge">v3.1 - KPI Integration</span>
+                    <span class="version-badge">v3.2 - Fixed</span>
                     <div class="connection-status">
                         <div class="status-indicator status-loading" id="statusIndicator"></div>
                         <span id="statusText">Connecting...</span>
@@ -1161,12 +1161,15 @@
                 <!-- Integration Info -->
                 <div class="integration-info">
                     <h4>🔗 Integrasi dengan KPI Nala</h4>
-                    <p>Inventory ini terintegrasi dengan aplikasi <strong>KPI Nala</strong>:</p>
+                    <p>Data inventory disimpan di <strong>Firebase financenala</strong> dan bisa diakses oleh KPI Nala:</p>
                     <ul>
                         <li>📥 <strong>Stock MASUK</strong> → Dicatat dari sini (pembelian material)</li>
-                        <li>📤 <strong>Stock KELUAR</strong> → Dicatat dari KPI Nala (saat teknisi mengerjakan job)</li>
+                        <li>📤 <strong>Stock KELUAR</strong> → Akan dicatat dari KPI Nala (saat teknisi mengerjakan job)</li>
                         <li>📊 <strong>Riwayat Pergerakan</strong> → Gabungan dari kedua aplikasi</li>
                     </ul>
+                    <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
+                        📁 Collections: <code>inventory</code>, <code>inventory_movements</code> di Firebase financenala
+                    </p>
                 </div>
                 
                 <div class="inventory-stats">
@@ -1509,8 +1512,8 @@
         // ==========================================
         // GLOBAL VARIABLES
         // ==========================================
-        let financeApp, financeDb;  // Finance Nala (transaksi)
-        let kpiApp, kpiDb;          // KPI Nala (inventory shared)
+        let financeApp, financeDb;  // Finance Nala (transaksi + inventory)
+        let kpiApp, kpiDb;          // KPI Nala (teknisi, untuk referensi)
         let transactions = [];
         let inventory = [];
         let inventoryMovements = [];
@@ -1595,10 +1598,10 @@
             }
         }
 
-        // Load inventory dari KPI Nala (SHARED)
+        // Load inventory dari Finance Nala (sama dengan transaksi)
         async function loadInventory() {
             try {
-                const snapshot = await kpiDb.collection('inventory').get();
+                const snapshot = await financeDb.collection('inventory').get();
                 inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderInventoryTable();
                 updateInventoryStats();
@@ -1607,10 +1610,10 @@
             }
         }
 
-        // Load movements dari KPI Nala (SHARED)
+        // Load movements dari Finance Nala
         async function loadInventoryMovements() {
             try {
-                const snapshot = await kpiDb.collection('inventory_movements').orderBy('date', 'desc').get();
+                const snapshot = await financeDb.collection('inventory_movements').orderBy('date', 'desc').get();
                 inventoryMovements = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 filteredMovements = [...inventoryMovements];
                 renderMovementTable();
@@ -1913,11 +1916,11 @@
         }
 
         // ==========================================
-        // INVENTORY FUNCTIONS (ke KPI Nala)
+        // INVENTORY FUNCTIONS (di Finance Nala)
         // ==========================================
         async function addInventoryMovement(data) {
             try {
-                await kpiDb.collection('inventory_movements').add({
+                await financeDb.collection('inventory_movements').add({
                     ...data,
                     source: 'finance_nala', // menandakan dari app mana
                     createdAt: new Date().toISOString()
@@ -1933,9 +1936,9 @@
             try {
                 const { category, type, merk, qty, unit, pricePerUnit, freonSize, displayName } = mat;
                 
-                // Check existing di KPI Nala
+                // Check existing di Finance Nala
                 let existingItem = null;
-                const query = await kpiDb.collection('inventory')
+                const query = await financeDb.collection('inventory')
                     .where('category', '==', category)
                     .where('type', '==', type)
                     .where('merk', '==', merk)
@@ -1959,7 +1962,7 @@
                         ((existingItem.avgPrice || 0) * (existingItem.totalQtyIn || 0) + pricePerUnit * qty) / newTotalQtyIn
                     );
                     
-                    await kpiDb.collection('inventory').doc(existingItem.id).update({
+                    await financeDb.collection('inventory').doc(existingItem.id).update({
                         totalQtyIn: newTotalQtyIn,
                         currentStock,
                         avgPrice: newAvgPrice,
@@ -1968,7 +1971,7 @@
                     });
                     inventoryId = existingItem.id;
                 } else {
-                    const docRef = await kpiDb.collection('inventory').add({
+                    const docRef = await financeDb.collection('inventory').add({
                         category,
                         type,
                         merk,
@@ -1987,7 +1990,7 @@
                     inventoryId = docRef.id;
                 }
                 
-                // Record movement ke KPI Nala
+                // Record movement di Finance Nala
                 await addInventoryMovement({
                     type: 'in',
                     inventoryId,
@@ -2196,7 +2199,7 @@
                     category, type, merk, qty, unit, pricePerUnit: price, freonSize, displayName, skipInventory: false
                 }, 'manual-add', date);
                 
-                showMessage('Stock ditambahkan ke KPI Nala!', 'success');
+                showMessage('Stock ditambahkan!', 'success');
                 closeAddInventoryModal();
                 await loadInventory();
                 await loadInventoryMovements();
@@ -2616,7 +2619,7 @@
         async function deleteInventoryItem(id) {
             if (!confirm('Hapus item ini dari inventory?')) return;
             try {
-                await kpiDb.collection('inventory').doc(id).delete();
+                await financeDb.collection('inventory').doc(id).delete();
                 showMessage('Item dihapus!', 'success');
                 await loadInventory();
                 updateAllStats();
@@ -2879,7 +2882,8 @@
         // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 Nala Finance v3.1 Starting...');
-            console.log('📦 Inventory akan disimpan ke KPI Nala untuk integrasi');
+            console.log('📦 Inventory disimpan di Firebase financenala');
+            console.log('🔗 KPI Nala bisa akses untuk stock keluar');
             const ok = await initializeFirebase();
             if (ok) {
                 setTodayDate();
