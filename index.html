@@ -455,12 +455,16 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            align-items: center;
         }
         .filter-row select, .filter-row input {
             padding: 8px 12px;
             border: 1px solid var(--gray-200);
             border-radius: 8px;
             font-size: 13px;
+        }
+        .filter-row input[type="date"] {
+            min-width: 140px;
         }
 
         /* Modal */
@@ -550,7 +554,7 @@
             <div class="header-content">
                 <h1>💼 Nala Aircon Finance</h1>
                 <div class="header-right">
-                    <span class="version-badge">v4.2</span>
+                    <span class="version-badge">v4.3</span>
                     <div class="connection-status">
                         <div class="status-indicator status-loading" id="statusIndicator"></div>
                         <span id="statusText">Connecting...</span>
@@ -734,6 +738,13 @@
             <!-- History -->
             <div id="history" class="tab-content">
                 <div class="filter-section">
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-sm" onclick="setQuickFilter('today')" style="background: var(--gray-100); color: var(--gray-700); padding: 6px 12px;">Hari Ini</button>
+                        <button class="btn btn-sm" onclick="setQuickFilter('week')" style="background: var(--gray-100); color: var(--gray-700); padding: 6px 12px;">Minggu Ini</button>
+                        <button class="btn btn-sm" onclick="setQuickFilter('month')" style="background: var(--gray-100); color: var(--gray-700); padding: 6px 12px;">Bulan Ini</button>
+                        <button class="btn btn-sm" onclick="setQuickFilter('lastMonth')" style="background: var(--gray-100); color: var(--gray-700); padding: 6px 12px;">Bulan Lalu</button>
+                        <button class="btn btn-sm" onclick="setQuickFilter('year')" style="background: var(--gray-100); color: var(--gray-700); padding: 6px 12px;">Tahun Ini</button>
+                    </div>
                     <div class="filter-row">
                         <select id="filterType" onchange="applyFilters()">
                             <option value="all">Semua Tipe</option>
@@ -743,9 +754,26 @@
                         <select id="filterCategory" onchange="applyFilters()">
                             <option value="all">Semua Kategori</option>
                         </select>
-                        <input type="month" id="filterMonth" onchange="applyFilters()">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 12px; color: var(--gray-600);">Dari:</span>
+                            <input type="date" id="filterDateStart" onchange="applyFilters()">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 12px; color: var(--gray-600);">Sampai:</span>
+                            <input type="date" id="filterDateEnd" onchange="applyFilters()">
+                        </div>
                         <button class="btn btn-primary btn-sm" onclick="resetFilters()">🔄 Reset</button>
                         <button class="btn btn-success btn-sm" onclick="exportExcel()">📥 Export</button>
+                    </div>
+                </div>
+                <div id="filterSummary" style="background: #f0f9ff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <span style="font-size: 13px; color: var(--gray-700);" id="filterInfo"></span>
+                        <div style="display: flex; gap: 15px;">
+                            <span style="color: var(--success-green); font-weight: 600;" id="filterIncome">+Rp 0</span>
+                            <span style="color: var(--danger-red); font-weight: 600;" id="filterExpense">-Rp 0</span>
+                            <span style="color: var(--primary-blue); font-weight: 700;" id="filterBalance">=Rp 0</span>
+                        </div>
                     </div>
                 </div>
                 <div id="txList"></div>
@@ -2026,11 +2054,46 @@
             
             const type = document.getElementById('filterType').value;
             const cat = document.getElementById('filterCategory').value;
-            const month = document.getElementById('filterMonth').value;
+            const dateStart = document.getElementById('filterDateStart').value;
+            const dateEnd = document.getElementById('filterDateEnd').value;
             
             if (type !== 'all') filteredTx = filteredTx.filter(t => t.type === type);
             if (cat !== 'all') filteredTx = filteredTx.filter(t => t.category === cat);
-            if (month) filteredTx = filteredTx.filter(t => t.date?.startsWith(month));
+            if (dateStart) filteredTx = filteredTx.filter(t => t.date >= dateStart);
+            if (dateEnd) filteredTx = filteredTx.filter(t => t.date <= dateEnd);
+            
+            // Show filter summary if any filter is active
+            const summaryDiv = document.getElementById('filterSummary');
+            const hasFilter = type !== 'all' || cat !== 'all' || dateStart || dateEnd;
+            
+            if (hasFilter) {
+                summaryDiv.style.display = 'block';
+                
+                // Build filter info text
+                let filterParts = [];
+                if (type !== 'all') filterParts.push(type === 'income' ? 'Pemasukan' : 'Pengeluaran');
+                if (cat !== 'all') filterParts.push(cat);
+                if (dateStart && dateEnd) {
+                    filterParts.push(`${formatDate(dateStart)} - ${formatDate(dateEnd)}`);
+                } else if (dateStart) {
+                    filterParts.push(`Dari ${formatDate(dateStart)}`);
+                } else if (dateEnd) {
+                    filterParts.push(`Sampai ${formatDate(dateEnd)}`);
+                }
+                
+                document.getElementById('filterInfo').textContent = 
+                    `📊 ${filteredTx.length} transaksi | ${filterParts.join(' • ')}`;
+                
+                // Calculate totals
+                const income = filteredTx.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
+                const expense = filteredTx.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
+                
+                document.getElementById('filterIncome').textContent = '+' + formatRp(income);
+                document.getElementById('filterExpense').textContent = '-' + formatRp(expense);
+                document.getElementById('filterBalance').textContent = '=' + formatRp(income - expense);
+            } else {
+                summaryDiv.style.display = 'none';
+            }
             
             renderTransactions();
         }
@@ -2038,9 +2101,49 @@
         function resetFilters() {
             document.getElementById('filterType').value = 'all';
             document.getElementById('filterCategory').value = 'all';
-            document.getElementById('filterMonth').value = '';
+            document.getElementById('filterDateStart').value = '';
+            document.getElementById('filterDateEnd').value = '';
+            document.getElementById('filterSummary').style.display = 'none';
             filteredTx = [...transactions];
             renderTransactions();
+        }
+
+        function setQuickFilter(preset) {
+            const now = new Date();
+            let startDate, endDate;
+            
+            switch (preset) {
+                case 'today':
+                    startDate = endDate = now.toISOString().split('T')[0];
+                    break;
+                case 'week':
+                    // Start of week (Monday)
+                    const dayOfWeek = now.getDay();
+                    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    const monday = new Date(now);
+                    monday.setDate(now.getDate() - diffToMonday);
+                    startDate = monday.toISOString().split('T')[0];
+                    endDate = now.toISOString().split('T')[0];
+                    break;
+                case 'month':
+                    startDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+                    endDate = now.toISOString().split('T')[0];
+                    break;
+                case 'lastMonth':
+                    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                    const lastDayPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                    startDate = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}-01`;
+                    endDate = `${lastDayPrevMonth.getFullYear()}-${String(lastDayPrevMonth.getMonth() + 1).padStart(2, '0')}-${String(lastDayPrevMonth.getDate()).padStart(2, '0')}`;
+                    break;
+                case 'year':
+                    startDate = `${now.getFullYear()}-01-01`;
+                    endDate = now.toISOString().split('T')[0];
+                    break;
+            }
+            
+            document.getElementById('filterDateStart').value = startDate;
+            document.getElementById('filterDateEnd').value = endDate;
+            applyFilters();
         }
 
         // ==========================================
@@ -2143,10 +2246,33 @@
                 'Keterangan': t.description || '-'
             }));
             
+            // Add summary row
+            const totalIncome = filteredTx.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
+            const totalExpense = filteredTx.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
+            data.push({});
+            data.push({ 'No': '', 'Tanggal': 'TOTAL', 'Tipe': '', 'Kategori': 'Pemasukan', 'Jumlah': totalIncome, 'Keterangan': '' });
+            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'Pengeluaran', 'Jumlah': totalExpense, 'Keterangan': '' });
+            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'Saldo', 'Jumlah': totalIncome - totalExpense, 'Keterangan': '' });
+            
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet(data);
             XLSX.utils.book_append_sheet(wb, ws, 'Transaksi');
-            XLSX.writeFile(wb, `Nala_Finance_${new Date().toISOString().split('T')[0]}.xlsx`);
+            
+            // Generate filename with date range if filtered
+            const dateStart = document.getElementById('filterDateStart').value;
+            const dateEnd = document.getElementById('filterDateEnd').value;
+            let filename = 'Nala_Finance';
+            if (dateStart && dateEnd) {
+                filename += `_${dateStart}_to_${dateEnd}`;
+            } else if (dateStart) {
+                filename += `_from_${dateStart}`;
+            } else if (dateEnd) {
+                filename += `_until_${dateEnd}`;
+            } else {
+                filename += `_${new Date().toISOString().split('T')[0]}`;
+            }
+            
+            XLSX.writeFile(wb, `${filename}.xlsx`);
             showMessage('Export berhasil!', 'success');
         }
 
@@ -2198,6 +2324,7 @@
         window.calcMaterialTotal = calcMaterialTotal;
         window.applyFilters = applyFilters;
         window.resetFilters = resetFilters;
+        window.setQuickFilter = setQuickFilter;
         window.exportExcel = exportExcel;
         window.exportInventory = exportInventory;
         window.openAddStockModal = openAddStockModal;
