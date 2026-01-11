@@ -550,7 +550,7 @@
             <div class="header-content">
                 <h1>💼 Nala Aircon Finance</h1>
                 <div class="header-right">
-                    <span class="version-badge">v4.1</span>
+                    <span class="version-badge">v4.2</span>
                     <div class="connection-status">
                         <div class="status-indicator status-loading" id="statusIndicator"></div>
                         <span id="statusText">Connecting...</span>
@@ -779,51 +779,27 @@
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                     <button class="btn btn-purple" onclick="openAddStockModal()" style="flex: 1;">➕ Tambah Stock</button>
                     <button class="btn btn-success" onclick="exportInventory()" style="flex: 1;">📥 Export</button>
+                    <button class="btn" onclick="syncMovementHistory()" style="flex: 1; background: var(--warning-orange); color: white;" id="syncBtn">🔄 Sinkron Riwayat</button>
                 </div>
 
-                <!-- Sub Tabs -->
-                <div class="sub-tabs">
-                    <button class="sub-tab active" onclick="showInvSubTab('stock')">📦 Stock Saat Ini</button>
-                    <button class="sub-tab" onclick="showInvSubTab('allMovements')">📊 Semua Riwayat</button>
-                </div>
-
-                <!-- Stock Table -->
-                <div id="invSubStock" class="sub-content active">
-                    <p style="font-size: 12px; color: var(--gray-500); margin-bottom: 15px;">💡 Klik baris untuk melihat riwayat pergerakan material</p>
-                    <div class="inv-table-container">
-                        <table class="inv-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 30px;"></th>
-                                    <th>Material</th>
-                                    <th>Merk</th>
-                                    <th>Masuk</th>
-                                    <th>Pakai</th>
-                                    <th>Sisa</th>
-                                    <th>Harga</th>
-                                    <th>Nilai</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="invTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- All Movements -->
-                <div id="invSubAllMovements" class="sub-content">
-                    <div class="filter-section" style="margin-bottom: 15px;">
-                        <div class="filter-row">
-                            <select id="allMoveFilterType" onchange="filterAllMovements()">
-                                <option value="all">Semua Tipe</option>
-                                <option value="in">📥 Masuk</option>
-                                <option value="out">📤 Keluar</option>
-                            </select>
-                            <input type="month" id="allMoveFilterMonth" onchange="filterAllMovements()">
-                            <button class="btn btn-primary btn-sm" onclick="resetAllMoveFilters()">🔄 Reset</button>
-                        </div>
-                    </div>
-                    <div id="allMovementsList"></div>
+                <p style="font-size: 12px; color: var(--gray-500); margin-bottom: 15px;">💡 Klik baris untuk melihat riwayat pergerakan material</p>
+                <div class="inv-table-container">
+                    <table class="inv-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 30px;"></th>
+                                <th>Material</th>
+                                <th>Merk</th>
+                                <th>Masuk</th>
+                                <th>Pakai</th>
+                                <th>Sisa</th>
+                                <th>Harga</th>
+                                <th>Nilai</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invTableBody"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1732,6 +1708,142 @@
         // ==========================================
         // INVENTORY FUNCTIONS
         // ==========================================
+        
+        // Sync movement history from existing transactions
+        async function syncMovementHistory() {
+            const btn = document.getElementById('syncBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Sinkronisasi...';
+            
+            try {
+                // Get all transactions with materials
+                const txWithMaterials = transactions.filter(t => t.materials && t.materials.length > 0);
+                console.log('📋 Transactions with materials:', txWithMaterials.length);
+                
+                if (txWithMaterials.length === 0) {
+                    showMessage('Tidak ada transaksi material untuk disinkronkan', 'warning');
+                    btn.disabled = false;
+                    btn.innerHTML = '🔄 Sinkron Riwayat';
+                    return;
+                }
+                
+                let syncCount = 0;
+                
+                for (const tx of txWithMaterials) {
+                    for (const mat of tx.materials) {
+                        // Find matching inventory item
+                        const invItem = inventory.find(inv => 
+                            inv.displayName === mat.displayName ||
+                            (inv.type === mat.type && inv.merk === mat.merk)
+                        );
+                        
+                        if (invItem) {
+                            // Check if movement already exists
+                            const existingMove = movements.find(m => 
+                                m.materialName === mat.displayName && 
+                                m.date === tx.date &&
+                                m.qty === mat.qty
+                            );
+                            
+                            if (!existingMove) {
+                                // Create movement record
+                                await db.collection('inventory_movements').add({
+                                    type: 'in',
+                                    inventoryId: invItem.id,
+                                    materialName: mat.displayName,
+                                    qty: mat.qty,
+                                    unit: mat.unit,
+                                    pricePerUnit: mat.price || Math.round(mat.total / mat.qty) || 0,
+                                    totalValue: mat.total || 0,
+                                    date: tx.date,
+                                    technician: '-',
+                                    jobType: 'Pembelian',
+                                    customer: '-',
+                                    note: `Sync dari ${tx.category}`,
+                                    source: 'finance_nala',
+                                    transactionId: tx.id,
+                                    createdAt: new Date().toISOString()
+                                });
+                                syncCount++;
+                                console.log('✅ Synced:', mat.displayName, tx.date);
+                            }
+                        }
+                    }
+                }
+                
+                // Also create initial stock movements for items without any movement
+                for (const inv of inventory) {
+                    const hasMovement = movements.some(m => 
+                        m.inventoryId === inv.id || 
+                        m.materialName === inv.displayName
+                    );
+                    
+                    if (!hasMovement && inv.totalQtyIn > 0) {
+                        await db.collection('inventory_movements').add({
+                            type: 'in',
+                            inventoryId: inv.id,
+                            materialName: inv.displayName,
+                            qty: inv.totalQtyIn,
+                            unit: inv.unit,
+                            pricePerUnit: inv.avgPrice || 0,
+                            totalValue: inv.totalValue || 0,
+                            date: inv.lastUpdated || new Date().toISOString().split('T')[0],
+                            technician: '-',
+                            jobType: 'Stock Awal',
+                            customer: '-',
+                            note: 'Sinkronisasi stock awal',
+                            source: 'finance_nala',
+                            createdAt: new Date().toISOString()
+                        });
+                        syncCount++;
+                        console.log('✅ Initial stock synced:', inv.displayName);
+                    }
+                    
+                    // If there's usage (totalQtyOut > 0), create out movement
+                    if (inv.totalQtyOut > 0) {
+                        const hasOutMovement = movements.some(m => 
+                            (m.inventoryId === inv.id || m.materialName === inv.displayName) && 
+                            m.type === 'out'
+                        );
+                        
+                        if (!hasOutMovement) {
+                            await db.collection('inventory_movements').add({
+                                type: 'out',
+                                inventoryId: inv.id,
+                                materialName: inv.displayName,
+                                qty: inv.totalQtyOut,
+                                unit: inv.unit,
+                                pricePerUnit: inv.avgPrice || 0,
+                                totalValue: (inv.totalQtyOut || 0) * (inv.avgPrice || 0),
+                                date: inv.lastUpdated || new Date().toISOString().split('T')[0],
+                                technician: '-',
+                                jobType: 'Pemakaian',
+                                customer: '-',
+                                note: 'Sinkronisasi pemakaian',
+                                source: 'finance_nala',
+                                createdAt: new Date().toISOString()
+                            });
+                            syncCount++;
+                            console.log('✅ Usage synced:', inv.displayName, inv.totalQtyOut);
+                        }
+                    }
+                }
+                
+                showMessage(`Sinkronisasi selesai! ${syncCount} riwayat ditambahkan`, 'success');
+                
+                // Reload movements
+                await loadMovements();
+                renderInventory();
+                
+            } catch (err) {
+                console.error('Sync error:', err);
+                showMessage('Gagal sinkronisasi: ' + err.message, 'error');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '🔄 Sinkron Riwayat';
+        }
+        
         async function addToInventory(mat, txId, date, note = '') {
             const { category, type, merk, size, displayName, qty, unit, price } = mat;
             console.log('📦 Adding to inventory:', displayName, qty, unit);
@@ -1901,83 +2013,6 @@
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(name).classList.add('active');
             event.target.classList.add('active');
-            
-            // If inventory tab, render all movements
-            if (name === 'inventory') {
-                renderAllMovements();
-            }
-        }
-
-        function showInvSubTab(name) {
-            document.querySelectorAll('#inventory .sub-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('#inventory .sub-tab').forEach(t => t.classList.remove('active'));
-            
-            // Map tab name to element ID
-            const idMap = {
-                'stock': 'invSubStock',
-                'allMovements': 'invSubAllMovements'
-            };
-            
-            document.getElementById(idMap[name]).classList.add('active');
-            event.target.classList.add('active');
-            
-            if (name === 'allMovements') {
-                renderAllMovements();
-            }
-        }
-
-        function renderAllMovements(typeFilter = 'all', monthFilter = '') {
-            const list = document.getElementById('allMovementsList');
-            
-            let filtered = [...movements];
-            
-            if (typeFilter !== 'all') {
-                filtered = filtered.filter(m => m.type === typeFilter);
-            }
-            if (monthFilter) {
-                filtered = filtered.filter(m => m.date?.startsWith(monthFilter));
-            }
-            
-            // Sort by date desc
-            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            if (filtered.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📊</div>
-                        <h3>Belum ada riwayat pergerakan</h3>
-                        <p style="margin-top: 10px; font-size: 13px;">Riwayat akan muncul setelah ada pembelian material atau pemakaian dari KPI Nala</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            list.innerHTML = filtered.map(m => `
-                <div class="movement-item ${m.type || 'in'}" style="margin-bottom: 10px;">
-                    <div class="movement-info">
-                        <div class="date">📅 ${formatDate(m.date)}</div>
-                        <div class="detail" style="font-weight: 600;">${m.materialName || '-'}</div>
-                        <div class="meta">${m.type === 'in' ? '📥 Masuk' : m.type === 'out' ? '📤 Keluar' : '📥'} - ${m.jobType || m.note || 'Pembelian'}</div>
-                        ${m.technician && m.technician !== '-' ? `<div class="meta">👷 ${m.technician} ${m.customer && m.customer !== '-' ? '• ' + m.customer : ''}</div>` : ''}
-                    </div>
-                    <div class="movement-qty">
-                        <div class="qty ${m.type || 'in'}">${m.type === 'out' ? '-' : '+'}${m.qty}</div>
-                        <div class="unit">${m.unit || ''}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterAllMovements() {
-            const type = document.getElementById('allMoveFilterType').value;
-            const month = document.getElementById('allMoveFilterMonth').value;
-            renderAllMovements(type, month);
-        }
-
-        function resetAllMoveFilters() {
-            document.getElementById('allMoveFilterType').value = 'all';
-            document.getElementById('allMoveFilterMonth').value = '';
-            renderAllMovements();
         }
 
         function populateFilterCategories() {
@@ -2155,7 +2190,6 @@
         // GLOBAL
         // ==========================================
         window.showTab = showTab;
-        window.showInvSubTab = showInvSubTab;
         window.selectIncomeCategory = selectIncomeCategory;
         window.selectExpenseCategory = selectExpenseCategory;
         window.addMaterialItem = addMaterialItem;
@@ -2176,8 +2210,7 @@
         window.toggleDrillDown = toggleDrillDown;
         window.filterMovements = filterMovements;
         window.filterMovementMonth = filterMovementMonth;
-        window.filterAllMovements = filterAllMovements;
-        window.resetAllMoveFilters = resetAllMoveFilters;
+        window.syncMovementHistory = syncMovementHistory;
 
         window.addEventListener('click', e => {
             if (e.target.classList.contains('modal')) {
