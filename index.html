@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nala Aircon - Finance & Inventory Dashboard v2</title>
+    <title>Nala Aircon - Finance & Inventory Dashboard v3</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -182,6 +182,8 @@
         }
         .card-header.purple { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); }
         .card-header.red { background: linear-gradient(135deg, var(--danger-red) 0%, var(--danger-red-dark) 100%); }
+        .card-header.green { background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%); }
+        .card-header.orange { background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%); }
         .card-header h3 { font-size: 1.4em; font-weight: 700; }
         .card-header .icon { font-size: 2.5em; margin-bottom: 10px; display: block; }
         .card-body { padding: 30px; }
@@ -475,6 +477,11 @@
             color: white;
         }
         .btn-purple:hover { box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3); transform: translateY(-2px); }
+        .btn-orange {
+            background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%);
+            color: white;
+        }
+        .btn-orange:hover { box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3); transform: translateY(-2px); }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
         /* Transaction Items */
@@ -642,6 +649,37 @@
         .inventory-stat-card.ok .value { color: var(--success-green); }
         .inventory-stat-card.low .value { color: var(--warning-orange); }
         .inventory-stat-card.out .value { color: var(--danger-red); }
+        
+        /* Inventory Sub Tabs */
+        .inventory-sub-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: var(--gray-100);
+            padding: 6px;
+            border-radius: 12px;
+        }
+        .inventory-sub-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-600);
+            transition: all 0.3s ease;
+        }
+        .inventory-sub-tab.active {
+            background: white;
+            color: var(--purple);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .inventory-sub-content { display: none; }
+        .inventory-sub-content.active { display: block; animation: fadeIn 0.3s ease-out; }
+        
         .inventory-table-container {
             background: white;
             border-radius: 15px;
@@ -658,12 +696,31 @@
             font-weight: 700;
             text-transform: uppercase;
         }
+        .inventory-table th.green-header {
+            background: linear-gradient(135deg, var(--success-green) 0%, var(--success-green-dark) 100%);
+        }
+        .inventory-table th.orange-header {
+            background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%);
+        }
         .inventory-table td { padding: 15px; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
         .inventory-table tr:hover { background: var(--gray-50); }
         .stock-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
         .stock-badge.ok { background: #d1fae5; color: #059669; }
         .stock-badge.low { background: #fef3c7; color: #d97706; }
         .stock-badge.out { background: #fee2e2; color: #dc2626; }
+        
+        /* Movement Badge */
+        .movement-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .movement-badge.in { background: #d1fae5; color: #059669; }
+        .movement-badge.out { background: #fee2e2; color: #dc2626; }
 
         /* Calendar */
         .calendar-nav {
@@ -735,13 +792,13 @@
         .modal.show { display: block; animation: fadeIn 0.3s ease-out; }
         .modal-content {
             background: white;
-            margin: 80px auto;
+            margin: 50px auto;
             border-radius: 20px;
             width: 90%;
-            max-width: 600px;
+            max-width: 700px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             animation: slideUp 0.3s ease-out;
-            max-height: 85vh;
+            max-height: 90vh;
             overflow-y: auto;
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
@@ -755,6 +812,7 @@
         }
         .modal-header.purple { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); }
         .modal-header.red { background: linear-gradient(135deg, var(--danger-red) 0%, var(--danger-red-dark) 100%); }
+        .modal-header.orange { background: linear-gradient(135deg, var(--warning-orange) 0%, #d97706 100%); }
         .modal-header h3 { font-size: 1.5em; font-weight: 700; }
         .close {
             position: absolute;
@@ -806,15 +864,12 @@
         .empty-state .icon { font-size: 5em; margin-bottom: 20px; }
         .empty-state h3 { color: var(--gray-600); margin-bottom: 10px; font-size: 1.3em; }
 
-        /* Loading State */
-        .loading-state { text-align: center; padding: 40px; }
-        .loading-state .spinner {
-            width: 40px;
-            height: 40px;
-            border-width: 4px;
-            border-color: var(--primary-blue);
-            border-top-color: transparent;
-            margin: 0 auto 20px;
+        /* Action Buttons Grid */
+        .action-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         /* Responsive */
@@ -823,6 +878,7 @@
             .balance-main { grid-column: 1 / -1; border-right: none; border-bottom: 2px solid var(--gray-200); padding-bottom: 20px; }
             .category-grid { grid-template-columns: repeat(3, 1fr); }
             .inventory-stats { grid-template-columns: repeat(2, 1fr); }
+            .action-buttons-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 768px) {
             .main-content { padding: 20px; }
@@ -831,6 +887,7 @@
             .filter-controls { grid-template-columns: 1fr; }
             .material-row-grid { grid-template-columns: 1fr 1fr; }
             .add-material-buttons { flex-direction: column; }
+            .action-buttons-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -841,7 +898,7 @@
             <div class="header-content">
                 <h1>💼 Nala Aircon - Finance & Inventory</h1>
                 <div class="header-right">
-                    <span class="version-badge">v2.0 - Custom Material</span>
+                    <span class="version-badge">v3.0 - Full Tracking</span>
                     <div class="connection-status">
                         <div class="status-indicator status-loading" id="statusIndicator"></div>
                         <span id="statusText">Connecting...</span>
@@ -1090,29 +1147,82 @@
                         <div class="label">Stock Habis</div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 15px; margin-bottom: 25px;">
-                    <button onclick="openAddInventoryModal()" class="btn btn-purple" style="flex: 1;">➕ Tambah Stock Manual</button>
-                    <button onclick="exportInventory()" class="btn btn-success" style="flex: 1;">📥 Export Inventory</button>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons-grid">
+                    <button onclick="openAddInventoryModal()" class="btn btn-purple">➕ Tambah Stock</button>
+                    <button onclick="openUseInventoryModal()" class="btn btn-orange">📤 Pakai Material</button>
+                    <button onclick="exportInventory()" class="btn btn-success">📥 Export</button>
                 </div>
-                <div class="inventory-table-container">
-                    <table class="inventory-table">
-                        <thead>
-                            <tr>
-                                <th>Material</th>
-                                <th>Merk</th>
-                                <th>Masuk</th>
-                                <th>Pakai</th>
-                                <th>Sisa</th>
-                                <th>Harga</th>
-                                <th>Nilai</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryTableBody">
-                            <tr><td colspan="9" class="empty-state"><div class="icon">📦</div><h3>Belum ada inventory</h3></td></tr>
-                        </tbody>
-                    </table>
+                
+                <!-- Inventory Sub Tabs -->
+                <div class="inventory-sub-tabs">
+                    <button class="inventory-sub-tab active" onclick="showInventorySubTab('stock')">📦 Stock Saat Ini</button>
+                    <button class="inventory-sub-tab" onclick="showInventorySubTab('movements')">📊 Riwayat Pergerakan</button>
+                </div>
+                
+                <!-- Stock Table -->
+                <div id="invSubStock" class="inventory-sub-content active">
+                    <div class="inventory-table-container">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Merk</th>
+                                    <th>Masuk</th>
+                                    <th>Pakai</th>
+                                    <th>Sisa</th>
+                                    <th>Harga</th>
+                                    <th>Nilai</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <tr><td colspan="9" class="empty-state"><div class="icon">📦</div><h3>Belum ada inventory</h3></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Movement History -->
+                <div id="invSubMovements" class="inventory-sub-content">
+                    <div class="filter-section" style="margin-bottom: 20px;">
+                        <div class="filter-controls" style="grid-template-columns: repeat(5, 1fr);">
+                            <select id="movementFilterType" class="form-control" onchange="applyMovementFilters()">
+                                <option value="all">Semua Tipe</option>
+                                <option value="in">📥 Masuk</option>
+                                <option value="out">📤 Keluar</option>
+                            </select>
+                            <select id="movementFilterMaterial" class="form-control" onchange="applyMovementFilters()">
+                                <option value="all">Semua Material</option>
+                            </select>
+                            <select id="movementFilterTechnician" class="form-control" onchange="applyMovementFilters()">
+                                <option value="all">Semua Teknisi</option>
+                            </select>
+                            <input type="date" id="movementFilterDate" class="form-control" onchange="applyMovementFilters()">
+                            <button onclick="resetMovementFilters()" class="btn btn-primary">🔄 Reset</button>
+                        </div>
+                    </div>
+                    <div class="inventory-table-container">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th class="green-header">Tanggal</th>
+                                    <th class="green-header">Tipe</th>
+                                    <th class="green-header">Material</th>
+                                    <th class="green-header">Qty</th>
+                                    <th class="green-header">Teknisi</th>
+                                    <th class="green-header">Pekerjaan</th>
+                                    <th class="green-header">Customer</th>
+                                    <th class="green-header">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="movementTableBody">
+                                <tr><td colspan="8" class="empty-state"><div class="icon">📊</div><h3>Belum ada riwayat pergerakan</h3></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1179,10 +1289,14 @@
         <div class="modal-content">
             <div class="modal-header purple">
                 <span class="close" onclick="closeAddInventoryModal()">&times;</span>
-                <h3>📦 Tambah Stock Manual</h3>
+                <h3>📥 Tambah Stock Material</h3>
             </div>
             <div class="modal-body">
                 <form id="addInventoryForm">
+                    <div class="form-group">
+                        <label>📅 Tanggal</label>
+                        <input type="date" id="invAddDate" class="form-control" required>
+                    </div>
                     <div class="form-group">
                         <label>Jenis Material</label>
                         <select id="invCategory" class="form-control" onchange="updateInvMaterialOptions()" required>
@@ -1226,7 +1340,77 @@
                         <label>Harga/Unit (Rp)</label>
                         <input type="number" id="invPrice" class="form-control" placeholder="0" required>
                     </div>
-                    <button type="submit" class="btn btn-purple">✅ Simpan</button>
+                    <div class="form-group">
+                        <label>📝 Keterangan (Opsional)</label>
+                        <input type="text" id="invAddNote" class="form-control" placeholder="Supplier, No. Invoice, dll...">
+                    </div>
+                    <button type="submit" class="btn btn-purple">✅ Simpan Stock</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- USE INVENTORY MODAL -->
+    <div id="useInventoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header orange">
+                <span class="close" onclick="closeUseInventoryModal()">&times;</span>
+                <h3>📤 Pakai Material dari Stock</h3>
+            </div>
+            <div class="modal-body">
+                <form id="useInventoryForm">
+                    <div class="form-group">
+                        <label>📅 Tanggal Pemakaian</label>
+                        <input type="date" id="useDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📦 Pilih Material</label>
+                        <select id="useMaterial" class="form-control" required onchange="updateUseMaxQty()">
+                            <option value="">-- Pilih Material --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock Tersedia: <span id="useAvailableStock" style="font-weight: 700; color: var(--success-green);">-</span></label>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Quantity Pakai</label>
+                            <input type="number" id="useQty" class="form-control" placeholder="0" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Satuan</label>
+                            <input type="text" id="useUnit" class="form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>👷 Teknisi</label>
+                        <select id="useTechnician" class="form-control" required>
+                            <option value="">-- Pilih Teknisi --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>🔧 Jenis Pekerjaan</label>
+                        <select id="useJobType" class="form-control" required>
+                            <option value="">-- Pilih Jenis Pekerjaan --</option>
+                            <option value="Pasang Baru">🆕 Pasang Baru</option>
+                            <option value="Service">🔧 Service</option>
+                            <option value="Bongkar Pasang">🔄 Bongkar Pasang</option>
+                            <option value="Cuci AC">🧼 Cuci AC</option>
+                            <option value="Isi Freon">❄️ Isi Freon</option>
+                            <option value="Perbaikan">🛠️ Perbaikan</option>
+                            <option value="Project">🏗️ Project</option>
+                            <option value="Lainnya">📋 Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Nama Customer / Lokasi</label>
+                        <input type="text" id="useCustomer" class="form-control" placeholder="Nama customer atau lokasi project..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>📝 Keterangan Tambahan</label>
+                        <input type="text" id="useNote" class="form-control" placeholder="Detail pekerjaan, alamat, dll...">
+                    </div>
+                    <button type="submit" class="btn btn-orange">✅ Simpan Pemakaian</button>
                 </form>
             </div>
         </div>
@@ -1249,6 +1433,16 @@
             storageBucket: "financenala.firebasestorage.app",
             messagingSenderId: "259185907850",
             appId: "1:259185907850:web:7278f2e27f658add34f573"
+        };
+
+        // KPI NALA Firebase Config (untuk data teknisi)
+        const kpiNalaConfig = {
+            apiKey: "AIzaSyCvyPmPliVTVvctSr1PRPKXE72pGo8DNTY",
+            authDomain: "nala-kpi.firebaseapp.com",
+            projectId: "nala-kpi",
+            storageBucket: "nala-kpi.firebasestorage.app",
+            messagingSenderId: "374378012498",
+            appId: "1:374378012498:web:4f27d988ad73e4bb31aead"
         };
 
         // ==========================================
@@ -1334,9 +1528,11 @@
         // ==========================================
         // GLOBAL VARIABLES
         // ==========================================
-        let app, db;
+        let app, db, kpiApp, kpiDb;
         let transactions = [];
         let inventory = [];
+        let inventoryMovements = [];
+        let technicians = [];
         let expenseCategories = [];
         let incomeCategories = [];
         let charts = { trends: null, topExpenses: null };
@@ -1346,6 +1542,7 @@
         let currentPage = 1;
         let itemsPerPage = 10;
         let filteredTransactions = [];
+        let filteredMovements = [];
         let selectedIncomeCategory = '';
         let selectedExpenseCategory = '';
         let materialRowCount = 0;
@@ -1355,14 +1552,22 @@
         // ==========================================
         async function initializeFirebase() {
             try {
+                // Initialize Finance Firebase
                 app = firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
+                
+                // Initialize KPI Nala Firebase (secondary)
+                kpiApp = firebase.initializeApp(kpiNalaConfig, 'kpiNala');
+                kpiDb = kpiApp.firestore();
+                
                 updateConnectionStatus('online', 'Connected');
                 
                 await Promise.all([
                     loadCategories(),
                     loadTransactions(),
-                    loadInventory()
+                    loadInventory(),
+                    loadInventoryMovements(),
+                    loadTechnicians()
                 ]);
                 return true;
             } catch (error) {
@@ -1373,8 +1578,52 @@
             }
         }
 
+        async function loadTechnicians() {
+            try {
+                // Load from KPI Nala Firebase
+                const snapshot = await kpiDb.collection('technicians').get();
+                technicians = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // If no data from KPI, use default
+                if (technicians.length === 0) {
+                    technicians = [
+                        { id: '1', name: 'Andi', role: 'Senior Technician' },
+                        { id: '2', name: 'Budi', role: 'Technician' },
+                        { id: '3', name: 'Candra', role: 'Technician' },
+                        { id: '4', name: 'Doni', role: 'Junior Technician' },
+                        { id: '5', name: 'Eko', role: 'Helper' }
+                    ];
+                }
+                
+                populateTechnicianSelect();
+                console.log(`Loaded ${technicians.length} technicians`);
+            } catch (error) {
+                console.error('Load technicians error:', error);
+                // Fallback to default technicians
+                technicians = [
+                    { id: '1', name: 'Andi', role: 'Senior Technician' },
+                    { id: '2', name: 'Budi', role: 'Technician' },
+                    { id: '3', name: 'Candra', role: 'Technician' },
+                    { id: '4', name: 'Doni', role: 'Junior Technician' },
+                    { id: '5', name: 'Eko', role: 'Helper' }
+                ];
+                populateTechnicianSelect();
+            }
+        }
+
+        function populateTechnicianSelect() {
+            const select = document.getElementById('useTechnician');
+            const filterSelect = document.getElementById('movementFilterTechnician');
+            
+            const options = technicians.map(t => 
+                `<option value="${t.name}">${t.name}${t.role ? ' - ' + t.role : ''}</option>`
+            ).join('');
+            
+            select.innerHTML = '<option value="">-- Pilih Teknisi --</option>' + options;
+            filterSelect.innerHTML = '<option value="all">Semua Teknisi</option>' + options;
+        }
+
         async function loadCategories() {
-            // Default categories
             expenseCategories = [
                 { icon: '🍽️', name: 'Uang Makan' },
                 { icon: '🔧', name: 'Servis Kendaraan' },
@@ -1417,9 +1666,37 @@
                 inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderInventoryTable();
                 updateInventoryStats();
+                populateMaterialSelects();
             } catch (error) {
                 console.error('Inventory error:', error);
             }
+        }
+
+        async function loadInventoryMovements() {
+            try {
+                const snapshot = await db.collection('inventory_movements').orderBy('date', 'desc').get();
+                inventoryMovements = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                filteredMovements = [...inventoryMovements];
+                renderMovementTable();
+                populateMovementFilterMaterial();
+            } catch (error) {
+                console.error('Movement error:', error);
+            }
+        }
+
+        function populateMaterialSelects() {
+            const useSelect = document.getElementById('useMaterial');
+            useSelect.innerHTML = '<option value="">-- Pilih Material --</option>' + 
+                inventory.filter(i => (i.currentStock || 0) > 0).map(i => 
+                    `<option value="${i.id}" data-stock="${i.currentStock}" data-unit="${i.unit}">${i.displayName} (Stock: ${i.currentStock} ${i.unit})</option>`
+                ).join('');
+        }
+
+        function populateMovementFilterMaterial() {
+            const select = document.getElementById('movementFilterMaterial');
+            const materials = [...new Set(inventoryMovements.map(m => m.materialName))];
+            select.innerHTML = '<option value="all">Semua Material</option>' + 
+                materials.map(m => `<option value="${m}">${m}</option>`).join('');
         }
 
         // ==========================================
@@ -1486,32 +1763,30 @@
             
             let rowHTML;
             if (isOneTime) {
-                // ONE-TIME / CUSTOM MATERIAL
                 rowHTML = `
                     <div class="material-row one-time-purchase" id="${rowId}" data-one-time="true">
                         <div class="material-row-header">
                             <div class="material-row-title">
                                 ⚡ Material #${materialRowCount}
-                                <span class="badge one-time">Sekali Pakai - Tidak Masuk Inventory</span>
+                                <span class="badge one-time">Sekali Pakai</span>
                             </div>
                             <button type="button" class="btn-remove-material" onclick="removeMaterialRow('${rowId}')">🗑️</button>
                         </div>
                         <div class="material-row-grid custom-grid">
                             <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>🏷️ Nama Material (Ketik Manual)</label>
-                                <input type="text" class="form-control mat-custom-name" 
-                                       placeholder="Contoh: Kawat Las 2.5mm, Elbow 90° 1/2, Isolasi Listrik 3M, Nepel 1/4, dll">
+                                <label>🏷️ Nama Material</label>
+                                <input type="text" class="form-control mat-custom-name" placeholder="Contoh: Kawat Las, Elbow, Isolasi...">
                             </div>
                             <div class="form-group">
-                                <label>Quantity</label>
+                                <label>Qty</label>
                                 <input type="number" class="form-control mat-qty" placeholder="1" min="1">
                             </div>
                             <div class="form-group">
                                 <label>Satuan</label>
-                                <input type="text" class="form-control mat-unit" placeholder="pcs/meter/roll/kg/btg">
+                                <input type="text" class="form-control mat-unit" placeholder="pcs/meter">
                             </div>
                             <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>💵 Total Harga (Rp) - Input Manual</label>
+                                <label>💵 Total Harga (Rp)</label>
                                 <input type="number" class="form-control mat-total-manual" placeholder="0" oninput="calculateAllMaterialTotal()">
                             </div>
                         </div>
@@ -1522,7 +1797,6 @@
                     </div>
                 `;
             } else {
-                // STOCK MATERIAL
                 const categoryOptions = Object.entries(MATERIAL_CONFIG)
                     .map(([key, val]) => `<option value="${key}">${val.label}</option>`)
                     .join('');
@@ -1538,7 +1812,7 @@
                         </div>
                         <div class="material-row-grid">
                             <div class="form-group">
-                                <label>Jenis Material</label>
+                                <label>Jenis</label>
                                 <select class="form-control mat-category" onchange="updateMaterialRowOptions('${rowId}')">
                                     <option value="">-- Pilih --</option>
                                     ${categoryOptions}
@@ -1546,14 +1820,14 @@
                             </div>
                             <div class="form-group">
                                 <label>Tipe</label>
-                                <select class="form-control mat-type"><option value="">Pilih jenis dulu</option></select>
+                                <select class="form-control mat-type"><option value="">-</option></select>
                             </div>
                             <div class="form-group">
                                 <label>Merk</label>
-                                <select class="form-control mat-merk"><option value="">Pilih jenis dulu</option></select>
+                                <select class="form-control mat-merk"><option value="">-</option></select>
                             </div>
                             <div class="form-group freon-size-group" style="display: none;">
-                                <label>Ukuran (Kg)</label>
+                                <label>Ukuran</label>
                                 <select class="form-control mat-freon-size">
                                     <option value="3">3 Kg</option>
                                     <option value="5">5 Kg</option>
@@ -1562,7 +1836,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Quantity</label>
+                                <label>Qty</label>
                                 <input type="number" class="form-control mat-qty" placeholder="0" min="1" oninput="calculateAllMaterialTotal()">
                             </div>
                             <div class="form-group">
@@ -1570,7 +1844,7 @@
                                 <input type="text" class="form-control mat-unit" readonly placeholder="-">
                             </div>
                             <div class="form-group">
-                                <label>Harga/Unit (Rp)</label>
+                                <label>Harga/Unit</label>
                                 <input type="number" class="form-control mat-price" placeholder="0" oninput="calculateAllMaterialTotal()">
                             </div>
                         </div>
@@ -1603,8 +1877,8 @@
             const freonGroup = row.querySelector('.freon-size-group');
             
             if (!cfg) {
-                typeSelect.innerHTML = '<option value="">Pilih jenis dulu</option>';
-                merkSelect.innerHTML = '<option value="">Pilih jenis dulu</option>';
+                typeSelect.innerHTML = '<option value="">-</option>';
+                merkSelect.innerHTML = '<option value="">-</option>';
                 unitInput.value = '';
                 if (freonGroup) freonGroup.style.display = 'none';
                 return;
@@ -1704,15 +1978,25 @@
         }
 
         // ==========================================
-        // TRANSACTION FUNCTIONS
+        // INVENTORY MOVEMENT FUNCTIONS
         // ==========================================
-        async function addToInventory(mat, transactionId) {
+        async function addInventoryMovement(data) {
+            try {
+                await db.collection('inventory_movements').add({
+                    ...data,
+                    createdAt: new Date().toISOString()
+                });
+            } catch (error) {
+                console.error('Add movement error:', error);
+            }
+        }
+
+        async function addToInventory(mat, transactionId, date) {
             if (mat.skipInventory) return;
             
             try {
                 const { category, type, merk, qty, unit, pricePerUnit, freonSize, displayName } = mat;
                 
-                // Check existing
                 let existingItem = null;
                 const query = await db.collection('inventory')
                     .where('category', '==', category)
@@ -1730,6 +2014,7 @@
                     }
                 }
                 
+                let inventoryId;
                 if (existingItem) {
                     const newTotalQtyIn = (existingItem.totalQtyIn || 0) + qty;
                     const currentStock = newTotalQtyIn - (existingItem.totalQtyOut || 0);
@@ -1742,10 +2027,11 @@
                         currentStock,
                         avgPrice: newAvgPrice,
                         totalValue: currentStock * newAvgPrice,
-                        lastUpdated: new Date().toISOString().split('T')[0]
+                        lastUpdated: date || new Date().toISOString().split('T')[0]
                     });
+                    inventoryId = existingItem.id;
                 } else {
-                    await db.collection('inventory').add({
+                    const docRef = await db.collection('inventory').add({
                         category,
                         type,
                         merk,
@@ -1758,12 +2044,70 @@
                         avgPrice: pricePerUnit,
                         totalValue: qty * pricePerUnit,
                         minQty: 10,
-                        lastUpdated: new Date().toISOString().split('T')[0],
+                        lastUpdated: date || new Date().toISOString().split('T')[0],
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
+                    inventoryId = docRef.id;
                 }
+                
+                // Record movement
+                await addInventoryMovement({
+                    type: 'in',
+                    inventoryId,
+                    materialName: displayName,
+                    qty,
+                    unit,
+                    pricePerUnit,
+                    totalValue: qty * pricePerUnit,
+                    date: date || new Date().toISOString().split('T')[0],
+                    technician: '-',
+                    jobType: 'Pembelian',
+                    customer: '-',
+                    note: `Dari transaksi ${transactionId}`,
+                    transactionId
+                });
+                
             } catch (error) {
                 console.error('Inventory error:', error);
+            }
+        }
+
+        async function useFromInventory(inventoryId, qty, technicianName, jobType, customer, note, date) {
+            try {
+                const item = inventory.find(i => i.id === inventoryId);
+                if (!item) throw new Error('Material tidak ditemukan');
+                if ((item.currentStock || 0) < qty) throw new Error('Stock tidak mencukupi');
+                
+                const newTotalQtyOut = (item.totalQtyOut || 0) + qty;
+                const newCurrentStock = (item.totalQtyIn || 0) - newTotalQtyOut;
+                
+                await db.collection('inventory').doc(inventoryId).update({
+                    totalQtyOut: newTotalQtyOut,
+                    currentStock: newCurrentStock,
+                    totalValue: newCurrentStock * (item.avgPrice || 0),
+                    lastUpdated: date
+                });
+                
+                // Record movement
+                await addInventoryMovement({
+                    type: 'out',
+                    inventoryId,
+                    materialName: item.displayName,
+                    qty,
+                    unit: item.unit,
+                    pricePerUnit: item.avgPrice || 0,
+                    totalValue: qty * (item.avgPrice || 0),
+                    date,
+                    technician: technicianName,
+                    jobType,
+                    customer,
+                    note
+                });
+                
+                return true;
+            } catch (error) {
+                console.error('Use inventory error:', error);
+                throw error;
             }
         }
 
@@ -1867,11 +2211,10 @@
                 
                 const docRef = await db.collection('transactions').add(transaction);
                 
-                // Add to inventory (only stock materials)
                 let stockCount = 0, oneTimeCount = 0;
                 for (const mat of materialsData) {
                     if (!mat.skipInventory) {
-                        await addToInventory(mat, docRef.id);
+                        await addToInventory(mat, docRef.id, date);
                         stockCount++;
                     } else {
                         oneTimeCount++;
@@ -1894,6 +2237,7 @@
                 
                 await loadTransactions();
                 await loadInventory();
+                await loadInventoryMovements();
             } catch (error) {
                 showMessage('Gagal menyimpan: ' + error.message, 'error');
             }
@@ -1928,6 +2272,7 @@
         document.getElementById('addInventoryForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const date = document.getElementById('invAddDate').value;
             const category = document.getElementById('invCategory').value;
             const type = document.getElementById('invType').value;
             const merk = document.getElementById('invMerk').value;
@@ -1935,8 +2280,9 @@
             const unit = document.getElementById('invUnit').value;
             const price = parseInt(document.getElementById('invPrice').value);
             const freonSize = category === 'freon' ? document.getElementById('invFreonSize').value : null;
+            const note = document.getElementById('invAddNote').value;
             
-            if (!category || !type || !merk || !qty || !price) {
+            if (!date || !category || !type || !merk || !qty || !price) {
                 showMessage('Lengkapi semua field!', 'warning');
                 return;
             }
@@ -1948,11 +2294,40 @@
                 
                 await addToInventory({
                     category, type, merk, qty, unit, pricePerUnit: price, freonSize, displayName, skipInventory: false
-                }, 'manual');
+                }, 'manual-add', date);
                 
                 showMessage('Stock ditambahkan!', 'success');
                 closeAddInventoryModal();
                 await loadInventory();
+                await loadInventoryMovements();
+                updateAllStats();
+            } catch (error) {
+                showMessage('Gagal: ' + error.message, 'error');
+            }
+        });
+
+        document.getElementById('useInventoryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const date = document.getElementById('useDate').value;
+            const materialId = document.getElementById('useMaterial').value;
+            const qty = parseInt(document.getElementById('useQty').value);
+            const technician = document.getElementById('useTechnician').value;
+            const jobType = document.getElementById('useJobType').value;
+            const customer = document.getElementById('useCustomer').value;
+            const note = document.getElementById('useNote').value;
+            
+            if (!date || !materialId || !qty || !technician || !jobType || !customer) {
+                showMessage('Lengkapi semua field wajib!', 'warning');
+                return;
+            }
+            
+            try {
+                await useFromInventory(materialId, qty, technician, jobType, customer, note, date);
+                showMessage('Pemakaian material berhasil dicatat!', 'success');
+                closeUseInventoryModal();
+                await loadInventory();
+                await loadInventoryMovements();
                 updateAllStats();
             } catch (error) {
                 showMessage('Gagal: ' + error.message, 'error');
@@ -1989,6 +2364,8 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('incomeDate').value = today;
             document.getElementById('expenseDate').value = today;
+            document.getElementById('invAddDate').value = today;
+            document.getElementById('useDate').value = today;
         }
 
         function updateAllStats() {
@@ -2010,7 +2387,6 @@
             const invValue = inventory.reduce((s, i) => s + (i.totalValue || 0), 0);
             document.getElementById('totalInventoryHeader').textContent = formatRupiah(invValue);
             
-            // Daily & Monthly stats
             const dailyIncome = transactions.filter(t => t.type === 'income' && t.date === today).reduce((s, t) => s + t.amount, 0);
             const dailyExpense = transactions.filter(t => t.type === 'expense' && t.date === today).reduce((s, t) => s + t.amount, 0);
             
@@ -2055,13 +2431,39 @@
                     <tr>
                         <td><strong>${item.displayName || '-'}</strong></td>
                         <td>${item.merk || '-'}</td>
-                        <td>${item.totalQtyIn || 0} ${item.unit || ''}</td>
+                        <td style="color: var(--success-green);">${item.totalQtyIn || 0} ${item.unit || ''}</td>
                         <td style="color: var(--warning-orange);">${item.totalQtyOut || 0}</td>
-                        <td style="color: var(--success-green); font-weight: 700;">${stock}</td>
+                        <td style="color: var(--primary-blue); font-weight: 700;">${stock}</td>
                         <td>${formatRupiah(item.avgPrice)}</td>
                         <td style="font-weight: 700;">${formatRupiah(item.totalValue)}</td>
                         <td><span class="stock-badge ${status.cls}">${status.txt}</span></td>
                         <td><button class="btn-small btn-delete" onclick="deleteInventoryItem('${item.id}')">🗑️</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderMovementTable() {
+            const tbody = document.getElementById('movementTableBody');
+            if (filteredMovements.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="icon">📊</div><h3>Belum ada riwayat pergerakan</h3></td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredMovements.map(m => {
+                const typeInfo = m.type === 'in' 
+                    ? { badge: 'in', icon: '📥', text: 'MASUK' }
+                    : { badge: 'out', icon: '📤', text: 'KELUAR' };
+                return `
+                    <tr>
+                        <td>${formatDate(m.date)}</td>
+                        <td><span class="movement-badge ${typeInfo.badge}">${typeInfo.icon} ${typeInfo.text}</span></td>
+                        <td><strong>${m.materialName || '-'}</strong></td>
+                        <td>${m.qty} ${m.unit || ''}</td>
+                        <td>${m.technician || '-'}</td>
+                        <td>${m.jobType || '-'}</td>
+                        <td>${m.customer || '-'}</td>
+                        <td>${m.note || '-'}</td>
                     </tr>
                 `;
             }).join('');
@@ -2074,6 +2476,13 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showInventorySubTab(subTab) {
+            document.querySelectorAll('.inventory-sub-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.inventory-sub-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('invSub' + subTab.charAt(0).toUpperCase() + subTab.slice(1)).classList.add('active');
             event.target.classList.add('active');
         }
 
@@ -2095,7 +2504,6 @@
         function applyFilters() {
             filteredTransactions = [...transactions];
             
-            // Period filter
             if (filterPeriod !== 'all') {
                 const today = new Date();
                 const todayStr = today.toISOString().split('T')[0];
@@ -2108,15 +2516,12 @@
                 else if (filterPeriod === 'month') filteredTransactions = filteredTransactions.filter(t => t.date?.startsWith(monthStr));
             }
             
-            // Type filter
             const typeFilter = document.getElementById('filterType').value;
             if (typeFilter !== 'all') filteredTransactions = filteredTransactions.filter(t => t.type === typeFilter);
             
-            // Category filter
             const catFilter = document.getElementById('filterCategory').value;
             if (catFilter !== 'all') filteredTransactions = filteredTransactions.filter(t => t.category === catFilter);
             
-            // Search
             const search = document.getElementById('searchInput').value.toLowerCase();
             if (search) {
                 filteredTransactions = filteredTransactions.filter(t => 
@@ -2131,6 +2536,24 @@
             renderPaginationControls();
         }
 
+        function applyMovementFilters() {
+            filteredMovements = [...inventoryMovements];
+            
+            const typeFilter = document.getElementById('movementFilterType').value;
+            if (typeFilter !== 'all') filteredMovements = filteredMovements.filter(m => m.type === typeFilter);
+            
+            const materialFilter = document.getElementById('movementFilterMaterial').value;
+            if (materialFilter !== 'all') filteredMovements = filteredMovements.filter(m => m.materialName === materialFilter);
+            
+            const techFilter = document.getElementById('movementFilterTechnician').value;
+            if (techFilter !== 'all') filteredMovements = filteredMovements.filter(m => m.technician === techFilter);
+            
+            const dateFilter = document.getElementById('movementFilterDate').value;
+            if (dateFilter) filteredMovements = filteredMovements.filter(m => m.date === dateFilter);
+            
+            renderMovementTable();
+        }
+
         function resetFilters() {
             filterPeriod = 'all';
             document.getElementById('filterType').value = 'all';
@@ -2139,6 +2562,15 @@
             document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
             document.querySelector('.filter-tab').classList.add('active');
             applyFilters();
+        }
+
+        function resetMovementFilters() {
+            document.getElementById('movementFilterType').value = 'all';
+            document.getElementById('movementFilterMaterial').value = 'all';
+            document.getElementById('movementFilterTechnician').value = 'all';
+            document.getElementById('movementFilterDate').value = '';
+            filteredMovements = [...inventoryMovements];
+            renderMovementTable();
         }
 
         function handleSearch() {
@@ -2277,6 +2709,7 @@
 
         function openAddInventoryModal() {
             document.getElementById('addInventoryForm').reset();
+            setTodayDate();
             document.getElementById('invType').innerHTML = '<option value="">Pilih jenis dulu</option>';
             document.getElementById('invMerk').innerHTML = '<option value="">Pilih jenis dulu</option>';
             document.getElementById('invFreonSizeGroup').style.display = 'none';
@@ -2285,6 +2718,30 @@
 
         function closeAddInventoryModal() {
             document.getElementById('addInventoryModal').classList.remove('show');
+        }
+
+        function openUseInventoryModal() {
+            document.getElementById('useInventoryForm').reset();
+            setTodayDate();
+            populateMaterialSelects();
+            document.getElementById('useAvailableStock').textContent = '-';
+            document.getElementById('useUnit').value = '';
+            document.getElementById('useInventoryModal').classList.add('show');
+        }
+
+        function closeUseInventoryModal() {
+            document.getElementById('useInventoryModal').classList.remove('show');
+        }
+
+        function updateUseMaxQty() {
+            const select = document.getElementById('useMaterial');
+            const option = select.options[select.selectedIndex];
+            const stock = option.dataset.stock || 0;
+            const unit = option.dataset.unit || '';
+            
+            document.getElementById('useAvailableStock').textContent = `${stock} ${unit}`;
+            document.getElementById('useUnit').value = unit;
+            document.getElementById('useQty').max = stock;
         }
 
         function updateInvMaterialOptions() {
@@ -2485,26 +2942,44 @@
         }
 
         function exportInventory() {
-            if (inventory.length === 0) {
-                showMessage('Tidak ada inventory', 'warning');
-                return;
+            // Export both stock and movements
+            const wb = XLSX.utils.book_new();
+            
+            // Stock sheet
+            if (inventory.length > 0) {
+                const stockData = inventory.map((item, i) => ({
+                    'No': i + 1,
+                    'Material': item.displayName,
+                    'Merk': item.merk,
+                    'Masuk': item.totalQtyIn,
+                    'Pakai': item.totalQtyOut,
+                    'Sisa': item.currentStock,
+                    'Satuan': item.unit,
+                    'Harga': item.avgPrice,
+                    'Nilai': item.totalValue
+                }));
+                const wsStock = XLSX.utils.json_to_sheet(stockData);
+                XLSX.utils.book_append_sheet(wb, wsStock, 'Stock');
             }
             
-            const data = inventory.map((item, i) => ({
-                'No': i + 1,
-                'Material': item.displayName,
-                'Merk': item.merk,
-                'Masuk': item.totalQtyIn,
-                'Pakai': item.totalQtyOut,
-                'Sisa': item.currentStock,
-                'Satuan': item.unit,
-                'Harga': item.avgPrice,
-                'Nilai': item.totalValue
-            }));
+            // Movements sheet
+            if (inventoryMovements.length > 0) {
+                const moveData = inventoryMovements.map((m, i) => ({
+                    'No': i + 1,
+                    'Tanggal': formatDate(m.date),
+                    'Tipe': m.type === 'in' ? 'MASUK' : 'KELUAR',
+                    'Material': m.materialName,
+                    'Qty': m.qty,
+                    'Satuan': m.unit,
+                    'Teknisi': m.technician || '-',
+                    'Pekerjaan': m.jobType || '-',
+                    'Customer': m.customer || '-',
+                    'Keterangan': m.note || '-'
+                }));
+                const wsMove = XLSX.utils.json_to_sheet(moveData);
+                XLSX.utils.book_append_sheet(wb, wsMove, 'Riwayat Pergerakan');
+            }
             
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, 'Inventory');
             XLSX.writeFile(wb, `Nala_Inventory_${new Date().toISOString().split('T')[0]}.xlsx`);
             showMessage('Export berhasil!', 'success');
         }
@@ -2513,9 +2988,12 @@
         // GLOBAL BINDINGS
         // ==========================================
         window.showTab = showTab;
+        window.showInventorySubTab = showInventorySubTab;
         window.setFilterPeriod = setFilterPeriod;
         window.applyFilters = applyFilters;
+        window.applyMovementFilters = applyMovementFilters;
         window.resetFilters = resetFilters;
+        window.resetMovementFilters = resetMovementFilters;
         window.handleSearch = handleSearch;
         window.goToPage = goToPage;
         window.exportToExcel = exportToExcel;
@@ -2536,6 +3014,9 @@
         window.calculateAllMaterialTotal = calculateAllMaterialTotal;
         window.openAddInventoryModal = openAddInventoryModal;
         window.closeAddInventoryModal = closeAddInventoryModal;
+        window.openUseInventoryModal = openUseInventoryModal;
+        window.closeUseInventoryModal = closeUseInventoryModal;
+        window.updateUseMaxQty = updateUseMaxQty;
         window.updateInvMaterialOptions = updateInvMaterialOptions;
         window.deleteInventoryItem = deleteInventoryItem;
 
@@ -2544,6 +3025,7 @@
                 if (e.target.id === 'editModal') closeEditModal();
                 if (e.target.id === 'deleteModal') closeDeleteModal();
                 if (e.target.id === 'addInventoryModal') closeAddInventoryModal();
+                if (e.target.id === 'useInventoryModal') closeUseInventoryModal();
             }
         });
 
@@ -2551,7 +3033,7 @@
         // INIT
         // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 Nala Finance v2 Starting...');
+            console.log('🚀 Nala Finance v3 Starting...');
             const ok = await initializeFirebase();
             if (ok) {
                 setTodayDate();
