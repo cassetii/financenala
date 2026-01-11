@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nala Aircon - Finance & Inventory Dashboard v3</title>
+    <title>Nala Aircon - Finance & Inventory Dashboard v3.1</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -299,7 +299,6 @@
         }
         .category-option .icon { font-size: 2.5em; margin-bottom: 10px; display: block; }
         .category-option .label { font-size: 14px; font-weight: 600; color: var(--gray-700); }
-        .category-option input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
 
         /* Material Detail Panel */
         .material-detail-panel {
@@ -328,6 +327,11 @@
             margin-bottom: 20px;
             font-size: 13px;
             color: #1e40af;
+        }
+        .material-info-box.purple {
+            background: #ede9fe;
+            border-color: #c4b5fd;
+            color: #5b21b6;
         }
 
         /* Material Row */
@@ -722,6 +726,34 @@
         .movement-badge.in { background: #d1fae5; color: #059669; }
         .movement-badge.out { background: #fee2e2; color: #dc2626; }
 
+        /* Integration Info */
+        .integration-info {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 2px solid #10b981;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .integration-info h4 {
+            color: #059669;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .integration-info p {
+            color: #047857;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .integration-info ul {
+            margin-top: 10px;
+            padding-left: 20px;
+            color: #047857;
+            font-size: 13px;
+        }
+        .integration-info li { margin-bottom: 5px; }
+
         /* Calendar */
         .calendar-nav {
             display: flex;
@@ -867,7 +899,7 @@
         /* Action Buttons Grid */
         .action-buttons-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -898,7 +930,7 @@
             <div class="header-content">
                 <h1>💼 Nala Aircon - Finance & Inventory</h1>
                 <div class="header-right">
-                    <span class="version-badge">v3.0 - Full Tracking</span>
+                    <span class="version-badge">v3.1 - KPI Integration</span>
                     <div class="connection-status">
                         <div class="status-indicator status-loading" id="statusIndicator"></div>
                         <span id="statusText">Connecting...</span>
@@ -1051,10 +1083,11 @@
 
                             <!-- MATERIAL DETAIL PANEL -->
                             <div class="material-detail-panel" id="materialDetailPanel">
-                                <h4>📦 Detail Material</h4>
-                                <div class="material-info-box">
-                                    ℹ️ <strong>Tips:</strong> Gunakan "Material Stok" untuk pipa/kabel/freon (masuk inventory). 
-                                    Gunakan "Sekali Pakai" untuk kawat las, elbow, isolasi, dll (TIDAK masuk inventory).
+                                <h4>📦 Detail Pembelian Material</h4>
+                                <div class="material-info-box purple">
+                                    ℹ️ <strong>Pembelian Material:</strong><br>
+                                    • <strong>Material Stok</strong> → Otomatis MASUK ke inventory (pipa, kabel, freon, dll)<br>
+                                    • <strong>Material Sekali Pakai</strong> → TIDAK masuk inventory (kawat las, elbow, isolasi)
                                 </div>
                                 
                                 <div id="materialItemsContainer"></div>
@@ -1064,7 +1097,7 @@
                                         ➕ Material Stok (Masuk Inventory)
                                     </button>
                                     <button type="button" class="btn-add-material one-time" onclick="addMaterialRow(true)">
-                                        ⚡ Material Sekali Pakai (Manual)
+                                        ⚡ Material Sekali Pakai
                                     </button>
                                 </div>
                                 
@@ -1125,6 +1158,17 @@
 
             <!-- INVENTORY TAB -->
             <div id="inventory" class="tab-content">
+                <!-- Integration Info -->
+                <div class="integration-info">
+                    <h4>🔗 Integrasi dengan KPI Nala</h4>
+                    <p>Inventory ini terintegrasi dengan aplikasi <strong>KPI Nala</strong>:</p>
+                    <ul>
+                        <li>📥 <strong>Stock MASUK</strong> → Dicatat dari sini (pembelian material)</li>
+                        <li>📤 <strong>Stock KELUAR</strong> → Dicatat dari KPI Nala (saat teknisi mengerjakan job)</li>
+                        <li>📊 <strong>Riwayat Pergerakan</strong> → Gabungan dari kedua aplikasi</li>
+                    </ul>
+                </div>
+                
                 <div class="inventory-stats">
                     <div class="inventory-stat-card total">
                         <div class="icon">📦</div>
@@ -1150,9 +1194,8 @@
                 
                 <!-- Action Buttons -->
                 <div class="action-buttons-grid">
-                    <button onclick="openAddInventoryModal()" class="btn btn-purple">➕ Tambah Stock</button>
-                    <button onclick="openUseInventoryModal()" class="btn btn-orange">📤 Pakai Material</button>
-                    <button onclick="exportInventory()" class="btn btn-success">📥 Export</button>
+                    <button onclick="openAddInventoryModal()" class="btn btn-purple">➕ Tambah Stock Manual</button>
+                    <button onclick="exportInventory()" class="btn btn-success">📥 Export Inventory</button>
                 </div>
                 
                 <!-- Inventory Sub Tabs -->
@@ -1289,9 +1332,12 @@
         <div class="modal-content">
             <div class="modal-header purple">
                 <span class="close" onclick="closeAddInventoryModal()">&times;</span>
-                <h3>📥 Tambah Stock Material</h3>
+                <h3>📥 Tambah Stock Manual</h3>
             </div>
             <div class="modal-body">
+                <div class="material-info-box" style="margin-bottom: 20px;">
+                    ℹ️ Gunakan ini untuk menambah stock tanpa mencatat pengeluaran kas (misal: stock awal, hibah, koreksi)
+                </div>
                 <form id="addInventoryForm">
                     <div class="form-group">
                         <label>📅 Tanggal</label>
@@ -1341,76 +1387,10 @@
                         <input type="number" id="invPrice" class="form-control" placeholder="0" required>
                     </div>
                     <div class="form-group">
-                        <label>📝 Keterangan (Opsional)</label>
-                        <input type="text" id="invAddNote" class="form-control" placeholder="Supplier, No. Invoice, dll...">
+                        <label>📝 Keterangan</label>
+                        <input type="text" id="invAddNote" class="form-control" placeholder="Stock awal, koreksi, dll...">
                     </div>
                     <button type="submit" class="btn btn-purple">✅ Simpan Stock</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- USE INVENTORY MODAL -->
-    <div id="useInventoryModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header orange">
-                <span class="close" onclick="closeUseInventoryModal()">&times;</span>
-                <h3>📤 Pakai Material dari Stock</h3>
-            </div>
-            <div class="modal-body">
-                <form id="useInventoryForm">
-                    <div class="form-group">
-                        <label>📅 Tanggal Pemakaian</label>
-                        <input type="date" id="useDate" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>📦 Pilih Material</label>
-                        <select id="useMaterial" class="form-control" required onchange="updateUseMaxQty()">
-                            <option value="">-- Pilih Material --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Stock Tersedia: <span id="useAvailableStock" style="font-weight: 700; color: var(--success-green);">-</span></label>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div class="form-group">
-                            <label>Quantity Pakai</label>
-                            <input type="number" id="useQty" class="form-control" placeholder="0" min="1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Satuan</label>
-                            <input type="text" id="useUnit" class="form-control" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>👷 Teknisi</label>
-                        <select id="useTechnician" class="form-control" required>
-                            <option value="">-- Pilih Teknisi --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>🔧 Jenis Pekerjaan</label>
-                        <select id="useJobType" class="form-control" required>
-                            <option value="">-- Pilih Jenis Pekerjaan --</option>
-                            <option value="Pasang Baru">🆕 Pasang Baru</option>
-                            <option value="Service">🔧 Service</option>
-                            <option value="Bongkar Pasang">🔄 Bongkar Pasang</option>
-                            <option value="Cuci AC">🧼 Cuci AC</option>
-                            <option value="Isi Freon">❄️ Isi Freon</option>
-                            <option value="Perbaikan">🛠️ Perbaikan</option>
-                            <option value="Project">🏗️ Project</option>
-                            <option value="Lainnya">📋 Lainnya</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>👤 Nama Customer / Lokasi</label>
-                        <input type="text" id="useCustomer" class="form-control" placeholder="Nama customer atau lokasi project..." required>
-                    </div>
-                    <div class="form-group">
-                        <label>📝 Keterangan Tambahan</label>
-                        <input type="text" id="useNote" class="form-control" placeholder="Detail pekerjaan, alamat, dll...">
-                    </div>
-                    <button type="submit" class="btn btn-orange">✅ Simpan Pemakaian</button>
                 </form>
             </div>
         </div>
@@ -1424,8 +1404,9 @@
 
     <script>
         // ==========================================
-        // FIREBASE CONFIG
+        // FIREBASE CONFIG - SHARED BETWEEN APPS
         // ==========================================
+        // Finance Nala Firebase (untuk transaksi keuangan)
         const firebaseConfig = {
             apiKey: "AIzaSyASArMgCz6lXELa92V1BFe-5ecY__Seauc",
             authDomain: "financenala.firebaseapp.com",
@@ -1435,7 +1416,7 @@
             appId: "1:259185907850:web:7278f2e27f658add34f573"
         };
 
-        // KPI NALA Firebase Config (untuk data teknisi)
+        // KPI Nala Firebase (untuk teknisi, job, dan SHARED inventory)
         const kpiNalaConfig = {
             apiKey: "AIzaSyCvyPmPliVTVvctSr1PRPKXE72pGo8DNTY",
             authDomain: "nala-kpi.firebaseapp.com",
@@ -1528,11 +1509,11 @@
         // ==========================================
         // GLOBAL VARIABLES
         // ==========================================
-        let app, db, kpiApp, kpiDb;
+        let financeApp, financeDb;  // Finance Nala (transaksi)
+        let kpiApp, kpiDb;          // KPI Nala (inventory shared)
         let transactions = [];
         let inventory = [];
         let inventoryMovements = [];
-        let technicians = [];
         let expenseCategories = [];
         let incomeCategories = [];
         let charts = { trends: null, topExpenses: null };
@@ -1548,15 +1529,15 @@
         let materialRowCount = 0;
 
         // ==========================================
-        // INITIALIZE
+        // INITIALIZE FIREBASE
         // ==========================================
         async function initializeFirebase() {
             try {
-                // Initialize Finance Firebase
-                app = firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
+                // Initialize Finance Nala (untuk transaksi keuangan)
+                financeApp = firebase.initializeApp(firebaseConfig, 'financeNala');
+                financeDb = financeApp.firestore();
                 
-                // Initialize KPI Nala Firebase (secondary)
+                // Initialize KPI Nala (untuk SHARED inventory & movements)
                 kpiApp = firebase.initializeApp(kpiNalaConfig, 'kpiNala');
                 kpiDb = kpiApp.firestore();
                 
@@ -1565,9 +1546,8 @@
                 await Promise.all([
                     loadCategories(),
                     loadTransactions(),
-                    loadInventory(),
-                    loadInventoryMovements(),
-                    loadTechnicians()
+                    loadInventory(),         // dari KPI Nala
+                    loadInventoryMovements() // dari KPI Nala
                 ]);
                 return true;
             } catch (error) {
@@ -1576,51 +1556,6 @@
                 showMessage('Koneksi gagal: ' + error.message, 'error');
                 return false;
             }
-        }
-
-        async function loadTechnicians() {
-            try {
-                // Load from KPI Nala Firebase
-                const snapshot = await kpiDb.collection('technicians').get();
-                technicians = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // If no data from KPI, use default
-                if (technicians.length === 0) {
-                    technicians = [
-                        { id: '1', name: 'Andi', role: 'Senior Technician' },
-                        { id: '2', name: 'Budi', role: 'Technician' },
-                        { id: '3', name: 'Candra', role: 'Technician' },
-                        { id: '4', name: 'Doni', role: 'Junior Technician' },
-                        { id: '5', name: 'Eko', role: 'Helper' }
-                    ];
-                }
-                
-                populateTechnicianSelect();
-                console.log(`Loaded ${technicians.length} technicians`);
-            } catch (error) {
-                console.error('Load technicians error:', error);
-                // Fallback to default technicians
-                technicians = [
-                    { id: '1', name: 'Andi', role: 'Senior Technician' },
-                    { id: '2', name: 'Budi', role: 'Technician' },
-                    { id: '3', name: 'Candra', role: 'Technician' },
-                    { id: '4', name: 'Doni', role: 'Junior Technician' },
-                    { id: '5', name: 'Eko', role: 'Helper' }
-                ];
-                populateTechnicianSelect();
-            }
-        }
-
-        function populateTechnicianSelect() {
-            const select = document.getElementById('useTechnician');
-            const filterSelect = document.getElementById('movementFilterTechnician');
-            
-            const options = technicians.map(t => 
-                `<option value="${t.name}">${t.name}${t.role ? ' - ' + t.role : ''}</option>`
-            ).join('');
-            
-            select.innerHTML = '<option value="">-- Pilih Teknisi --</option>' + options;
-            filterSelect.innerHTML = '<option value="all">Semua Teknisi</option>' + options;
         }
 
         async function loadCategories() {
@@ -1648,7 +1583,7 @@
         async function loadTransactions() {
             try {
                 updateConnectionStatus('loading', 'Loading...');
-                const snapshot = await db.collection('transactions').get();
+                const snapshot = await financeDb.collection('transactions').get();
                 transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
                 updateConnectionStatus('online', 'Connected');
@@ -1660,43 +1595,43 @@
             }
         }
 
+        // Load inventory dari KPI Nala (SHARED)
         async function loadInventory() {
             try {
-                const snapshot = await db.collection('inventory').get();
+                const snapshot = await kpiDb.collection('inventory').get();
                 inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderInventoryTable();
                 updateInventoryStats();
-                populateMaterialSelects();
             } catch (error) {
                 console.error('Inventory error:', error);
             }
         }
 
+        // Load movements dari KPI Nala (SHARED)
         async function loadInventoryMovements() {
             try {
-                const snapshot = await db.collection('inventory_movements').orderBy('date', 'desc').get();
+                const snapshot = await kpiDb.collection('inventory_movements').orderBy('date', 'desc').get();
                 inventoryMovements = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 filteredMovements = [...inventoryMovements];
                 renderMovementTable();
-                populateMovementFilterMaterial();
+                populateMovementFilters();
             } catch (error) {
                 console.error('Movement error:', error);
             }
         }
 
-        function populateMaterialSelects() {
-            const useSelect = document.getElementById('useMaterial');
-            useSelect.innerHTML = '<option value="">-- Pilih Material --</option>' + 
-                inventory.filter(i => (i.currentStock || 0) > 0).map(i => 
-                    `<option value="${i.id}" data-stock="${i.currentStock}" data-unit="${i.unit}">${i.displayName} (Stock: ${i.currentStock} ${i.unit})</option>`
-                ).join('');
-        }
-
-        function populateMovementFilterMaterial() {
-            const select = document.getElementById('movementFilterMaterial');
+        function populateMovementFilters() {
+            // Material filter
+            const materialSelect = document.getElementById('movementFilterMaterial');
             const materials = [...new Set(inventoryMovements.map(m => m.materialName))];
-            select.innerHTML = '<option value="all">Semua Material</option>' + 
+            materialSelect.innerHTML = '<option value="all">Semua Material</option>' + 
                 materials.map(m => `<option value="${m}">${m}</option>`).join('');
+            
+            // Technician filter
+            const techSelect = document.getElementById('movementFilterTechnician');
+            const technicians = [...new Set(inventoryMovements.filter(m => m.technician && m.technician !== '-').map(m => m.technician))];
+            techSelect.innerHTML = '<option value="all">Semua Teknisi</option>' + 
+                technicians.map(t => `<option value="${t}">${t}</option>`).join('');
         }
 
         // ==========================================
@@ -1978,12 +1913,13 @@
         }
 
         // ==========================================
-        // INVENTORY MOVEMENT FUNCTIONS
+        // INVENTORY FUNCTIONS (ke KPI Nala)
         // ==========================================
         async function addInventoryMovement(data) {
             try {
-                await db.collection('inventory_movements').add({
+                await kpiDb.collection('inventory_movements').add({
                     ...data,
+                    source: 'finance_nala', // menandakan dari app mana
                     createdAt: new Date().toISOString()
                 });
             } catch (error) {
@@ -1997,8 +1933,9 @@
             try {
                 const { category, type, merk, qty, unit, pricePerUnit, freonSize, displayName } = mat;
                 
+                // Check existing di KPI Nala
                 let existingItem = null;
-                const query = await db.collection('inventory')
+                const query = await kpiDb.collection('inventory')
                     .where('category', '==', category)
                     .where('type', '==', type)
                     .where('merk', '==', merk)
@@ -2022,7 +1959,7 @@
                         ((existingItem.avgPrice || 0) * (existingItem.totalQtyIn || 0) + pricePerUnit * qty) / newTotalQtyIn
                     );
                     
-                    await db.collection('inventory').doc(existingItem.id).update({
+                    await kpiDb.collection('inventory').doc(existingItem.id).update({
                         totalQtyIn: newTotalQtyIn,
                         currentStock,
                         avgPrice: newAvgPrice,
@@ -2031,7 +1968,7 @@
                     });
                     inventoryId = existingItem.id;
                 } else {
-                    const docRef = await db.collection('inventory').add({
+                    const docRef = await kpiDb.collection('inventory').add({
                         category,
                         type,
                         merk,
@@ -2050,7 +1987,7 @@
                     inventoryId = docRef.id;
                 }
                 
-                // Record movement
+                // Record movement ke KPI Nala
                 await addInventoryMovement({
                     type: 'in',
                     inventoryId,
@@ -2063,51 +2000,12 @@
                     technician: '-',
                     jobType: 'Pembelian',
                     customer: '-',
-                    note: `Dari transaksi ${transactionId}`,
-                    transactionId
+                    note: `Pembelian dari Finance Nala`,
+                    financeTransactionId: transactionId
                 });
                 
             } catch (error) {
                 console.error('Inventory error:', error);
-            }
-        }
-
-        async function useFromInventory(inventoryId, qty, technicianName, jobType, customer, note, date) {
-            try {
-                const item = inventory.find(i => i.id === inventoryId);
-                if (!item) throw new Error('Material tidak ditemukan');
-                if ((item.currentStock || 0) < qty) throw new Error('Stock tidak mencukupi');
-                
-                const newTotalQtyOut = (item.totalQtyOut || 0) + qty;
-                const newCurrentStock = (item.totalQtyIn || 0) - newTotalQtyOut;
-                
-                await db.collection('inventory').doc(inventoryId).update({
-                    totalQtyOut: newTotalQtyOut,
-                    currentStock: newCurrentStock,
-                    totalValue: newCurrentStock * (item.avgPrice || 0),
-                    lastUpdated: date
-                });
-                
-                // Record movement
-                await addInventoryMovement({
-                    type: 'out',
-                    inventoryId,
-                    materialName: item.displayName,
-                    qty,
-                    unit: item.unit,
-                    pricePerUnit: item.avgPrice || 0,
-                    totalValue: qty * (item.avgPrice || 0),
-                    date,
-                    technician: technicianName,
-                    jobType,
-                    customer,
-                    note
-                });
-                
-                return true;
-            } catch (error) {
-                console.error('Use inventory error:', error);
-                throw error;
             }
         }
 
@@ -2131,7 +2029,7 @@
             btn.innerHTML = '<div class="spinner"></div> Menyimpan...';
             
             try {
-                await db.collection('transactions').add({
+                await financeDb.collection('transactions').add({
                     type: 'income',
                     category: selectedIncomeCategory,
                     amount: parseFloat(amount),
@@ -2209,8 +2107,10 @@
                     }));
                 }
                 
-                const docRef = await db.collection('transactions').add(transaction);
+                // Simpan transaksi ke Finance Nala
+                const docRef = await financeDb.collection('transactions').add(transaction);
                 
+                // Tambah ke inventory di KPI Nala (hanya material stock)
                 let stockCount = 0, oneTimeCount = 0;
                 for (const mat of materialsData) {
                     if (!mat.skipInventory) {
@@ -2222,7 +2122,7 @@
                 }
                 
                 let msg = 'Pengeluaran berhasil!';
-                if (stockCount > 0) msg += ` (${stockCount} ke inventory)`;
+                if (stockCount > 0) msg += ` (${stockCount} item ke inventory)`;
                 if (oneTimeCount > 0) msg += ` (${oneTimeCount} sekali pakai)`;
                 showMessage(msg, 'success');
                 
@@ -2257,7 +2157,7 @@
             const description = document.getElementById('editDescription').value;
             
             try {
-                await db.collection('transactions').doc(id).update({
+                await financeDb.collection('transactions').doc(id).update({
                     type, category, amount: parseFloat(amount), description, date,
                     updatedAt: new Date().toISOString()
                 });
@@ -2296,36 +2196,8 @@
                     category, type, merk, qty, unit, pricePerUnit: price, freonSize, displayName, skipInventory: false
                 }, 'manual-add', date);
                 
-                showMessage('Stock ditambahkan!', 'success');
+                showMessage('Stock ditambahkan ke KPI Nala!', 'success');
                 closeAddInventoryModal();
-                await loadInventory();
-                await loadInventoryMovements();
-                updateAllStats();
-            } catch (error) {
-                showMessage('Gagal: ' + error.message, 'error');
-            }
-        });
-
-        document.getElementById('useInventoryForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const date = document.getElementById('useDate').value;
-            const materialId = document.getElementById('useMaterial').value;
-            const qty = parseInt(document.getElementById('useQty').value);
-            const technician = document.getElementById('useTechnician').value;
-            const jobType = document.getElementById('useJobType').value;
-            const customer = document.getElementById('useCustomer').value;
-            const note = document.getElementById('useNote').value;
-            
-            if (!date || !materialId || !qty || !technician || !jobType || !customer) {
-                showMessage('Lengkapi semua field wajib!', 'warning');
-                return;
-            }
-            
-            try {
-                await useFromInventory(materialId, qty, technician, jobType, customer, note, date);
-                showMessage('Pemakaian material berhasil dicatat!', 'success');
-                closeUseInventoryModal();
                 await loadInventory();
                 await loadInventoryMovements();
                 updateAllStats();
@@ -2365,7 +2237,6 @@
             document.getElementById('incomeDate').value = today;
             document.getElementById('expenseDate').value = today;
             document.getElementById('invAddDate').value = today;
-            document.getElementById('useDate').value = today;
         }
 
         function updateAllStats() {
@@ -2454,6 +2325,7 @@
                 const typeInfo = m.type === 'in' 
                     ? { badge: 'in', icon: '📥', text: 'MASUK' }
                     : { badge: 'out', icon: '📤', text: 'KELUAR' };
+                const sourceInfo = m.source === 'kpi_nala' ? ' (KPI)' : m.source === 'finance_nala' ? ' (Finance)' : '';
                 return `
                     <tr>
                         <td>${formatDate(m.date)}</td>
@@ -2461,7 +2333,7 @@
                         <td><strong>${m.materialName || '-'}</strong></td>
                         <td>${m.qty} ${m.unit || ''}</td>
                         <td>${m.technician || '-'}</td>
-                        <td>${m.jobType || '-'}</td>
+                        <td>${m.jobType || '-'}${sourceInfo}</td>
                         <td>${m.customer || '-'}</td>
                         <td>${m.note || '-'}</td>
                     </tr>
@@ -2588,9 +2460,10 @@
             let html = '';
             if (totalPages > 1) {
                 html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
-                for (let i = 1; i <= totalPages; i++) {
+                for (let i = 1; i <= Math.min(totalPages, 5); i++) {
                     html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
                 }
+                if (totalPages > 5) html += `<span style="padding: 10px;">...</span>`;
                 html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
             }
             document.getElementById('paginationControls').innerHTML = html;
@@ -2698,7 +2571,7 @@
             if (!deleteTransactionId) return;
             
             try {
-                await db.collection('transactions').doc(deleteTransactionId).delete();
+                await financeDb.collection('transactions').doc(deleteTransactionId).delete();
                 showMessage('Transaksi dihapus!', 'success');
                 closeDeleteModal();
                 await loadTransactions();
@@ -2718,30 +2591,6 @@
 
         function closeAddInventoryModal() {
             document.getElementById('addInventoryModal').classList.remove('show');
-        }
-
-        function openUseInventoryModal() {
-            document.getElementById('useInventoryForm').reset();
-            setTodayDate();
-            populateMaterialSelects();
-            document.getElementById('useAvailableStock').textContent = '-';
-            document.getElementById('useUnit').value = '';
-            document.getElementById('useInventoryModal').classList.add('show');
-        }
-
-        function closeUseInventoryModal() {
-            document.getElementById('useInventoryModal').classList.remove('show');
-        }
-
-        function updateUseMaxQty() {
-            const select = document.getElementById('useMaterial');
-            const option = select.options[select.selectedIndex];
-            const stock = option.dataset.stock || 0;
-            const unit = option.dataset.unit || '';
-            
-            document.getElementById('useAvailableStock').textContent = `${stock} ${unit}`;
-            document.getElementById('useUnit').value = unit;
-            document.getElementById('useQty').max = stock;
         }
 
         function updateInvMaterialOptions() {
@@ -2767,7 +2616,7 @@
         async function deleteInventoryItem(id) {
             if (!confirm('Hapus item ini dari inventory?')) return;
             try {
-                await db.collection('inventory').doc(id).delete();
+                await kpiDb.collection('inventory').doc(id).delete();
                 showMessage('Item dihapus!', 'success');
                 await loadInventory();
                 updateAllStats();
@@ -2942,7 +2791,6 @@
         }
 
         function exportInventory() {
-            // Export both stock and movements
             const wb = XLSX.utils.book_new();
             
             // Stock sheet
@@ -2974,7 +2822,8 @@
                     'Teknisi': m.technician || '-',
                     'Pekerjaan': m.jobType || '-',
                     'Customer': m.customer || '-',
-                    'Keterangan': m.note || '-'
+                    'Keterangan': m.note || '-',
+                    'Sumber': m.source || '-'
                 }));
                 const wsMove = XLSX.utils.json_to_sheet(moveData);
                 XLSX.utils.book_append_sheet(wb, wsMove, 'Riwayat Pergerakan');
@@ -3014,9 +2863,6 @@
         window.calculateAllMaterialTotal = calculateAllMaterialTotal;
         window.openAddInventoryModal = openAddInventoryModal;
         window.closeAddInventoryModal = closeAddInventoryModal;
-        window.openUseInventoryModal = openUseInventoryModal;
-        window.closeUseInventoryModal = closeUseInventoryModal;
-        window.updateUseMaxQty = updateUseMaxQty;
         window.updateInvMaterialOptions = updateInvMaterialOptions;
         window.deleteInventoryItem = deleteInventoryItem;
 
@@ -3025,7 +2871,6 @@
                 if (e.target.id === 'editModal') closeEditModal();
                 if (e.target.id === 'deleteModal') closeDeleteModal();
                 if (e.target.id === 'addInventoryModal') closeAddInventoryModal();
-                if (e.target.id === 'useInventoryModal') closeUseInventoryModal();
             }
         });
 
@@ -3033,7 +2878,8 @@
         // INIT
         // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 Nala Finance v3 Starting...');
+            console.log('🚀 Nala Finance v3.1 Starting...');
+            console.log('📦 Inventory akan disimpan ke KPI Nala untuk integrasi');
             const ok = await initializeFirebase();
             if (ok) {
                 setTodayDate();
