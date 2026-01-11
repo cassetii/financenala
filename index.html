@@ -554,7 +554,7 @@
             <div class="header-content">
                 <h1>💼 Nala Aircon Finance</h1>
                 <div class="header-right">
-                    <span class="version-badge">v4.3</span>
+                    <span class="version-badge">v4.4</span>
                     <div class="connection-status">
                         <div class="status-indicator status-loading" id="statusIndicator"></div>
                         <span id="statusText">Connecting...</span>
@@ -2237,26 +2237,138 @@
                 return;
             }
             
-            const data = filteredTx.map((t, i) => ({
-                'No': i + 1,
-                'Tanggal': formatDate(t.date),
-                'Tipe': t.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
-                'Kategori': t.category,
-                'Jumlah': t.amount,
-                'Keterangan': t.description || '-'
-            }));
+            // Sheet 1: Transaksi dengan detail material
+            const data = [];
+            let rowNum = 1;
             
-            // Add summary row
+            filteredTx.forEach((t) => {
+                // Main transaction row
+                const mainRow = {
+                    'No': rowNum++,
+                    'Tanggal': formatDate(t.date),
+                    'Tipe': t.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
+                    'Kategori': t.category,
+                    'Keterangan': t.description || '-',
+                    'Material': '',
+                    'Qty': '',
+                    'Satuan': '',
+                    'Harga/Unit': '',
+                    'Subtotal': '',
+                    'Total': t.amount
+                };
+                
+                if (t.materials && t.materials.length > 0) {
+                    // First material in same row as transaction
+                    const firstMat = t.materials[0];
+                    mainRow['Material'] = firstMat.displayName || '-';
+                    mainRow['Qty'] = firstMat.qty || 0;
+                    mainRow['Satuan'] = firstMat.unit || '-';
+                    mainRow['Harga/Unit'] = firstMat.price || 0;
+                    mainRow['Subtotal'] = firstMat.total || (firstMat.qty * firstMat.price) || 0;
+                    data.push(mainRow);
+                    
+                    // Additional materials in separate rows
+                    for (let i = 1; i < t.materials.length; i++) {
+                        const mat = t.materials[i];
+                        data.push({
+                            'No': '',
+                            'Tanggal': '',
+                            'Tipe': '',
+                            'Kategori': '',
+                            'Keterangan': '',
+                            'Material': mat.displayName || '-',
+                            'Qty': mat.qty || 0,
+                            'Satuan': mat.unit || '-',
+                            'Harga/Unit': mat.price || 0,
+                            'Subtotal': mat.total || (mat.qty * mat.price) || 0,
+                            'Total': ''
+                        });
+                    }
+                } else {
+                    data.push(mainRow);
+                }
+            });
+            
+            // Add empty row before summary
+            data.push({});
+            
+            // Add summary rows
             const totalIncome = filteredTx.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
             const totalExpense = filteredTx.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
-            data.push({});
-            data.push({ 'No': '', 'Tanggal': 'TOTAL', 'Tipe': '', 'Kategori': 'Pemasukan', 'Jumlah': totalIncome, 'Keterangan': '' });
-            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'Pengeluaran', 'Jumlah': totalExpense, 'Keterangan': '' });
-            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'Saldo', 'Jumlah': totalIncome - totalExpense, 'Keterangan': '' });
+            
+            data.push({ 'No': '', 'Tanggal': 'RINGKASAN', 'Tipe': '', 'Kategori': '', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga/Unit': '', 'Subtotal': '', 'Total': '' });
+            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'Total Pemasukan', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga/Unit': '', 'Subtotal': '', 'Total': totalIncome });
+            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'Total Pengeluaran', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga/Unit': '', 'Subtotal': '', 'Total': totalExpense });
+            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'SALDO', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga/Unit': '', 'Subtotal': '', 'Total': totalIncome - totalExpense });
             
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.json_to_sheet(data);
+            
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 5 },   // No
+                { wch: 12 },  // Tanggal
+                { wch: 12 },  // Tipe
+                { wch: 18 },  // Kategori
+                { wch: 25 },  // Keterangan
+                { wch: 30 },  // Material
+                { wch: 8 },   // Qty
+                { wch: 8 },   // Satuan
+                { wch: 12 },  // Harga/Unit
+                { wch: 12 },  // Subtotal
+                { wch: 15 }   // Total
+            ];
+            
             XLSX.utils.book_append_sheet(wb, ws, 'Transaksi');
+            
+            // Sheet 2: Ringkasan Material (jika ada)
+            const materialTx = filteredTx.filter(t => t.materials && t.materials.length > 0);
+            if (materialTx.length > 0) {
+                const matSummary = {};
+                
+                materialTx.forEach(t => {
+                    t.materials.forEach(mat => {
+                        const key = mat.displayName || 'Unknown';
+                        if (!matSummary[key]) {
+                            matSummary[key] = {
+                                name: key,
+                                unit: mat.unit || 'pcs',
+                                totalQty: 0,
+                                totalValue: 0,
+                                count: 0
+                            };
+                        }
+                        matSummary[key].totalQty += mat.qty || 0;
+                        matSummary[key].totalValue += mat.total || (mat.qty * mat.price) || 0;
+                        matSummary[key].count++;
+                    });
+                });
+                
+                const matData = Object.values(matSummary).map((m, i) => ({
+                    'No': i + 1,
+                    'Material': m.name,
+                    'Total Qty': m.totalQty,
+                    'Satuan': m.unit,
+                    'Total Nilai': m.totalValue,
+                    'Jumlah Transaksi': m.count
+                }));
+                
+                // Add total row
+                const grandTotal = Object.values(matSummary).reduce((s, m) => s + m.totalValue, 0);
+                matData.push({});
+                matData.push({ 'No': '', 'Material': 'TOTAL', 'Total Qty': '', 'Satuan': '', 'Total Nilai': grandTotal, 'Jumlah Transaksi': '' });
+                
+                const wsMat = XLSX.utils.json_to_sheet(matData);
+                wsMat['!cols'] = [
+                    { wch: 5 },   // No
+                    { wch: 35 },  // Material
+                    { wch: 12 },  // Total Qty
+                    { wch: 10 },  // Satuan
+                    { wch: 15 },  // Total Nilai
+                    { wch: 18 }   // Jumlah Transaksi
+                ];
+                XLSX.utils.book_append_sheet(wb, wsMat, 'Ringkasan Material');
+            }
             
             // Generate filename with date range if filtered
             const dateStart = document.getElementById('filterDateStart').value;
