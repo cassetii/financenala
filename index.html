@@ -554,7 +554,7 @@
             <div class="header-content">
                 <h1>💼 Nala Aircon Finance</h1>
                 <div class="header-right">
-                    <span class="version-badge">v4.4</span>
+                    <span class="version-badge">v4.5</span>
                     <div class="connection-status">
                         <div class="status-indicator status-loading" id="statusIndicator"></div>
                         <span id="statusText">Connecting...</span>
@@ -2237,155 +2237,210 @@
                 return;
             }
             
-            // Sheet 1: Transaksi dengan detail material
-            const data = [];
-            let rowNum = 1;
+            const wb = XLSX.utils.book_new();
             
-            filteredTx.forEach((t) => {
-                // Main transaction row
-                const mainRow = {
-                    'No': rowNum++,
-                    'Tanggal': formatDate(t.date),
-                    'Tipe': t.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
-                    'Kategori': t.category,
-                    'Keterangan': t.description || '-',
-                    'Material': '',
-                    'Qty': '',
-                    'Satuan': '',
-                    'Harga/Unit': '',
-                    'Subtotal': '',
-                    'Total': t.amount
-                };
-                
+            // =====================
+            // SHEET 1: SEMUA TRANSAKSI
+            // =====================
+            const txData = [];
+            let no = 1;
+            
+            filteredTx.forEach(t => {
+                // Jika ada material, tampilkan detail
                 if (t.materials && t.materials.length > 0) {
-                    // First material in same row as transaction
-                    const firstMat = t.materials[0];
-                    mainRow['Material'] = firstMat.displayName || '-';
-                    mainRow['Qty'] = firstMat.qty || 0;
-                    mainRow['Satuan'] = firstMat.unit || '-';
-                    mainRow['Harga/Unit'] = firstMat.price || 0;
-                    mainRow['Subtotal'] = firstMat.total || (firstMat.qty * firstMat.price) || 0;
-                    data.push(mainRow);
-                    
-                    // Additional materials in separate rows
-                    for (let i = 1; i < t.materials.length; i++) {
-                        const mat = t.materials[i];
-                        data.push({
-                            'No': '',
-                            'Tanggal': '',
-                            'Tipe': '',
-                            'Kategori': '',
-                            'Keterangan': '',
-                            'Material': mat.displayName || '-',
+                    t.materials.forEach((mat, idx) => {
+                        txData.push({
+                            'No': idx === 0 ? no : '',
+                            'Tanggal': idx === 0 ? t.date : '',
+                            'Tipe': idx === 0 ? (t.type === 'income' ? 'MASUK' : 'KELUAR') : '',
+                            'Kategori': idx === 0 ? t.category : '',
+                            'Keterangan': idx === 0 ? (t.description || '-') : '',
+                            'Nama Material': mat.displayName || '-',
                             'Qty': mat.qty || 0,
                             'Satuan': mat.unit || '-',
-                            'Harga/Unit': mat.price || 0,
-                            'Subtotal': mat.total || (mat.qty * mat.price) || 0,
-                            'Total': ''
+                            'Harga Satuan': mat.price || 0,
+                            'Subtotal Material': mat.total || 0,
+                            'Total Transaksi': idx === 0 ? t.amount : ''
                         });
-                    }
+                    });
+                    no++;
                 } else {
-                    data.push(mainRow);
+                    // Transaksi tanpa material
+                    txData.push({
+                        'No': no++,
+                        'Tanggal': t.date,
+                        'Tipe': t.type === 'income' ? 'MASUK' : 'KELUAR',
+                        'Kategori': t.category,
+                        'Keterangan': t.description || '-',
+                        'Nama Material': '-',
+                        'Qty': '-',
+                        'Satuan': '-',
+                        'Harga Satuan': '-',
+                        'Subtotal Material': '-',
+                        'Total Transaksi': t.amount
+                    });
                 }
             });
             
-            // Add empty row before summary
-            data.push({});
+            // Tambah baris kosong
+            txData.push({});
             
-            // Add summary rows
-            const totalIncome = filteredTx.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
-            const totalExpense = filteredTx.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
+            // Tambah ringkasan
+            const totalMasuk = filteredTx.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
+            const totalKeluar = filteredTx.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
             
-            data.push({ 'No': '', 'Tanggal': 'RINGKASAN', 'Tipe': '', 'Kategori': '', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga/Unit': '', 'Subtotal': '', 'Total': '' });
-            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'Total Pemasukan', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga/Unit': '', 'Subtotal': '', 'Total': totalIncome });
-            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'Total Pengeluaran', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga/Unit': '', 'Subtotal': '', 'Total': totalExpense });
-            data.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': 'SALDO', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga/Unit': '', 'Subtotal': '', 'Total': totalIncome - totalExpense });
+            txData.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': '', 'Keterangan': '', 'Nama Material': '', 'Qty': '', 'Satuan': '', 'Harga Satuan': '', 'Subtotal Material': 'TOTAL MASUK:', 'Total Transaksi': totalMasuk });
+            txData.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': '', 'Keterangan': '', 'Nama Material': '', 'Qty': '', 'Satuan': '', 'Harga Satuan': '', 'Subtotal Material': 'TOTAL KELUAR:', 'Total Transaksi': totalKeluar });
+            txData.push({ 'No': '', 'Tanggal': '', 'Tipe': '', 'Kategori': '', 'Keterangan': '', 'Nama Material': '', 'Qty': '', 'Satuan': '', 'Harga Satuan': '', 'Subtotal Material': 'SALDO:', 'Total Transaksi': totalMasuk - totalKeluar });
             
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(data);
-            
-            // Set column widths
-            ws['!cols'] = [
+            const ws1 = XLSX.utils.json_to_sheet(txData);
+            ws1['!cols'] = [
                 { wch: 5 },   // No
                 { wch: 12 },  // Tanggal
-                { wch: 12 },  // Tipe
-                { wch: 18 },  // Kategori
+                { wch: 8 },   // Tipe
+                { wch: 20 },  // Kategori
                 { wch: 25 },  // Keterangan
-                { wch: 30 },  // Material
+                { wch: 30 },  // Nama Material
                 { wch: 8 },   // Qty
-                { wch: 8 },   // Satuan
-                { wch: 12 },  // Harga/Unit
-                { wch: 12 },  // Subtotal
-                { wch: 15 }   // Total
+                { wch: 10 },  // Satuan
+                { wch: 15 },  // Harga Satuan
+                { wch: 18 },  // Subtotal Material
+                { wch: 18 }   // Total Transaksi
             ];
+            XLSX.utils.book_append_sheet(wb, ws1, 'Transaksi');
             
-            XLSX.utils.book_append_sheet(wb, ws, 'Transaksi');
+            // =====================
+            // SHEET 2: PEMASUKAN SAJA
+            // =====================
+            const incomeData = filteredTx.filter(t => t.type === 'income').map((t, i) => ({
+                'No': i + 1,
+                'Tanggal': t.date,
+                'Kategori': t.category,
+                'Keterangan': t.description || '-',
+                'Jumlah': t.amount
+            }));
             
-            // Sheet 2: Ringkasan Material (jika ada)
-            const materialTx = filteredTx.filter(t => t.materials && t.materials.length > 0);
-            if (materialTx.length > 0) {
-                const matSummary = {};
+            if (incomeData.length > 0) {
+                incomeData.push({});
+                incomeData.push({ 'No': '', 'Tanggal': '', 'Kategori': '', 'Keterangan': 'TOTAL PEMASUKAN:', 'Jumlah': totalMasuk });
                 
-                materialTx.forEach(t => {
-                    t.materials.forEach(mat => {
-                        const key = mat.displayName || 'Unknown';
-                        if (!matSummary[key]) {
-                            matSummary[key] = {
-                                name: key,
-                                unit: mat.unit || 'pcs',
-                                totalQty: 0,
-                                totalValue: 0,
-                                count: 0
-                            };
-                        }
-                        matSummary[key].totalQty += mat.qty || 0;
-                        matSummary[key].totalValue += mat.total || (mat.qty * mat.price) || 0;
-                        matSummary[key].count++;
-                    });
-                });
-                
-                const matData = Object.values(matSummary).map((m, i) => ({
-                    'No': i + 1,
-                    'Material': m.name,
-                    'Total Qty': m.totalQty,
-                    'Satuan': m.unit,
-                    'Total Nilai': m.totalValue,
-                    'Jumlah Transaksi': m.count
-                }));
-                
-                // Add total row
-                const grandTotal = Object.values(matSummary).reduce((s, m) => s + m.totalValue, 0);
-                matData.push({});
-                matData.push({ 'No': '', 'Material': 'TOTAL', 'Total Qty': '', 'Satuan': '', 'Total Nilai': grandTotal, 'Jumlah Transaksi': '' });
-                
-                const wsMat = XLSX.utils.json_to_sheet(matData);
-                wsMat['!cols'] = [
-                    { wch: 5 },   // No
-                    { wch: 35 },  // Material
-                    { wch: 12 },  // Total Qty
-                    { wch: 10 },  // Satuan
-                    { wch: 15 },  // Total Nilai
-                    { wch: 18 }   // Jumlah Transaksi
-                ];
-                XLSX.utils.book_append_sheet(wb, wsMat, 'Ringkasan Material');
+                const ws2 = XLSX.utils.json_to_sheet(incomeData);
+                ws2['!cols'] = [{ wch: 5 }, { wch: 12 }, { wch: 20 }, { wch: 30 }, { wch: 15 }];
+                XLSX.utils.book_append_sheet(wb, ws2, 'Pemasukan');
             }
             
-            // Generate filename with date range if filtered
+            // =====================
+            // SHEET 3: PENGELUARAN SAJA
+            // =====================
+            const expenseList = filteredTx.filter(t => t.type === 'expense');
+            const expenseData = [];
+            let expNo = 1;
+            
+            expenseList.forEach(t => {
+                if (t.materials && t.materials.length > 0) {
+                    t.materials.forEach((mat, idx) => {
+                        expenseData.push({
+                            'No': idx === 0 ? expNo : '',
+                            'Tanggal': idx === 0 ? t.date : '',
+                            'Kategori': idx === 0 ? t.category : '',
+                            'Keterangan': idx === 0 ? (t.description || '-') : '',
+                            'Material': mat.displayName || '-',
+                            'Qty': mat.qty || 0,
+                            'Satuan': mat.unit || '-',
+                            'Harga': mat.price || 0,
+                            'Subtotal': mat.total || 0,
+                            'Total': idx === 0 ? t.amount : ''
+                        });
+                    });
+                    expNo++;
+                } else {
+                    expenseData.push({
+                        'No': expNo++,
+                        'Tanggal': t.date,
+                        'Kategori': t.category,
+                        'Keterangan': t.description || '-',
+                        'Material': '-',
+                        'Qty': '-',
+                        'Satuan': '-',
+                        'Harga': '-',
+                        'Subtotal': '-',
+                        'Total': t.amount
+                    });
+                }
+            });
+            
+            if (expenseData.length > 0) {
+                expenseData.push({});
+                expenseData.push({ 'No': '', 'Tanggal': '', 'Kategori': '', 'Keterangan': '', 'Material': '', 'Qty': '', 'Satuan': '', 'Harga': '', 'Subtotal': 'TOTAL PENGELUARAN:', 'Total': totalKeluar });
+                
+                const ws3 = XLSX.utils.json_to_sheet(expenseData);
+                ws3['!cols'] = [{ wch: 5 }, { wch: 12 }, { wch: 18 }, { wch: 20 }, { wch: 28 }, { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 15 }, { wch: 15 }];
+                XLSX.utils.book_append_sheet(wb, ws3, 'Pengeluaran');
+            }
+            
+            // =====================
+            // SHEET 4: REKAP MATERIAL
+            // =====================
+            const allMaterials = [];
+            filteredTx.forEach(t => {
+                if (t.materials && t.materials.length > 0) {
+                    t.materials.forEach(mat => {
+                        allMaterials.push({
+                            date: t.date,
+                            category: t.category,
+                            ...mat
+                        });
+                    });
+                }
+            });
+            
+            if (allMaterials.length > 0) {
+                // Group by material name
+                const matGroup = {};
+                allMaterials.forEach(m => {
+                    const key = m.displayName;
+                    if (!matGroup[key]) {
+                        matGroup[key] = { name: key, unit: m.unit, totalQty: 0, totalNilai: 0, count: 0 };
+                    }
+                    matGroup[key].totalQty += m.qty || 0;
+                    matGroup[key].totalNilai += m.total || 0;
+                    matGroup[key].count++;
+                });
+                
+                const matSummary = Object.values(matGroup).map((m, i) => ({
+                    'No': i + 1,
+                    'Nama Material': m.name,
+                    'Total Qty': m.totalQty,
+                    'Satuan': m.unit,
+                    'Total Nilai': m.totalNilai,
+                    'Jml Transaksi': m.count
+                }));
+                
+                const grandTotal = Object.values(matGroup).reduce((s, m) => s + m.totalNilai, 0);
+                matSummary.push({});
+                matSummary.push({ 'No': '', 'Nama Material': 'GRAND TOTAL', 'Total Qty': '', 'Satuan': '', 'Total Nilai': grandTotal, 'Jml Transaksi': '' });
+                
+                const ws4 = XLSX.utils.json_to_sheet(matSummary);
+                ws4['!cols'] = [{ wch: 5 }, { wch: 35 }, { wch: 12 }, { wch: 10 }, { wch: 15 }, { wch: 15 }];
+                XLSX.utils.book_append_sheet(wb, ws4, 'Rekap Material');
+            }
+            
+            // Generate filename
             const dateStart = document.getElementById('filterDateStart').value;
             const dateEnd = document.getElementById('filterDateEnd').value;
-            let filename = 'Nala_Finance';
+            let filename = 'Laporan_Keuangan_Nala';
             if (dateStart && dateEnd) {
-                filename += `_${dateStart}_to_${dateEnd}`;
+                filename += `_${dateStart}_sd_${dateEnd}`;
             } else if (dateStart) {
-                filename += `_from_${dateStart}`;
+                filename += `_dari_${dateStart}`;
             } else if (dateEnd) {
-                filename += `_until_${dateEnd}`;
+                filename += `_sampai_${dateEnd}`;
             } else {
                 filename += `_${new Date().toISOString().split('T')[0]}`;
             }
             
             XLSX.writeFile(wb, `${filename}.xlsx`);
-            showMessage('Export berhasil!', 'success');
+            showMessage(`Export berhasil! ${allMaterials.length > 0 ? '(Termasuk ' + allMaterials.length + ' item material)' : ''}`, 'success');
         }
 
         function exportInventory() {
